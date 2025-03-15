@@ -439,6 +439,7 @@
       <!-- Acquired journeys view with Duolingo-style modules -->
       <div id="empleadoAcquiredView" style="display: none;">
         <h2 style="margin-bottom: 20px;">Mi Progreso de Aprendizaje</h2>
+        
         <!-- Módulo 1 -->
         <div class="module-content">
           <div class="module-unit-expanded">
@@ -451,7 +452,15 @@
             </div>
           </div>
           <p>Este módulo cubre los fundamentos de Pronto Cash y sus beneficios.</p>
+          
+          <!-- Mostrar lección y cuestionario juntos en una grid como en el módulo 2 -->
           <div class="lessons-grid">
+            <div class="lesson-card">
+              <div class="lesson-icon">🔠</div>
+              <h4>Lección 1</h4>
+              <p>Introducción a ProntoCash</p>
+              <button class="start-lesson-btn">Iniciar</button>
+            </div>
             <div class="lesson-card quiz-card" data-module="1">
               <div class="lesson-icon">❓</div>
               <h4>Cuestionario Módulo 1</h4>
@@ -526,6 +535,35 @@
             </div>
             <button id="submitQuizBtn" class="submit-btn">Enviar respuestas</button>
             <button id="closeQuizBtn" class="close-btn">Cerrar</button>
+          </div>
+        </div>
+        
+        <!-- Modal para la lección -->
+        <div id="lessonModal" class="lesson-modal" style="display: none;">
+          <div class="lesson-modal-content">
+            <h3 id="lessonTitle">Lección: Módulo X</h3>
+            
+            <!-- Indicador de progreso de la lección -->
+            <div class="lesson-progress-container">
+              <div class="lesson-progress-bar">
+                <div class="lesson-progress-fill" style="width: 0%"></div>
+              </div>
+              <div class="lesson-progress-text">Nivel <span id="currentLevel">1</span> de <span id="totalLevels">4</span></div>
+            </div>
+            
+            <!-- Contenedor para los niveles de la lección -->
+            <div id="lessonContent" class="lesson-container">
+              <!-- Los niveles se generarán con JavaScript -->
+            </div>
+            
+            <!-- Navegación entre niveles -->
+            <div class="lesson-navigation">
+              <button id="prevLevelBtn" class="nav-btn" disabled>Anterior</button>
+              <button id="nextLevelBtn" class="nav-btn">Siguiente</button>
+              <button id="completeLessonBtn" class="complete-btn" style="display: none;">Completar lección</button>
+            </div>
+            
+            <button id="closeLessonBtn" class="close-btn">Cerrar</button>
           </div>
         </div>
       </div>

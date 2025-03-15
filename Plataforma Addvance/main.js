@@ -522,73 +522,263 @@ const quizData = {
   ]
 };
 
+// Función para obtener preguntas según el módulo
+function getQuestionsForModule(moduleId) {
+  // Convertir a número
+  const modId = parseInt(moduleId);
+  
+  console.log('Obteniendo preguntas para el módulo:', modId);
+  
+  // Preguntas para cada módulo
+  const questions = {
+    1: [
+      {
+        text: "¿Qué es ProntoCash?",
+        options: [
+          "Una plataforma de crédito tradicional",
+          "Una solución de financiamiento para empresas",
+          "Un servicio de cambio de divisas",
+          "Una aplicación para transferencias personales"
+        ],
+        correctAnswer: 1 // Índice de la opción correcta (empezando en 0)
+      },
+      {
+        text: "¿Qué beneficio principal ofrece ProntoCash a las empresas?",
+        options: [
+          "Reducción de impuestos",
+          "Acceso a capital de trabajo",
+          "Contratación de personal",
+          "Marketing digital"
+        ],
+        correctAnswer: 1
+      },
+      {
+        text: "¿Cómo funciona ProntoCash?",
+        options: [
+          "A través de préstamos bancarios tradicionales",
+          "Mediante financiamiento de facturas por cobrar",
+          "Con microcréditos personales",
+          "Por medio de inversiones en bolsa"
+        ],
+        correctAnswer: 1
+      }
+    ],
+    2: [
+      {
+        text: "¿Qué es ÁbacoPay?",
+        options: [
+          "Una herramienta de contabilidad tradicional",
+          "Un sistema de gestión de inventario",
+          "Una solución de pago y facturación electrónica",
+          "Una aplicación para control de asistencia"
+        ],
+        correctAnswer: 2
+      },
+      {
+        text: "¿Qué beneficio principal ofrece ÁbacoPay a las empresas?",
+        options: [
+          "Reducción de personal contable",
+          "Simplificación de procesos de pago y facturación",
+          "Aumento del número de clientes",
+          "Mejora del clima laboral"
+        ],
+        correctAnswer: 1
+      },
+      {
+        text: "¿Qué documentos se pueden gestionar con ÁbacoPay?",
+        options: [
+          "Solo facturas de venta",
+          "Únicamente recibos de caja",
+          "Documentos personales y DUI",
+          "Facturas, recibos y documentos fiscales"
+        ],
+        correctAnswer: 3
+      }
+    ],
+    3: [
+      {
+        text: "¿Qué es CashX?",
+        options: [
+          "Una plataforma de cambio de divisas",
+          "Un servicio de préstamos personales",
+          "Una solución para mejorar el flujo de caja",
+          "Una aplicación de gestión de nómina"
+        ],
+        correctAnswer: 2
+      },
+      {
+        text: "¿Qué información se sube una vez se está registrado en CashX?",
+        options: [
+          "Crédito fiscal y factura electrónica",
+          "Documentación sobre nuestras cuentas por cobrar",
+          "DUI del representante",
+          "NIT de la empresa"
+        ],
+        correctAnswer: 1
+      },
+      {
+        text: "¿De qué manera mejora CashX los procesos de las PYMEs?",
+        options: [
+          "Reduce los impuestos a pagar de las empresas",
+          "Permite cobrar mayor comisión por transacción",
+          "Mejora la relación con los empleados",
+          "Permite la inversión y evita la interrupción de operaciones"
+        ],
+        correctAnswer: 3
+      }
+    ]
+  };
+  
+  // Verificar si existe el módulo solicitado
+  if (!questions[modId]) {
+    console.error(`No se encontraron preguntas para el módulo ${modId}`);
+    return [];
+  }
+  
+  return questions[modId];
+}
+
 // Función para mostrar el cuestionario
 function showQuiz(moduleId) {
-  if (!moduleId) {
-    console.error('Error: moduleId indefinido');
-    return;
-  }
-  
-  const modal = document.getElementById('quizModal');
+  const quizModal = document.getElementById('quizModal');
   const quizTitle = document.getElementById('quizTitle');
   const quizQuestions = document.getElementById('quizQuestions');
+  const submitBtn = document.getElementById('submitQuizBtn');
+  const closeBtn = document.getElementById('closeQuizBtn');
   
-  if (!modal || !quizTitle || !quizQuestions) {
-    console.error('Error: Elementos del modal no encontrados', {modal, quizTitle, quizQuestions});
-    return;
-  }
+  // Establecer el título del cuestionario según el módulo
+  quizTitle.textContent = `Cuestionario: Módulo ${moduleId}`;
   
-  // Asegurar que quizData existe
-  if (!quizData) {
-    console.error('Error: quizData no está definido');
-    quizQuestions.innerHTML = '<p>Error al cargar las preguntas. Por favor, recarga la página.</p>';
-    modal.style.display = 'flex';
-    return;
-  }
-  
-  quizTitle.textContent = `Cuestionario Módulo ${moduleId}`;
+  // Limpiar preguntas anteriores
   quizQuestions.innerHTML = '';
 
-  const questions = quizData[moduleId] || [];
-  if (questions.length === 0) {
-    quizQuestions.innerHTML = '<p>No hay preguntas disponibles para este módulo.</p>';
-  } else {
-    try {
-      questions.forEach((q, index) => {
-        if (!q || !q.question || !Array.isArray(q.options)) {
-          console.error(`Error: Pregunta ${index} mal formateada`, q);
-          return;
-        }
-        
+  // Generar preguntas según el módulo
+  const questions = getQuestionsForModule(moduleId);
+  
+  questions.forEach((question, qIndex) => {
         const questionDiv = document.createElement('div');
         questionDiv.className = 'quiz-question';
         
-        let optionsHtml = '';
-        q.options.forEach((opt) => {
-          if (opt) {
-            optionsHtml += `
-              <label>
-                <input type="radio" name="q${index}" value="${opt}">
-                ${opt}
-              </label>
-            `;
-          }
+    // Añadir el texto de la pregunta
+    const questionText = document.createElement('p');
+    questionText.textContent = question.text;
+    questionDiv.appendChild(questionText);
+    
+    // Crear el contenedor para las opciones
+    const optionsDiv = document.createElement('div');
+    optionsDiv.className = 'quiz-options';
+    
+    // Generar opciones de respuesta
+    question.options.forEach((option, oIndex) => {
+      const radioId = `q${qIndex}_o${oIndex}`;
+      
+      // Crear input de tipo radio
+      const radioInput = document.createElement('input');
+      radioInput.type = 'radio';
+      radioInput.name = `question_${qIndex}`;
+      radioInput.id = radioId;
+      radioInput.value = oIndex;
+      
+      // Manejar el evento de cambio para aplicar estilos a la opción seleccionada
+      radioInput.addEventListener('change', function() {
+        // Resetear todas las etiquetas de esta pregunta
+        const allLabels = optionsDiv.querySelectorAll('label');
+        allLabels.forEach(label => {
+          label.classList.remove('selected');
         });
         
-        questionDiv.innerHTML = `
-          <p>${index + 1}. ${q.question}</p>
-          ${optionsHtml}
-        `;
-        
+        // Aplicar clase a la etiqueta seleccionada
+        if (this.checked) {
+          document.querySelector(`label[for="${radioId}"]`).classList.add('selected');
+        }
+      });
+      
+      // Crear etiqueta para la opción
+      const label = document.createElement('label');
+      label.htmlFor = radioId;
+      label.textContent = option;
+      
+      // Agregar los elementos al contenedor de opciones
+      optionsDiv.appendChild(radioInput);
+      optionsDiv.appendChild(label);
+      optionsDiv.appendChild(document.createElement('br'));
+    });
+    
+    questionDiv.appendChild(optionsDiv);
         quizQuestions.appendChild(questionDiv);
       });
-    } catch (error) {
-      console.error('Error al generar preguntas:', error);
-      quizQuestions.innerHTML = '<p>Error al generar las preguntas. Por favor, intenta de nuevo.</p>';
+  
+  // Mostrar el modal del cuestionario
+  quizModal.style.display = 'flex';
+  
+  // Manejar el envío del cuestionario
+  submitBtn.onclick = function() {
+    evaluateQuiz(questions, moduleId);
+  };
+  
+  // Manejar el cierre del cuestionario
+  closeBtn.onclick = function() {
+    quizModal.style.display = 'none';
+  };
+}
+
+// Función para evaluar el cuestionario
+function evaluateQuiz(questions, moduleId) {
+  const quizQuestions = document.getElementById('quizQuestions');
+  const questionDivs = quizQuestions.querySelectorAll('.quiz-question');
+  
+  let correctAnswers = 0;
+  let totalQuestions = questions.length;
+  
+  // Verificar cada respuesta
+  questionDivs.forEach((questionDiv, qIndex) => {
+    const selectedOption = questionDiv.querySelector(`input[name="question_${qIndex}"]:checked`);
+    
+    if (selectedOption) {
+      const selectedIndex = parseInt(selectedOption.value);
+      
+      if (selectedIndex === questions[qIndex].correctAnswer) {
+        correctAnswers++;
+      }
+    }
+  });
+  
+  // Calcular puntaje como porcentaje
+  const score = Math.round((correctAnswers / totalQuestions) * 100);
+  
+  // Mostrar resultado
+  alert(`Has obtenido ${score}% (${correctAnswers} de ${totalQuestions} respuestas correctas)`);
+  
+  // Cerrar modal
+  document.getElementById('quizModal').style.display = 'none';
+  
+  // Actualizar progreso del módulo si se aprueba (70% o más)
+  if (score >= 70) {
+    // Marcar el cuestionario como completado si tenemos la referencia almacenada
+    if (window.journeySystem.currentQuizCard) {
+      const quizCard = window.journeySystem.currentQuizCard;
+      quizCard.classList.add('completed');
+      quizCard.querySelector('.start-lesson-btn').textContent = '✓ Completado';
+      
+      // Actualizar barra de progreso del módulo
+      if (window.journeySystem.currentModuleContent) {
+        updateModuleProgress(window.journeySystem.currentModuleContent);
+      }
+    } else {
+      // Buscar el quiz-card correspondiente si no tenemos la referencia
+      const quizCards = document.querySelectorAll(`.quiz-card[data-module="${moduleId}"]`);
+      quizCards.forEach(quizCard => {
+        quizCard.classList.add('completed');
+        quizCard.querySelector('.start-lesson-btn').textContent = '✓ Completado';
+        
+        // Actualizar barra de progreso del módulo
+        const moduleContent = quizCard.closest('.module-content');
+        if (moduleContent) {
+          updateModuleProgress(moduleContent);
+        }
+      });
     }
   }
-
-  modal.style.display = 'flex';
 }
 
 // Sistema mejorado para módulos y cuestionarios
@@ -606,184 +796,57 @@ window.journeySystem = {
  * Permite ver todos los módulos pero bloquea los cuestionarios secuencialmente
  */
 function initializeJourneySystem() {
-  // Evitar inicialización múltiple
-  if (window.journeySystem && window.journeySystem.initialized) {
-    console.log('El sistema ya está inicializado');
-    
-    // Aún así, verificamos que todos los módulos estén visibles
-    const moduleContents = document.querySelectorAll('.module-content');
-    moduleContents.forEach(content => {
-      content.style.display = 'block';
-    });
-    
-    return;
-  }
+  // Configurar eventos para las lecciones
+  configureLessonCardEvents();
   
-  console.log('Inicializando sistema de journeys...');
-  
-  // Paso 1: Identificar todos los elementos necesarios
-  const moduleUnits = document.querySelectorAll('.module-unit');
-  const moduleContents = document.querySelectorAll('.module-content');
-  const quizCards = document.querySelectorAll('.quiz-card');
-  
-  // SOLUCIÓN CRÍTICA: Asegurar que todos los módulos estén visibles
-  console.log(`Total de módulos encontrados: ${moduleContents.length}`);
-  moduleContents.forEach((content, index) => {
-    // Eliminar cualquier estilo que pueda ocultar el módulo
-    content.style.display = 'block';
-    // Inicialmente ocultar todos excepto el primero para mostrarlos mediante clics
-    if (index !== 0) {
-      content.classList.remove('active');
-    } else {
-      content.classList.add('active');
-    }
-    console.log(`Módulo ${index + 1} configurado para ser visible`);
-  });
-  
-  // Paso 2: Hacer visibles todos los módulos
-  moduleUnits.forEach((unit, index) => {
-    // Eliminar clase "locked" para hacer visible el módulo
-    unit.classList.remove('locked');
-    console.log(`Módulo ${index + 1} desbloqueado`);
-    
-    // Agregar evento de clic para mostrar el contenido de ese módulo
-    unit.addEventListener('click', function() {
-      // Ocultar todos los contenidos
-      moduleContents.forEach(content => content.classList.remove('active'));
-      
-      // Mostrar el contenido del módulo seleccionado
-      if (moduleContents[index]) {
-        moduleContents[index].classList.add('active');
-        moduleContents[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-  });
-  
-  // Paso 3: Configurar el estado inicial de los cuestionarios
-  if (quizCards.length > 0) {
-    // Desbloquear solo el primer cuestionario
-    quizCards[0].classList.remove('locked');
-    
-    // Bloquear todos los demás quizzes
-    for (let i = 1; i < quizCards.length; i++) {
-      const card = quizCards[i];
-      card.classList.add('locked');
-      
-      // Actualizar apariencia de cuestionario bloqueado
-      const startBtn = card.querySelector('.start-lesson-btn');
-      if (startBtn) {
-        startBtn.textContent = '🔒 Bloqueado';
-        startBtn.disabled = true;
-      }
-    }
-  }
-  
-  // Paso 4: Mostrar el primer módulo por defecto (pero todos deben ser visibles)
-  if (moduleContents.length > 0) {
-    moduleContents[0].classList.add('active');
-  }
-  
-  // Paso 5: Configurar eventos para los cuestionarios
+  // Configurar eventos para los cuestionarios
   configureQuizCardEvents();
   
-  // Paso 6: Inicializar barras de progreso
+  // Asegurar que todos los módulos estén visibles
+  const moduleContents = document.querySelectorAll('.module-content');
   moduleContents.forEach(moduleContent => {
-    updateModuleProgress(moduleContent);
+    moduleContent.style.display = 'block';
   });
   
-  // Verificación adicional para módulos
-  console.log("Verificando módulos después de inicialización:");
-  document.querySelectorAll('.module-unit').forEach((unit, i) => {
-    console.log(`Módulo ${i + 1} - Clases: ${unit.className}`);
-  });
-  
-  // Marcar como inicializado
-  window.journeySystem = window.journeySystem || {};
-  window.journeySystem.initialized = true;
-  window.journeySystem.currentQuizCard = null;
-  window.journeySystem.currentModuleContent = null;
-  
-  console.log('Sistema de journeys inicializado correctamente');
+  // Asegurarse de que esto esté al final para permitir eventos personalizados
+  document.dispatchEvent(new CustomEvent('journeySystemInitialized'));
 }
 
 /**
  * Configura los eventos para todas las tarjetas de cuestionarios
  */
 function configureQuizCardEvents() {
+  // Seleccionar todos los botones de iniciar cuestionario
   const quizCards = document.querySelectorAll('.quiz-card');
   
-  quizCards.forEach(card => {
-    // Limpiar event listeners previos (si hay)
-    const newCard = card.cloneNode(true);
-    card.parentNode.replaceChild(newCard, card);
+  quizCards.forEach(quizCard => {
+    const startButton = quizCard.querySelector('.start-lesson-btn');
+    const moduleId = quizCard.getAttribute('data-module');
     
-    // Agregar nuevo event listener
-    newCard.addEventListener('click', function(e) {
+    // Remover eventos anteriores para evitar duplicados
+    startButton.removeEventListener('click', quizButtonHandler);
+    
+    // Agregar el nuevo evento
+    startButton.addEventListener('click', quizButtonHandler);
+    
+    function quizButtonHandler(e) {
       e.preventDefault();
+      e.stopPropagation();
       
-      // No permitir interacción con cuestionarios bloqueados
-      if (this.classList.contains('locked')) {
-        alert('Este cuestionario está bloqueado. Primero debes completar el cuestionario anterior.');
-        return;
-      }
+      console.log('Iniciando cuestionario del módulo:', moduleId);
       
-      const moduleId = this.getAttribute('data-module');
-      if (!moduleId) {
-        console.error('Error: No se encontró el atributo data-module');
-        return;
-      }
-      
-      // Guardar referencias para uso posterior
-      window.journeySystem.currentQuizCard = this;
-      window.journeySystem.currentModuleContent = this.closest('.module-content');
+      // Guardar referencias para usar después
+      window.journeySystem.currentQuizCard = quizCard;
+      window.journeySystem.currentModuleContent = quizCard.closest('.module-content');
       
       // Mostrar el cuestionario
       showQuiz(moduleId);
-    });
+      
+      return false;
+    }
   });
   
-  // Configurar botones del modal de cuestionario
-  const submitBtn = document.getElementById('submitQuizBtn');
-  if (submitBtn) {
-    // Limpiar event listeners previos
-    const newSubmitBtn = submitBtn.cloneNode(true);
-    submitBtn.parentNode.replaceChild(newSubmitBtn, submitBtn);
-    
-    // Agregar nuevo event listener
-    newSubmitBtn.addEventListener('click', function() {
-      if (!window.journeySystem.currentQuizCard) {
-        console.error('Error: No hay cuestionario activo');
-        return;
-      }
-      
-      const moduleId = window.journeySystem.currentQuizCard.getAttribute('data-module');
-      if (!moduleId) {
-        console.error('Error: No se encontró el ID del módulo');
-        return;
-      }
-      
-      submitQuiz(
-        window.journeySystem.currentQuizCard,
-        window.journeySystem.currentModuleContent,
-        moduleId
-      );
-    });
-  }
-  
-  const closeBtn = document.getElementById('closeQuizBtn');
-  if (closeBtn) {
-    // Limpiar event listeners previos
-    const newCloseBtn = closeBtn.cloneNode(true);
-    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
-    
-    // Agregar nuevo event listener
-    newCloseBtn.addEventListener('click', function() {
-      const modal = document.getElementById('quizModal');
-      if (modal) {
-        modal.style.display = 'none';
-      }
-    });
-  }
+  console.log('Eventos de cuestionarios configurados en', quizCards.length, 'tarjetas');
 }
 
 /**
@@ -791,47 +854,29 @@ function configureQuizCardEvents() {
  * @param {HTMLElement} moduleContent - El contenedor del módulo
  */
 function updateModuleProgress(moduleContent) {
-  if (!moduleContent) return;
-  
-  const totalCards = moduleContent.querySelectorAll('.lesson-card').length || 0;
-  const completedCards = moduleContent.querySelectorAll('.lesson-card.completed').length || 0;
-  
-  if (totalCards > 0) {
-    const percentage = (completedCards / totalCards) * 100;
-    const progressBar = moduleContent.querySelector('.module-progress-fill');
-    
-    if (progressBar) {
-      progressBar.style.width = `${percentage}%`;
-    }
+  if (!moduleContent) {
+    console.log('No se pudo actualizar el progreso: moduleContent es null');
+    return;
   }
-}
-
-/**
- * Desbloquea el siguiente cuestionario después de completar el actual
- * @param {HTMLElement} currentQuizCard - El cuestionario actual que se completó
- */
-function unlockNextQuiz(currentQuizCard) {
-  if (!currentQuizCard) return;
   
-  // Obtener todos los cuestionarios
-  const allQuizCards = Array.from(document.querySelectorAll('.quiz-card'));
-  const currentIndex = allQuizCards.indexOf(currentQuizCard);
+  console.log('Actualizando progreso del módulo');
   
-  // Si existe un siguiente cuestionario, desbloquearlo
-  if (currentIndex !== -1 && currentIndex < allQuizCards.length - 1) {
-    const nextQuiz = allQuizCards[currentIndex + 1];
-    
-    if (nextQuiz) {
-      nextQuiz.classList.remove('locked');
-      
-      const startButton = nextQuiz.querySelector('.start-lesson-btn');
-      if (startButton) {
-        startButton.textContent = 'Iniciar ❓';
-        startButton.disabled = false;
-      }
-      
-      console.log('Cuestionario desbloqueado: ' + (currentIndex + 2));
-    }
+  // Contar elementos completados (lecciones y cuestionarios)
+  const totalElements = moduleContent.querySelectorAll('.lesson-card, .quiz-card').length;
+  const completedElements = moduleContent.querySelectorAll('.lesson-card.completed, .quiz-card.completed').length;
+  
+  console.log(`Elementos completados: ${completedElements} de ${totalElements}`);
+  
+  // Calcular porcentaje
+  const progressPercentage = (completedElements / totalElements) * 100;
+  
+  // Actualizar barra de progreso
+  const progressBar = moduleContent.querySelector('.module-progress-fill');
+  if (progressBar) {
+    progressBar.style.width = `${progressPercentage}%`;
+    console.log(`Progreso actualizado: ${progressPercentage}%`);
+  } else {
+    console.log('No se encontró la barra de progreso');
   }
 }
 
@@ -839,63 +884,109 @@ function unlockNextQuiz(currentQuizCard) {
  * Procesa las respuestas del cuestionario y actualiza el estado
  */
 function submitQuiz(quizCard, moduleContent, moduleId) {
-  if (!quizCard || !moduleContent || !moduleId) {
-    console.error('Error: Parámetros insuficientes para submitQuiz');
-    return;
-  }
+  const quizQuestions = document.querySelectorAll('.quiz-question');
+  let allAnswered = true;
+  let correctCount = 0;
   
-  const questions = quizData[moduleId];
-  if (!questions || !Array.isArray(questions) || questions.length === 0) {
-    console.error('Error: No hay preguntas disponibles para este módulo');
-    return;
-  }
-  
-  // Verificar que todas las preguntas han sido respondidas
-  const allAnswered = questions.every((_, index) => {
-    return document.querySelector(`input[name="q${index}"]:checked`);
+  // Primero verificamos que todas las preguntas estén respondidas
+  quizQuestions.forEach(question => {
+    const radioButtons = question.querySelectorAll('input[type="radio"]');
+    const answered = Array.from(radioButtons).some(radio => radio.checked);
+    
+    if (!answered) {
+      allAnswered = false;
+      // Destacamos las preguntas sin responder
+      question.style.animation = 'shake 0.5s';
+      setTimeout(() => {
+        question.style.animation = '';
+      }, 500);
+    }
   });
   
   if (!allAnswered) {
-    alert('Por favor, responde todas las preguntas antes de enviar.');
+    // Mostrar mensaje pidiendo que se responda todas las preguntas
+    let resultDiv = document.querySelector('.quiz-result');
+    if (!resultDiv) {
+      resultDiv = document.createElement('div');
+      resultDiv.className = 'quiz-result error';
+      document.getElementById('quizQuestions').appendChild(resultDiv);
+    }
+    resultDiv.innerHTML = '<p>Por favor responde todas las preguntas antes de enviar.</p>';
+    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
   
-  // Contar respuestas correctas
-  let correctAnswers = 0;
-  document.querySelectorAll('.quiz-question').forEach((qDiv, index) => {
-    const selected = qDiv.querySelector(`input[name="q${index}"]:checked`);
-    if (selected && selected.value === questions[index].correct) {
-      correctAnswers++;
+  // Procesar las respuestas
+  quizQuestions.forEach(question => {
+    const radioButtons = question.querySelectorAll('input[type="radio"]');
+    const selectedAnswer = Array.from(radioButtons).find(radio => radio.checked);
+    
+    // En nuestro prototipo, consideramos la primera opción como correcta
+    if (selectedAnswer && selectedAnswer === radioButtons[0]) {
+      correctCount++;
+      selectedAnswer.parentElement.classList.add('correct');
+    } else if (selectedAnswer) {
+      selectedAnswer.parentElement.classList.add('incorrect');
+      // Destacar la respuesta correcta
+      radioButtons[0].parentElement.classList.add('correct');
     }
+    
+    // Desactivar los controles después de enviar
+    radioButtons.forEach(radio => {
+      radio.disabled = true;
+    });
   });
   
-  // Comprobar si todas las respuestas son correctas
-  if (correctAnswers === questions.length) {
-    // Marcar cuestionario como completado
+  // Calcular puntuación
+  const scorePercentage = (correctCount / quizQuestions.length) * 100;
+  const passed = scorePercentage >= 70; // Consideramos 70% como nota de aprobación
+  
+  // Mostrar resultado
+  let resultDiv = document.querySelector('.quiz-result');
+  if (!resultDiv) {
+    resultDiv = document.createElement('div');
+    resultDiv.className = `quiz-result ${passed ? 'success' : 'error'}`;
+    document.getElementById('quizQuestions').appendChild(resultDiv);
+  } else {
+    resultDiv.className = `quiz-result ${passed ? 'success' : 'error'}`;
+  }
+  
+  let resultMessage = '';
+  if (passed) {
+    resultMessage = `
+      <p><strong>¡Felicidades!</strong> Has completado el cuestionario con éxito.</p>
+      <p>Puntuación: ${correctCount}/${quizQuestions.length} (${scorePercentage.toFixed(0)}%)</p>
+    `;
+    
+    // Marcar el cuestionario como completado
     quizCard.classList.add('completed');
-    quizCard.classList.remove('locked');
     
-    const startButton = quizCard.querySelector('.start-lesson-btn');
-    if (startButton) {
-      startButton.textContent = 'Repasar ✓';
-    }
-    
-    // Desbloquear siguiente cuestionario
-    unlockNextQuiz(quizCard);
+    // Ocultar botón de enviar y cambiar el texto del botón de cerrar
+    document.getElementById('submitQuizBtn').style.display = 'none';
+    document.getElementById('closeQuizBtn').textContent = 'Continuar';
     
     // Actualizar barra de progreso del módulo
     updateModuleProgress(moduleContent);
     
-    alert('¡Excelente! Has completado correctamente este cuestionario.');
+    // NOTA: Se ha eliminado la creación de confeti para simplificar
   } else {
-    alert(`Obtuviste ${correctAnswers}/${questions.length} correctas. Revisa tus errores e intenta de nuevo.`);
+    resultMessage = `
+      <p>Necesitas mejorar. Tu puntuación: ${correctCount}/${quizQuestions.length} (${scorePercentage.toFixed(0)}%)</p>
+      <p>Requieres al menos 70% para aprobar. ¡Revisa el material e intenta nuevamente!</p>
+    `;
   }
   
-  // Cerrar modal
-  const modal = document.getElementById('quizModal');
-  if (modal) {
-    modal.style.display = 'none';
-  }
+  resultDiv.innerHTML = resultMessage;
+  resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// Función para obtener un color aleatorio
+function getRandomColor() {
+  const colors = [
+    '#ff9f43', '#ff6b6b', '#48dbfb', '#1dd1a1', '#f368e0', 
+    '#00d2d3', '#feca57', '#5f27cd', '#c8d6e5', '#576574'
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
 }
 
 // Agregar estilos dinámicos para los cuestionarios
@@ -943,113 +1034,57 @@ function addJourneyStyles() {
   document.head.appendChild(style);
 }
 
-// Inicializar el sistema cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
-  // Agregar estilos para los cuestionarios
-  addJourneyStyles();
+// Función para manejar el botón de alternar entre lección y cuestionario
+function setupToggleButtons() {
+  const toggleBtn = document.getElementById('toggleLesson1');
+  const lessonContainer = document.getElementById('lessonContainer1');
+  const moduloContainer = document.getElementById('moduloContainer1');
   
-  // Agregar estilo específico para hacer visibles todos los módulos
-  const moduleVisibilityStyle = document.createElement('style');
-  moduleVisibilityStyle.textContent = `
-    /* Asegurar que todos los módulos son visibles */
-    .module-content {
-      display: block !important;
-      margin-bottom: 30px;
-    }
-    
-    /* Solo el módulo activo muestra su contenido */
-    .module-content:not(.active) {
-      display: block !important;
-    }
-    
-    /* Mejorar visualización de módulos */
-    .module-unit {
-      opacity: 1 !important;
-    }
-  `;
-  document.head.appendChild(moduleVisibilityStyle);
-  
-  // Configurar tabs para la sección de Journey de empleados
-  const empleadoAcquiredTab = document.getElementById('empleadoAcquiredTab');
-  const empleadoSearchTab = document.getElementById('empleadoSearchTab');
-  
-  if (empleadoAcquiredTab) {
-    empleadoAcquiredTab.addEventListener('click', function() {
-      // Actualizar UI
-      if (empleadoSearchTab) empleadoSearchTab.classList.remove('active');
-      empleadoAcquiredTab.classList.add('active');
-      
-      // Mostrar vista "Mis Journeys" y ocultar "Búsqueda"
-      const searchView = document.getElementById('empleadoSearchView');
-      const acquiredView = document.getElementById('empleadoAcquiredView');
-      
-      if (searchView) searchView.style.display = 'none';
-      if (acquiredView) acquiredView.style.display = 'block';
-      
-      // SOLUCIÓN ADICIONAL: Asegurar visibilidad de todos los módulos
-      setTimeout(function() {
-        // Hacer visibles todos los módulos directamente
-        const moduleContents = document.querySelectorAll('.module-content');
-        moduleContents.forEach((content, index) => {
-          // Forzar visibilidad
-          content.style.display = 'block';
-          console.log(`Módulo ${index + 1} forzado a ser visible`);
-        });
-        
-        // Inicializar el sistema después
-        initializeJourneySystem();
-      }, 100);
-    });
-  }
-  
-  if (empleadoSearchTab) {
-    empleadoSearchTab.addEventListener('click', function() {
-      // Actualizar UI
-      if (empleadoAcquiredTab) empleadoAcquiredTab.classList.remove('active');
-      empleadoSearchTab.classList.add('active');
-      
-      // Mostrar vista "Búsqueda" y ocultar "Mis Journeys"
-      const searchView = document.getElementById('empleadoSearchView');
-      const acquiredView = document.getElementById('empleadoAcquiredView');
-      
-      if (searchView) searchView.style.display = 'block';
-      if (acquiredView) acquiredView.style.display = 'none';
-    });
-  }
-  
-  // Configurar lecciones normales (no cuestionarios)
-  const normalLessons = document.querySelectorAll('.lesson-card:not(.quiz-card)');
-  normalLessons.forEach(lesson => {
-    // Limpiar event listeners previos
-    const newLesson = lesson.cloneNode(true);
-    lesson.parentNode.replaceChild(newLesson, lesson);
-    
-    // Agregar nuevo event listener
-    newLesson.addEventListener('click', function() {
-      if (!this.classList.contains('completed')) {
-        this.classList.add('completed');
-        
-        // Actualizar barra de progreso del módulo
-        const moduleContent = this.closest('.module-content');
-        if (moduleContent) {
-          updateModuleProgress(moduleContent);
-        }
+  if (toggleBtn && lessonContainer && moduloContainer) {
+    toggleBtn.addEventListener('click', function() {
+      // Si la lección está oculta, mostrarla
+      if (lessonContainer.style.display === 'none') {
+        lessonContainer.style.display = 'grid';
+        moduloContainer.style.display = 'none';
+        toggleBtn.textContent = 'Ver cuestionario';
+      } else {
+        // Si la lección está visible, ocultarla
+        lessonContainer.style.display = 'none';
+        moduloContainer.style.display = 'block';
+        toggleBtn.textContent = 'Ver lección';
       }
     });
+  }
+}
+
+// Inicializar todo al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Inicializando sistema de lecciones y cuestionarios...');
+  
+  // Configurar las lecciones al cargar la página
+  configureLessonCardEvents();
+  
+  // Inicializar el sistema de journeys
+  initializeJourneySystem();
+  
+  // Configurar el modal de lección
+  initializeLessonModal();
+  
+  // Asegurar que todos los módulos estén visibles
+  const moduleContents = document.querySelectorAll('.module-content');
+  moduleContents.forEach(moduleContent => {
+    moduleContent.style.display = 'block';
   });
   
-  // Inicializar el sistema cuando se selecciona la pestaña de Journey
-  const empleadoJourneyOption = document.getElementById('empleadoJourneyOption');
-  if (empleadoJourneyOption) {
-    empleadoJourneyOption.addEventListener('click', function() {
-      // Ejecutar con un breve retraso para permitir actualización del DOM
-      setTimeout(function() {
-        // Si el tab "Mis Journeys" está activo, inicializar
-        const acquiredTab = document.getElementById('empleadoAcquiredTab');
-        if (acquiredTab && acquiredTab.classList.contains('active')) {
-          initializeJourneySystem();
-        }
-      }, 200);
+  // También reinicializar cuando se cambie a la vista de journeys adquiridos
+  const empleadoAcquiredTab = document.getElementById('empleadoAcquiredTab');
+  if (empleadoAcquiredTab) {
+    empleadoAcquiredTab.addEventListener('click', function() {
+      console.log('Cambiando a vista de journeys adquiridos...');
+      setTimeout(() => {
+        configureLessonCardEvents();
+        initializeModuleRequirements();
+      }, 100);
     });
   }
 });
@@ -1400,4 +1435,466 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
-}); 
+});
+
+function configureLessonCardEvents() {
+  // Seleccionar todos los botones de iniciar lección (excluyendo los de cuestionario)
+  const lessonStartButtons = document.querySelectorAll('.lesson-card:not(.quiz-card) .start-lesson-btn');
+  
+  // Agregar evento a cada botón
+  lessonStartButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Obtener la tarjeta de lección
+      const lessonCard = this.closest('.lesson-card');
+      
+      // Mostrar la lección
+      console.log('Iniciando lección');
+      showLesson(lessonCard);
+      
+      return false;
+    });
+  });
+  
+  console.log('Eventos de lecciones configurados:', lessonStartButtons.length);
+}
+
+function showLesson(lessonCard) {
+  const lessonModal = document.getElementById('lessonModal');
+  const lessonTitle = document.getElementById('lessonTitle');
+  const lessonContent = document.getElementById('lessonContent');
+  const currentLevelSpan = document.getElementById('currentLevel');
+  const totalLevelsSpan = document.getElementById('totalLevels');
+  const progressFill = document.querySelector('.lesson-progress-fill');
+  
+  // Determinar a qué módulo pertenece esta lección
+  const moduleContent = lessonCard.closest('.module-content');
+  const moduleTitle = moduleContent.querySelector('h3').textContent;
+  
+  // Almacenar referencias para usar al completar
+  window.currentLessonCard = lessonCard;
+  window.currentModuleContent = moduleContent;
+  
+  // Configurar título
+  lessonTitle.textContent = `Lección: ${moduleTitle}`;
+  
+  // Limpiar contenido anterior
+  lessonContent.innerHTML = '';
+  
+  // Crear niveles de la lección (contenido)
+  const totalLevels = 4;
+  
+  // Según el título del módulo, añadir clases para estilos específicos
+  let moduleClass = '';
+  if (moduleTitle.includes('Pronto Cash')) {
+    moduleClass = 'pronto-cash';
+  } else if (moduleTitle.includes('ÁbacoPay')) {
+    moduleClass = 'abaco-pay';
+  } else if (moduleTitle.includes('CashX')) {
+    moduleClass = 'cash-x';
+  }
+  
+  // Aplicar clase al modal
+  lessonModal.querySelector('.lesson-modal-content').className = `lesson-modal-content ${moduleClass}`;
+  
+  // Generar contenido según el módulo
+  createLessonLevels(moduleTitle, lessonContent);
+  
+  // Actualizar el contador de niveles
+  totalLevelsSpan.textContent = totalLevels;
+  currentLevelSpan.textContent = '1';
+  progressFill.style.width = '0%';
+  
+  // Mostrar el modal
+  lessonModal.style.display = 'flex';
+  
+  // Restablecer la navegación
+  const prevLevelBtn = document.getElementById('prevLevelBtn');
+  const nextLevelBtn = document.getElementById('nextLevelBtn');
+  const completeLessonBtn = document.getElementById('completeLessonBtn');
+  
+  prevLevelBtn.disabled = true;
+  nextLevelBtn.style.display = 'block';
+  completeLessonBtn.style.display = 'none';
+  
+  // Activar solo el primer nivel
+  const levels = lessonContent.querySelectorAll('.level');
+  levels.forEach((level, index) => {
+    if (index === 0) {
+      level.classList.add('active');
+    } else {
+      level.classList.add('next');
+    }
+  });
+}
+
+// Al iniciar el sistema, bloquear los cuestionarios hasta que se completen las lecciones
+function initializeModuleRequirements() {
+  // No bloquear los cuestionarios inicialmente
+  // Esto permite que los usuarios accedan a las lecciones y cuestionarios libremente
+  console.log('Inicializando requisitos de módulos - no bloqueando cuestionarios');
+}
+
+// Inicializar todo al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Inicializando sistema de lecciones y cuestionarios...');
+  
+  // Inicializar las variables globales del sistema
+  window.journeySystem = {
+    currentQuizCard: null,
+    currentModuleContent: null,
+    initialized: false
+  };
+  
+  // Configurar las lecciones y cuestionarios inmediatamente
+  configureLessonCardEvents();
+  configureQuizCardEvents();
+  
+  // Inicializar el sistema de journeys
+  initializeJourneySystem();
+  
+  // Configurar el modal de lección
+  initializeLessonModal();
+  
+  // Asegurar que todos los módulos estén visibles
+  const moduleContents = document.querySelectorAll('.module-content');
+  moduleContents.forEach(moduleContent => {
+    moduleContent.style.display = 'block';
+  });
+  
+  // También reinicializar cuando se cambie a la vista de journeys adquiridos
+  const empleadoAcquiredTab = document.getElementById('empleadoAcquiredTab');
+  if (empleadoAcquiredTab) {
+    empleadoAcquiredTab.addEventListener('click', function() {
+      console.log('Cambiando a vista de journeys adquiridos...');
+      setTimeout(() => {
+        configureLessonCardEvents();
+        configureQuizCardEvents();
+        initializeModuleRequirements();
+      }, 100);
+    });
+  }
+  
+  // Asegurarnos de volver a configurar los eventos cuando se haga visible la sección empleadoAcquiredView
+  const empleadoJourneyOption = document.getElementById('empleadoJourneyOption');
+  if (empleadoJourneyOption) {
+    empleadoJourneyOption.addEventListener('click', function() {
+      console.log('Navegando a sección journey...');
+      setTimeout(() => {
+        configureLessonCardEvents();
+        configureQuizCardEvents();
+      }, 100);
+    });
+  }
+});
+
+// Inicializar el modal de lección
+function initializeLessonModal() {
+  const lessonModal = document.getElementById('lessonModal');
+  const closeLessonBtn = document.getElementById('closeLessonBtn');
+  const prevLevelBtn = document.getElementById('prevLevelBtn');
+  const nextLevelBtn = document.getElementById('nextLevelBtn');
+  const completeLessonBtn = document.getElementById('completeLessonBtn');
+  const lessonContent = document.getElementById('lessonContent');
+  const currentLevelSpan = document.getElementById('currentLevel');
+  const totalLevelsSpan = document.getElementById('totalLevels');
+  const progressFill = document.querySelector('.lesson-progress-fill');
+  
+  let currentLevel = 1;
+  let totalLevels = 4;
+  
+  // Cerrar la lección
+  closeLessonBtn.addEventListener('click', () => {
+    lessonModal.style.display = 'none';
+    // Reiniciar la lección al cerrar
+    currentLevel = 1;
+    updateLessonView();
+  });
+  
+  // Botón para ir al nivel anterior
+  prevLevelBtn.addEventListener('click', () => {
+    if (currentLevel > 1) {
+      currentLevel--;
+      updateLessonView();
+    }
+  });
+  
+  // Botón para ir al siguiente nivel - Corregido para no saltarse niveles
+  nextLevelBtn.addEventListener('click', () => {
+    if (currentLevel < totalLevels) {
+      currentLevel++;
+      updateLessonView();
+    }
+  });
+  
+  // Función para actualizar la vista de la lección según el nivel actual
+  function updateLessonView() {
+    // Actualizar indicador de progreso
+    currentLevelSpan.textContent = currentLevel;
+    const progressPercentage = (currentLevel - 1) / (totalLevels - 1) * 100;
+    progressFill.style.width = `${progressPercentage}%`;
+    
+    // Activar/desactivar botones de navegación
+    prevLevelBtn.disabled = currentLevel === 1;
+    
+    // Mostrar u ocultar botones según el nivel
+    if (currentLevel === totalLevels) {
+      nextLevelBtn.style.display = 'none';
+      completeLessonBtn.style.display = 'block';
+    } else {
+      nextLevelBtn.style.display = 'block';
+      completeLessonBtn.style.display = 'none';
+    }
+    
+    // Mostrar el nivel actual y ocultar los demás
+    const levels = lessonContent.querySelectorAll('.level');
+    levels.forEach((level, index) => {
+      if (index + 1 === currentLevel) {
+        level.classList.add('active');
+        level.classList.remove('prev', 'next');
+      } else if (index + 1 < currentLevel) {
+        level.classList.add('prev');
+        level.classList.remove('active', 'next');
+      } else {
+        level.classList.add('next');
+        level.classList.remove('active', 'prev');
+      }
+    });
+  }
+  
+  // Botón para completar la lección
+  completeLessonBtn.addEventListener('click', () => {
+    // Marcar la lección como completada
+    if (window.currentLessonCard) {
+      // Añadir clase para estilo visual
+      window.currentLessonCard.classList.add('completed');
+      
+      // Actualizar texto del botón
+      const lessonButton = window.currentLessonCard.querySelector('.start-lesson-btn');
+      if (lessonButton) {
+        lessonButton.textContent = '✓ Completado';
+      }
+      
+      // Actualizar la barra de progreso del módulo
+      if (window.currentModuleContent) {
+        updateModuleProgress(window.currentModuleContent);
+      } else {
+        // Intenta encontrar el módulo al que pertenece
+        const moduleContent = window.currentLessonCard.closest('.module-content');
+        if (moduleContent) {
+          updateModuleProgress(moduleContent);
+        }
+      }
+    } else {
+      console.log('No se pudo determinar qué lección se completó');
+    }
+    
+    // Mostrar mensaje de éxito
+    alert('¡Lección completada con éxito!');
+    
+    // Cerrar el modal
+    lessonModal.style.display = 'none';
+    
+    // Reiniciar la lección al completarla
+    currentLevel = 1;
+    updateLessonView();
+  });
+}
+
+// Función para asegurar que el botón de iniciar cuestionario funcione
+function forceEnableQuizButtons() {
+  // Aplicar directamente a todos los botones de cuestionario
+  const quizButtons = document.querySelectorAll('.quiz-card .start-lesson-btn');
+  
+  console.log('Forzando habilitación de', quizButtons.length, 'botones de cuestionario');
+  
+  quizButtons.forEach(button => {
+    // Asegurar que no está deshabilitado
+    button.disabled = false;
+    
+    // Remover clases que puedan bloquear o afectar interacción
+    const quizCard = button.closest('.quiz-card');
+    if (quizCard) {
+      quizCard.classList.remove('locked');
+    }
+    
+    // Volver a aplicar estilo del botón
+    button.style.backgroundColor = '';
+    button.style.cursor = 'pointer';
+  });
+}
+
+// Hacer que esto se ejecute al cargar y al cambiar de pestaña
+document.addEventListener('DOMContentLoaded', function() {
+  // Configuración inicial ya existente
+  
+  // Agregar la habilitación forzada de botones de cuestionario
+  setTimeout(forceEnableQuizButtons, 500);
+  
+  // También al cambiar a la vista de journeys adquiridos
+  const empleadoAcquiredTab = document.getElementById('empleadoAcquiredTab');
+  if (empleadoAcquiredTab) {
+    empleadoAcquiredTab.addEventListener('click', function() {
+      setTimeout(forceEnableQuizButtons, 500);
+    });
+  }
+});
+
+// Función para crear niveles de lección según el módulo
+function createLessonLevels(moduleTitle, lessonContainer) {
+  let lessonData = [];
+  
+  // Determinar qué contenido mostrar según el módulo
+  if (moduleTitle.includes('Pronto Cash')) {
+    lessonData = [
+      {
+        title: "¿Qué es ProntoCash?",
+        content: `<p>ProntoCash es una solución financiera diseñada específicamente para pequeñas y medianas empresas (PYMES) que buscan mejorar su flujo de efectivo. Esta herramienta permite a las empresas acceder a financiamiento inmediato basado en sus facturas pendientes de cobro.</p>
+                <p>A diferencia de los préstamos tradicionales, ProntoCash utiliza el modelo de factoraje financiero, permitiendo a las empresas convertir sus cuentas por cobrar en efectivo disponible sin incrementar su deuda.</p>`
+      },
+      {
+        title: "¿Cómo funciona ProntoCash?",
+        content: `<p>El proceso de ProntoCash es simple y eficiente:</p>
+                <p>1. <strong>Carga de Facturas</strong>: La empresa sube sus facturas pendientes de cobro a la plataforma.</p>
+                <p>2. <strong>Verificación</strong>: El sistema verifica la validez de las facturas y evalúa el riesgo.</p>
+                <p>3. <strong>Oferta de Financiamiento</strong>: Se genera una oferta con el porcentaje de adelanto y la comisión aplicable.</p>
+                <p>4. <strong>Desembolso</strong>: Una vez aceptada la oferta, el dinero se transfiere a la cuenta bancaria de la empresa en menos de 24 horas.</p>
+                <p>5. <strong>Gestión de Cobro</strong>: ProntoCash se encarga del seguimiento y cobro de las facturas.</p>`
+      },
+      {
+        title: "Beneficios de ProntoCash",
+        content: `<p>Al utilizar ProntoCash, las empresas obtienen:</p>
+                <p>• <strong>Liquidez Inmediata</strong>: Acceso a capital de trabajo sin esperar los plazos de pago habituales.</p>
+                <p>• <strong>Sin Deuda</strong>: No se registra como un préstamo en los estados financieros.</p>
+                <p>• <strong>Proceso Digital</strong>: Toda la operación se realiza en línea, sin papeleo.</p>
+                <p>• <strong>Flexibilidad</strong>: Se puede utilizar según las necesidades, sin montos mínimos.</p>
+                <p>• <strong>Mejora en Indicadores Financieros</strong>: Optimiza el ciclo de conversión de efectivo.</p>`
+      },
+      {
+        title: "Requisitos y Proceso de Registro",
+        content: `<p>Para acceder a ProntoCash, una empresa necesita:</p>
+                <p>• Estar legalmente constituida.</p>
+                <p>• Tener al menos 6 meses de operación.</p>
+                <p>• Facturar a otras empresas (B2B).</p>
+                <p>• Presentar documentos básicos de la empresa.</p>
+                <p>El proceso de registro toma menos de 30 minutos y la aprobación de la cuenta se realiza en 24-48 horas.</p>`
+      }
+    ];
+  } else if (moduleTitle.includes('ÁbacoPay')) {
+    lessonData = [
+      {
+        title: "¿Qué es ÁbacoPay?",
+        content: `<p>ÁbacoPay es una solución integral de pagos y facturación electrónica diseñada específicamente para pequeñas y medianas empresas en Latinoamérica.</p>
+                <p>Esta plataforma permite emitir y recibir facturas electrónicas, gestionar pagos a proveedores, y simplificar la conciliación bancaria, todo desde una única interfaz digital.</p>`
+      },
+      {
+        title: "Funcionalidades principales",
+        content: `<p>ÁbacoPay ofrece múltiples herramientas:</p>
+                <p>• <strong>Facturación Electrónica</strong>: Emisión de facturas que cumplen con requisitos fiscales.</p>
+                <p>• <strong>Gestión de Pagos</strong>: Programación y ejecución de pagos a proveedores.</p>
+                <p>• <strong>Conciliación Automática</strong>: Matching entre facturas y pagos.</p>
+                <p>• <strong>Reportes Financieros</strong>: Visualización de flujos de caja y proyecciones.</p>
+                <p>• <strong>Integración Bancaria</strong>: Conexión con múltiples bancos locales.</p>`
+      },
+      {
+        title: "Beneficios para tu empresa",
+        content: `<p>Implementar ÁbacoPay proporciona ventajas significativas:</p>
+                <p>• <strong>Ahorro de Tiempo</strong>: Automatización de tareas administrativas repetitivas.</p>
+                <p>• <strong>Reducción de Errores</strong>: Minimiza errores humanos en facturación y pagos.</p>
+                <p>• <strong>Cumplimiento Fiscal</strong>: Garantiza el cumplimiento de normativas locales.</p>
+                <p>• <strong>Visibilidad Financiera</strong>: Proporciona panorama claro de cuentas por pagar y cobrar.</p>
+                <p>• <strong>Acceso Remoto</strong>: Gestión desde cualquier dispositivo con internet.</p>`
+      },
+      {
+        title: "Implementación y Soporte",
+        content: `<p>El proceso de adopción de ÁbacoPay es sencillo:</p>
+                <p>• <strong>Onboarding</strong>: Configuración inicial en menos de 24 horas.</p>
+                <p>• <strong>Capacitación</strong>: Entrenamiento para el equipo administrativo.</p>
+                <p>• <strong>Migración de Datos</strong>: Importación de catálogos de clientes y proveedores.</p>
+                <p>• <strong>Soporte Continuo</strong>: Asistencia técnica por múltiples canales.</p>
+                <p>• <strong>Actualizaciones</strong>: Mejoras constantes sin costo adicional.</p>`
+      }
+    ];
+  } else if (moduleTitle.includes('CashX')) {
+    lessonData = [
+      {
+        title: "¿Qué es CashX?",
+        content: `<p>CashX es una plataforma innovadora que permite a las empresas optimizar su flujo de efectivo mediante la monetización temprana de sus cuentas por cobrar.</p>
+                <p>A diferencia de soluciones tradicionales, CashX utiliza tecnología blockchain y algoritmos predictivos para ofrecer tasas competitivas y procesos automatizados.</p>`
+      },
+      {
+        title: "Cómo funciona CashX",
+        content: `<p>El proceso de CashX se basa en estos pasos:</p>
+                <p>1. <strong>Registro y Verificación</strong>: Proceso digital KYC/KYB para empresas.</p>
+                <p>2. <strong>Carga de Documentos</strong>: Subir facturas y documentos de cuentas por cobrar.</p>
+                <p>3. <strong>Evaluación Instantánea</strong>: Algoritmos evalúan el riesgo y generan oferta.</p>
+                <p>4. <strong>Financiamiento</strong>: Recepción de fondos en menos de 24 horas.</p>
+                <p>5. <strong>Gestión Automatizada</strong>: Seguimiento de pagos y conciliaciones.</p>`
+      },
+      {
+        title: "Ventajas de CashX",
+        content: `<p>CashX ofrece beneficios específicos:</p>
+                <p>• <strong>Tasas Competitivas</strong>: Menores comisiones que factoraje tradicional.</p>
+                <p>• <strong>Procesos 100% Digitales</strong>: Sin necesidad de visitas o papeleo físico.</p>
+                <p>• <strong>Decisiones Rápidas</strong>: Aprobación en minutos, no días.</p>
+                <p>• <strong>Sin Volúmenes Mínimos</strong>: Accesible para empresas de cualquier tamaño.</p>
+                <p>• <strong>Integración con ERP</strong>: Conexión directa con sistemas de gestión.</p>`
+      },
+      {
+        title: "Casos de uso y aplicaciones",
+        content: `<p>CashX se utiliza efectivamente en diversos escenarios:</p>
+                <p>• <strong>Expansión de Operaciones</strong>: Financiamiento para crecimiento sin endeudamiento.</p>
+                <p>• <strong>Gestión de Estacionalidad</strong>: Estabilización de flujo en temporadas bajas.</p>
+                <p>• <strong>Aprovechamiento de Oportunidades</strong>: Acceso rápido a capital para nuevos proyectos.</p>
+                <p>• <strong>Mejora de Indicadores Financieros</strong>: Optimización del ciclo de conversión de efectivo.</p>
+                <p>• <strong>Pago a Proveedores</strong>: Mantenimiento de la cadena de suministro.</p>`
+      }
+    ];
+  } else {
+    // Contenido genérico por si el módulo no coincide con ninguno conocido
+    lessonData = [
+      {
+        title: "Introducción",
+        content: "<p>Contenido introductorio del módulo.</p>"
+      },
+      {
+        title: "Conceptos básicos",
+        content: "<p>Explicación de conceptos fundamentales.</p>"
+      },
+      {
+        title: "Aplicaciones prácticas",
+        content: "<p>Casos de uso y ejemplos prácticos.</p>"
+      },
+      {
+        title: "Resumen y conclusiones",
+        content: "<p>Resumen de los puntos clave y siguientes pasos.</p>"
+      }
+    ];
+  }
+  
+  // Crear y añadir los niveles al contenedor
+  lessonData.forEach((level, index) => {
+    const levelDiv = document.createElement('div');
+    levelDiv.className = 'level';
+    levelDiv.id = `level-${index + 1}`;
+    
+    const levelTitle = document.createElement('h5');
+    const levelIcon = document.createElement('span');
+    levelIcon.className = 'level-icon';
+    levelIcon.textContent = '📝 ';
+    
+    levelTitle.appendChild(levelIcon);
+    levelTitle.appendChild(document.createTextNode(level.title));
+    
+    const levelContent = document.createElement('div');
+    levelContent.className = 'level-content';
+    levelContent.innerHTML = level.content;
+    
+    levelDiv.appendChild(levelTitle);
+    levelDiv.appendChild(levelContent);
+    
+    lessonContainer.appendChild(levelDiv);
+  });
+} 
