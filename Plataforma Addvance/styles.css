@@ -215,8 +215,9 @@ button:disabled {
 
 /* Swiper container */
 .swiper {
-  padding: 20px 15px;
+  display: block;
   width: 100%;
+  padding: 20px 15px;
 }
 
 /* Swiper slide (card) styling */
@@ -1113,29 +1114,88 @@ button:disabled {
   font-weight: 500;
 }
 
-/* Media query for smaller screens */
-@media (max-width: 768px) {
-  .menu {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.8rem;
-  }
-  
-  .rankings-submenu {
-    flex-wrap: wrap;
-  }
-  
-  .rankings-submenu button {
-    flex: 1;
-    min-width: 120px;
-  }
-  
-  .journey-submenu {
-    flex-direction: column;
-  }
+/* Network grid container */
+.network-grid-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
+/* Network profiles grid */
+.network-profiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+/* Network profile card */
+.network-profile-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Network profile card hover effect */
+.network-profile-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Profile avatar */
+.profile-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Profile info */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Profile name */
+.profile-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: white;
+}
+
+/* Profile title and description */
+.profile-title, .profile-description {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Distance badge */
+.distance-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  color: white;
+}
+
+/* Quiz card */
 .quiz-card {
   border-left: 4px solid var(--accent-color); /* Resalta la tarjeta */
 }
@@ -1923,4 +1983,27 @@ button:disabled {
 
 .lesson-modal .close-btn:before {
   display: none;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .menu {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem;
+  }
+  
+  .rankings-submenu {
+    flex-wrap: wrap;
+  }
+  
+  .rankings-submenu button {
+    flex: 1;
+    min-width: 120px;
+  }
+  
+  .journey-submenu {
+    flex-direction: column;
+  }
 }

@@ -113,7 +113,7 @@ function initializeAllSwipers() {
   // Make swiperConfig globally accessible
   window.swiperConfig = swiperConfig;
   
-  // Initialize empresa swipers
+  // Initialize empresa swipers if they exist
   if (document.querySelector('.empresasSwiper')) {
     createCarouselItems('Empresa', 'empresasSwiper');
     new Swiper('.empresasSwiper', swiperConfig);
@@ -129,7 +129,7 @@ function initializeAllSwipers() {
     new Swiper('.similaresSwiper', swiperConfig);
   }
   
-  // Initialize proveedor swipers
+  // Initialize proveedor swipers if they exist
   if (document.querySelector('.proveedorClientesSwiper')) {
     createCarouselItems('Cliente', 'proveedorClientesSwiper');
     new Swiper('.proveedorClientesSwiper', swiperConfig);
@@ -589,7 +589,7 @@ function getQuestionsForModule(moduleId) {
         options: [
           "Solo facturas de venta",
           "Únicamente recibos de caja",
-          "Documentos personales y DUI",
+          "Documentación sobre nuestras cuentas por cobrar",
           "Facturas, recibos y documentos fiscales"
         ],
         correctAnswer: 3
@@ -651,7 +651,7 @@ function showQuiz(moduleId) {
   
   // Limpiar preguntas anteriores
   quizQuestions.innerHTML = '';
-
+  
   // Generar preguntas según el módulo
   const questions = getQuestionsForModule(moduleId);
   
@@ -1407,36 +1407,133 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Asegurar que el módulo más reciente esté en la vista al cargar la página
-  const refreshJourneyView = () => {
-    const activeModule = document.querySelector('.module-content.active');
-    if (activeModule) {
-      activeModule.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-  
-  // Ejecutar después de que todo esté cargado
-  setTimeout(refreshJourneyView, 500);
-});
-
-// Mejorar el evento para el cierre del modal de cuestionario
-document.addEventListener('DOMContentLoaded', function() {
-  const closeQuizBtn = document.getElementById('closeQuizBtn');
-  if (closeQuizBtn) {
-    closeQuizBtn.addEventListener('click', function() {
-      const quizModal = document.getElementById('quizModal');
-      if (quizModal) {
-        quizModal.style.display = 'none';
-        
-        // Actualizar progreso después de cerrar el modal
-        if (window.currentModuleContent) {
-          updateModuleProgress(window.currentModuleContent);
-        }
-      }
+  // Asegurarnos de volver a configurar los eventos cuando se haga visible la sección empleadoAcquiredView
+  const empleadoJourneyOption = document.getElementById('empleadoJourneyOption');
+  if (empleadoJourneyOption) {
+    empleadoJourneyOption.addEventListener('click', function() {
+      console.log('Navegando a sección journey...');
+      setTimeout(() => {
+        configureLessonCardEvents();
+        configureQuizCardEvents();
+      }, 100);
     });
   }
 });
 
+// Initialize the journey system
+document.addEventListener('DOMContentLoaded', function() {
+  // Set default selected option
+  document.getElementById('networkOption').classList.add('selected');
+  
+  // Initialize all swipers for carousel functionality
+  initializeAllSwipers();
+  
+  // Create employee list
+  createEmployeeList();
+  
+  // Set up journey functionality
+  configureLessonCardEvents();
+  configureQuizCardEvents();
+  initializeJourneySystem();
+  initializeLessonModal();
+  
+  // Make sure modules are visible
+  const moduleContents = document.querySelectorAll('.module-content');
+  moduleContents.forEach(moduleContent => {
+    moduleContent.style.display = 'block';
+  });
+});
+
+/**
+ * Creates network profile grid from carousel data
+ * @param {string} type - Company type (Empresa, Proveedor, etc.)
+ * @param {string} gridId - ID of the grid container
+ * @param {number} count - Number of profiles to generate
+ */
+function createNetworkProfiles(type, gridId, count = 8) {
+  const gridContainer = document.getElementById(gridId);
+  if (!gridContainer) return;
+  
+  // Clear existing profiles
+  gridContainer.innerHTML = '';
+  
+  for (let i = 1; i <= count; i++) {
+    const industry = getRandomIndustry();
+    const status = getRandomStatus();
+    const location = getRandomLocation();
+    const companyName = getCompanyName(type, i);
+    
+    const profileCard = document.createElement('div');
+    profileCard.className = 'network-profile-card';
+    profileCard.innerHTML = `
+      <div class="profile-avatar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M12 8v8" />
+          <path d="M8 12h8" />
+        </svg>
+      </div>
+      <div class="profile-info">
+        <div class="profile-name">${companyName}</div>
+        <div class="profile-title">Industry: ${industry}</div>
+        <div class="profile-description">Status: ${status}</div>
+        <div class="profile-description">Location: ${location}</div>
+      </div>
+    `;
+    
+    gridContainer.appendChild(profileCard);
+    
+    // Add click event to show more details
+    profileCard.addEventListener('click', function() {
+      alert(`Connecting with ${companyName}\nIndustry: ${industry}\nLocation: ${location}\nStatus: ${status}`);
+    });
+  }
+}
+
+// Initialize network grids when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Other initialization code...
+  
+  // Create network grids
+  document.getElementById('networkOption').addEventListener('click', () => {
+    createNetworkProfiles('Empresa', 'empresasGrid');
+    createNetworkProfiles('Proveedor', 'proveedoresGrid');
+    createNetworkProfiles('Similar', 'similaresGrid');
+  });
+  
+  document.getElementById('proveedorNetworkOption').addEventListener('click', () => {
+    createNetworkProfiles('Cliente', 'clientesGrid');
+    createNetworkProfiles('Potencial', 'potencialesGrid');
+  });
+});
+
+// Reset quiz system to ensure it works
+document.getElementById('quizModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    this.style.display = 'none';
+  }
+});
+
+document.getElementById('lessonModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    this.style.display = 'none';
+  }
+});
+
+// Trigger initialization of quizzes when journey tab is clicked
+document.getElementById('empleadoJourneyOption').addEventListener('click', function() {
+  setTimeout(function() {
+    configureLessonCardEvents();
+    configureQuizCardEvents();
+    initializeJourneySystem();
+  }, 100);
+});
+
+// ... existing code ...
+
+/**
+ * Configura los eventos para todas las tarjetas de lección
+ */
 function configureLessonCardEvents() {
   // Seleccionar todos los botones de iniciar lección (excluyendo los de cuestionario)
   const lessonStartButtons = document.querySelectorAll('.lesson-card:not(.quiz-card) .start-lesson-btn');
@@ -1461,6 +1558,10 @@ function configureLessonCardEvents() {
   console.log('Eventos de lecciones configurados:', lessonStartButtons.length);
 }
 
+/**
+ * Muestra la lección seleccionada
+ * @param {HTMLElement} lessonCard - La tarjeta de lección
+ */
 function showLesson(lessonCard) {
   const lessonModal = document.getElementById('lessonModal');
   const lessonTitle = document.getElementById('lessonTitle');
@@ -1770,7 +1871,7 @@ function createLessonLevels(moduleTitle, lessonContainer) {
                 <p>• <strong>Sin Deuda</strong>: No se registra como un préstamo en los estados financieros.</p>
                 <p>• <strong>Proceso Digital</strong>: Toda la operación se realiza en línea, sin papeleo.</p>
                 <p>• <strong>Flexibilidad</strong>: Se puede utilizar según las necesidades, sin montos mínimos.</p>
-                <p>• <strong>Mejora en Indicadores Financieros</strong>: Optimiza el ciclo de conversión de efectivo.</p>`
+                <p>• <strong>Mejora de Indicadores Financieros</strong>: Optimiza el ciclo de conversión de efectivo.</p>`
       },
       {
         title: "Requisitos y Proceso de Registro",
@@ -1897,4 +1998,4 @@ function createLessonLevels(moduleTitle, lessonContainer) {
     
     lessonContainer.appendChild(levelDiv);
   });
-} 
+}
