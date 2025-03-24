@@ -5,6 +5,7 @@
  * user-specific interfaces for empresa, empleado, and proveedor profiles.
  */
 
+
 // Menu visibility handling - Hide menu on scroll down, show on scroll up
 let lastScrollTop = 0;
 const menu = document.getElementById('empresaMenu');
