@@ -13,6 +13,6 @@ let empresaJourneys = new Array();
 
 //FUNCIONES
     //Constructor
-function UsuarioEmpresa( nombre, rubro, puntaje, nivel, logros){
+function UsuarioEmpresa(nombre, rubro, puntaje, nivel, logros){
 
 }
