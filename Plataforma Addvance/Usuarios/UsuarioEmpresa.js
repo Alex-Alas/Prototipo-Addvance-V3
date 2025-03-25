@@ -5,6 +5,7 @@
 //Crear clase UsuarioEmpresa
 class UsuarioEmpresa extends Usuario{
     //ATRIBUTOS
+    #todasEmpresas = new Map();
     #usuarioCodigo;
     #empresaCodigo;
     #empresaSector;
@@ -16,20 +17,30 @@ class UsuarioEmpresa extends Usuario{
     #empresaJourneys = new Array();
     #empresaCertificados = new Array();
     #contadorEmpresas = 0;
+    
 
     //METODOS
-    constructor(nombre, contrasena, email='-', telefono='-',departamento='-', municipio='-', sector='-', industria = '-', rubro = '-' ){
-        super(tiposUsuario.EMPRESA, nombre, contrasena, email, telefono, departamento, municipio);
+    constructor(nombre, contrasena, email='-', 
+        telefono='-',departamento='-', municipio='-', 
+        sector='-', industria = '-', rubro = '-' ){
+        super(tiposUsuario.EMPRESA, nombre, 
+            contrasena, email, telefono, departamento, 
+            municipio);
         this.#contadorEmpresas++;
-        this.#empresaCodigo = this.#usuarioCodigo + this.#contadorEmpresas.toString();
+        this.#empresaCodigo = this.#usuarioCodigo +
+         this.#contadorEmpresas.toString();
         this.#empresaSector = sector;
         this.#empresaIndustria = industria;
         this.#empresaRubro = rubro;
         this.#empresaPuntaje = 0;
         this.#empresaNivel = 1;
+        this.#todasEmpresas.set(this.#empresaCodigo, this);
     }
 
     //Getters
+    get todasEmpresas(){
+        return this.#todasEmpresas;
+    }
     get empresaCodigo(){
         return this.#empresaCodigo;
     }
@@ -69,3 +80,5 @@ class UsuarioEmpresa extends Usuario{
         this.#empresaRubro = rubro;
     }
 }
+
+
