@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <!-- Dashboard Background -->
+  <rect x="0" y="0" width="800" height="500" rx="12" ry="12" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="800" height="60" rx="12" ry="12" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="30" y="35" font-family="Montserrat, sans-serif" font-size="18" font-weight="600" fill="#333333">ábaco</text>
+  
+  <!-- Navigation -->
+  <circle cx="550" cy="30" r="15" fill="#F5F5F5"/>
+  <circle cx="590" cy="30" r="15" fill="#F5F5F5"/>
+  <circle cx="630" cy="30" r="15" fill="#F5F5F5"/>
+  <circle cx="670" cy="30" r="15" fill="#F5F5F5"/>
+  
+  <!-- Main Content -->
+  <text x="30" y="100" font-family="Montserrat, sans-serif" font-size="20" font-weight="700" fill="#333333">¡Hola, bienvenido a Ábaco!</text>
+  <text x="30" y="130" font-family="Montserrat, sans-serif" font-size="14" fill="#999999">Consulta el estado de tus facturas y solicita financiamiento</text>
+  
+  <!-- Progress Indicators -->
+  <rect x="30" y="160" width="740" height="60" rx="8" ry="8" fill="#F5F5F5"/>
+  <circle cx="70" cy="190" r="20" fill="#6C63FF"/>
+  <text x="70" y="195" font-family="Montserrat, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">1</text>
+  <line x1="90" y1="190" x2="150" y2="190" stroke="#E0E0E0" stroke-width="2"/>
+  
+  <circle cx="170" cy="190" r="20" fill="#6C63FF"/>
+  <text x="170" y="195" font-family="Montserrat, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">2</text>
+  <line x1="190" y1="190" x2="250" y2="190" stroke="#E0E0E0" stroke-width="2"/>
+  
+  <circle cx="270" cy="190" r="20" fill="#F5F5F5" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="270" y="195" font-family="Montserrat, sans-serif" font-size="14" font-weight="600" fill="#999999" text-anchor="middle">3</text>
+  <line x1="290" y1="190" x2="350" y2="190" stroke="#E0E0E0" stroke-width="2"/>
+  
+  <circle cx="370" cy="190" r="20" fill="#F5F5F5" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="370" y="195" font-family="Montserrat, sans-serif" font-size="14" font-weight="600" fill="#999999" text-anchor="middle">4</text>
+  
+  <!-- Amount Section -->
+  <text x="30" y="260" font-family="Montserrat, sans-serif" font-size="14" fill="#999999">MONTO SOLICITADO</text>
+  <text x="30" y="290" font-family="Montserrat, sans-serif" font-size="24" font-weight="700" fill="#333333">$15,000.00</text>
+  
+  <!-- Progress Bar -->
+  <rect x="30" y="320" width="740" height="10" rx="5" ry="5" fill="#F5F5F5"/>
+  <rect x="30" y="320" width="370" height="10" rx="5" ry="5" fill="#6C63FF"/>
+  
+  <!-- Details -->
+  <text x="30" y="360" font-family="Montserrat, sans-serif" font-size="14" fill="#999999">TASA DE INTERÉS</text>
+  <text x="30" y="385" font-family="Montserrat, sans-serif" font-size="16" fill="#333333">5.5%</text>
+  
+  <text x="200" y="360" font-family="Montserrat, sans-serif" font-size="14" fill="#999999">PLAZO</text>
+  <text x="200" y="385" font-family="Montserrat, sans-serif" font-size="16" fill="#333333">30 días</text>
+  
+  <text x="370" y="360" font-family="Montserrat, sans-serif" font-size="14" fill="#999999">FECHA DE PAGO</text>
+  <text x="370" y="385" font-family="Montserrat, sans-serif" font-size="16" fill="#333333">15/06/2024</text>
+  
+  <!-- User Profile -->
+  <circle cx="700" cy="370" r="25" fill="#F5F5F5"/>
+  <text x="700" y="375" font-family="Montserrat, sans-serif" font-size="14" font-weight="600" fill="#999999" text-anchor="middle">TA</text>
+  <text x="650" y="375" font-family="Montserrat, sans-serif" font-size="14" fill="#333333" text-anchor="end">Transferencia Ábaco</text>
+  
+  <!-- Action Button -->
+  <rect x="600" y="420" width="170" height="40" rx="8" ry="8" fill="#6C63FF"/>
+  <text x="685" y="445" font-family="Montserrat, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">CONTINUAR</text>
+</svg>

@@ -2,23 +2,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prototipo</title>
+  <title>Addvance - Plataforma</title>
   <!-- External CSS dependencies -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Google Fonts - Updated for Ábaco aesthetic -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Custom stylesheet -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    Main Navigation Menu - Empresa View
-    Contains primary navigation options for the empresa interface
-  -->
+  <!-- Header based on Ábaco aesthetic -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="logo-container">
+        <a href="#">
+          <img src="assets/abaco-logo.svg" alt="Addvance Logo" class="logo">
+        </a>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="#">Productos</a></li>
+          <li><a href="#">Soluciones</a></li>
+          <li><a href="#">Recursos</a></li>
+          <li><a href="#">Nosotros</a></li>
+          <li><a href="#">Centro de ayuda</a></li>
+        </ul>
+      </nav>
+      <div class="auth-buttons">
+        <button class="login-btn">Ingresar</button>
+        <button class="register-btn">Registrate</button>
+      </div>
+    </div>
+  </header>
+  
   <div id="empresaMenu" class="menu">
-    <button id="perfilOption" class="menu-option">Perfil</button>
-    <button id="networkOption" class="menu-option">Network</button>
-    <button id="rankingsOption" class="menu-option">Rankings</button>
-    <button id="journeyOption" class="menu-option">Journey</button>
+    <div class="menu-logo">
+      <img src="assets/abaco-logo.svg" alt="Addvance Logo" class="logo">
+    </div>
+    <div class="menu-options">
+      <button id="perfilOption" class="menu-option">Perfil</button>
+      <button id="networkOption" class="menu-option">Network</button>
+      <button id="rankingsOption" class="menu-option">Rankings</button>
+      <button id="journeyOption" class="menu-option">Journey</button>
+    </div>
+    <div class="menu-auth">
+      <button class="logout-button">Cerrar sesión</button>
+    </div>
   </div>
   
   <!-- Main Content Container -->

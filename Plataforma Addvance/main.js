@@ -3,21 +3,44 @@
  * This file contains all interactive functionality for the multi-user platform
  * including menu handling, section display, carousel functionality, and 
  * user-specific interfaces for empresa, empleado, and proveedor profiles.
+ * 
+ * Updated with Ábaco's aesthetic and UX patterns
  */
 
 
 // Menu visibility handling - Hide menu on scroll down, show on scroll up
 let lastScrollTop = 0;
 const menu = document.getElementById('empresaMenu');
+const header = document.querySelector('.site-header');
 
 window.addEventListener('scroll', () => {
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-  if (scrollTop > lastScrollTop) {
+  if (scrollTop > lastScrollTop && scrollTop > 100) {
     menu.classList.add('hidden');
+    header.classList.add('hidden');
   } else {
     menu.classList.remove('hidden');
+    header.classList.remove('hidden');
   }
   lastScrollTop = scrollTop;
+});
+
+// Handle login and register buttons
+document.addEventListener('DOMContentLoaded', () => {
+  const loginBtn = document.querySelector('.login-btn');
+  const registerBtn = document.querySelector('.register-btn');
+  
+  if (loginBtn) {
+    loginBtn.addEventListener('click', () => {
+      document.querySelector('.selection-box').style.display = 'block';
+    });
+  }
+  
+  if (registerBtn) {
+    registerBtn.addEventListener('click', () => {
+      document.querySelector('.selection-box').style.display = 'block';
+    });
+  }
 });
 
 // Section visibility handling - Shows one section at a time
