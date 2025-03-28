@@ -88,7 +88,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Main heading style */
 h1 {
   font-size: 40px;
-  font-weight: 800;
+  font-weight: 700;
   margin-bottom: 1rem;
 }
 
@@ -379,6 +379,50 @@ p {
   font-size: 14px;
 }
 
+/* Hamburger Menu */
+.hamburger-menu {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+  padding: 0.5rem;
+  z-index: 1001;
+}
+
+.hamburger-menu:hover {
+  color: var(--accent-color);
+}
+
+/* Mobile Navigation */
+.main-nav.active {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: var(--primary-color);
+  z-index: 1000;
+  padding-top: 80px;
+  overflow-y: auto;
+}
+
+.main-nav.active ul {
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: flex-start;
+  padding-left: 2rem;
+}
+
+.main-nav.active li {
+  margin: 1rem 0;
+}
+
 /* Responsive Design */
 @media (max-width: 992px) {
   .hero-container {
@@ -396,6 +440,10 @@ p {
   
   .main-nav {
     display: none;
+  }
+  
+  .hamburger-menu {
+    display: block;
   }
   
   .header-container {
@@ -433,6 +481,36 @@ p {
   .platform-image,
   .benefits-image {
     margin-bottom: 2rem;
+  }
+  
+  /* Siempre ocultar los botones de autenticación en la vista móvil */
+  .auth-buttons {
+    display: none;
+  }
+  
+  /* Mostrar los botones de autenticación solo cuando están dentro del menú móvil */
+  .auth-buttons.mobile-visible {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: auto;
+    padding: 2rem 0;
+    gap: 1rem;
+    z-index: 1001;
+  }
+  
+  h1 {
+    font-size: 32px;
+  }
+  
+  h2 {
+    font-size: 28px;
+  }
+  
+  .subtitle {
+    font-size: 16px;
   }
 }
 

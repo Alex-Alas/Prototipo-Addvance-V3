@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Addvance - Registro de Proveedor</title>
+  <!-- Google Fonts - Montserrat and Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom stylesheets -->
+  <link rel="stylesheet" href="auth.css">
+  <link rel="stylesheet" href="registro.css">
+</head>
+<body>
+  <!-- Header based on Ábaco aesthetic -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="logo-container">
+        <a href="landing.html">
+          <img src="assets/Logo oscuro ábaco.png" alt="Ábaco" class="logo">
+        </a>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="landing.html#productos">Productos</a></li>
+          <li><a href="landing.html#soluciones">Soluciones</a></li>
+          <li><a href="landing.html#recursos">Recursos</a></li>
+          <li><a href="landing.html#nosotros">Nosotros</a></li>
+          <li><a href="landing.html#ayuda">Centro de ayuda</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Registration Container -->
+  <div class="auth-container">
+    <!-- Registration Form for Provider -->
+    <div class="auth-form-container" id="register-form">
+      <h2>Registro de Proveedor</h2>
+      <p class="subtitle">Únete a la plataforma Addvance como proveedor o asociado</p>
+      
+      <form id="registerForm">
+        <!-- Información básica de la cuenta -->
+        <div class="form-section">
+          <h3>Información de la cuenta</h3>
+          
+          <div class="form-group">
+            <label for="registerEmail">Correo electrónico</label>
+            <input type="email" id="registerEmail" name="registerEmail" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="registerPassword">Contraseña</label>
+            <div class="password-input-container">
+              <input type="password" id="registerPassword" name="registerPassword" required>
+              <button type="button" class="toggle-password">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="registerConfirmPassword">Confirmar contraseña</label>
+            <div class="password-input-container">
+              <input type="password" id="registerConfirmPassword" name="registerConfirmPassword" required>
+              <button type="button" class="toggle-password">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Información del proveedor -->
+        <div class="form-section">
+          <h3>Información del proveedor</h3>
+          
+          <div class="form-group">
+            <label for="providerName">Nombre de la empresa/organización</label>
+            <input type="text" id="providerName" name="providerName" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="providerTaxId">NIT / Identificación fiscal</label>
+            <input type="text" id="providerTaxId" name="providerTaxId" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="providerType">Tipo de proveedor</label>
+            <select id="providerType" name="providerType" required>
+              <option value="" disabled selected>Selecciona un tipo</option>
+              <option value="consultoria">Consultoría</option>
+              <option value="tecnologia">Tecnología</option>
+              <option value="capacitacion">Capacitación</option>
+              <option value="servicios">Servicios profesionales</option>
+              <option value="productos">Productos</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="providerSpecialty">Especialidad</label>
+            <input type="text" id="providerSpecialty" name="providerSpecialty" required>
+            <small class="form-hint">Ej: Desarrollo web, Consultoría financiera, Capacitación en liderazgo</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="providerSize">Tamaño de la organización</label>
+            <select id="providerSize" name="providerSize" required>
+              <option value="" disabled selected>Selecciona el tamaño</option>
+              <option value="independiente">Independiente/Freelance</option>
+              <option value="micro">Micro (1-10 empleados)</option>
+              <option value="pequena">Pequeña (11-50 empleados)</option>
+              <option value="mediana">Mediana (51-250 empleados)</option>
+              <option value="grande">Grande (más de 250 empleados)</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Información de contacto -->
+        <div class="form-section">
+          <h3>Información de contacto</h3>
+          
+          <div class="form-group">
+            <label for="contactName">Nombre del contacto principal</label>
+            <input type="text" id="contactName" name="contactName" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="contactPosition">Cargo/Puesto</label>
+            <input type="text" id="contactPosition" name="contactPosition" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="contactPhone">Teléfono de contacto</label>
+            <input type="tel" id="contactPhone" name="contactPhone" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="providerAddress">Dirección</label>
+            <input type="text" id="providerAddress" name="providerAddress" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="providerWebsite">Sitio web (opcional)</label>
+            <input type="url" id="providerWebsite" name="providerWebsite" placeholder="https://">
+          </div>
+        </div>
+        
+        <!-- Servicios y experiencia -->
+        <div class="form-section">
+          <h3>Servicios y experiencia</h3>
+          
+          <div class="form-group">
+            <label for="providerServices">Servicios ofrecidos</label>
+            <textarea id="providerServices" name="providerServices" rows="3" required></textarea>
+            <small class="form-hint">Describe brevemente los servicios o productos que ofreces</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="providerExperience">Experiencia</label>
+            <textarea id="providerExperience" name="providerExperience" rows="3" required></textarea>
+            <small class="form-hint">Describe tu experiencia en el sector y principales logros</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="providerClients">Clientes destacados (opcional)</label>
+            <textarea id="providerClients" name="providerClients" rows="2"></textarea>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <button type="submit" class="submit-btn">Registrar Proveedor</button>
+        </div>
+        
+        <div class="form-footer">
+          <p>¿Ya tienes una cuenta? <a href="auth.html">Inicia sesión</a></p>
+        </div>
+      </form>
+      
+      <div class="auth-message" id="registerMessage"></div>
+    </div>
+  </div>
+  
+  <!-- Scripts -->
+  <script src="auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Toggle password visibility
+      const toggleButtons = document.querySelectorAll('.toggle-password');
+      toggleButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const input = button.previousElementSibling;
+          const icon = button.querySelector('i');
+          
+          if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+          } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+          }
+        });
+      });
+      
+      // Handle register form submission
+      document.getElementById('registerForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+        const confirmPassword = document.getElementById('registerConfirmPassword').value;
+        const providerName = document.getElementById('providerName').value;
+        const messageDiv = document.getElementById('registerMessage');
+        
+        // Validate password match
+        if (password !== confirmPassword) {
+          messageDiv.textContent = 'Las contraseñas no coinciden';
+          messageDiv.className = 'auth-message error';
+          return;
+        }
+        
+        // Recopilar todos los datos del formulario para crear un objeto de proveedor
+        const providerData = {
+          nombre: providerName,
+          correo: email,
+          nit: document.getElementById('providerTaxId').value,
+          tipo: document.getElementById('providerType').value,
+          especialidad: document.getElementById('providerSpecialty').value,
+          tamano: document.getElementById('providerSize').value,
+          contacto: {
+            nombre: document.getElementById('contactName').value,
+            cargo: document.getElementById('contactPosition').value,
+            telefono: document.getElementById('contactPhone').value
+          },
+          direccion: document.getElementById('providerAddress').value,
+          sitioWeb: document.getElementById('providerWebsite').value || '',
+          servicios: document.getElementById('providerServices').value,
+          experiencia: document.getElementById('providerExperience').value,
+          clientes: document.getElementById('providerClients').value || ''
+        };
+        
+        // Registrar usuario con tipo 'proveedor' y los datos adicionales
+        const resultado = registrarUsuario(providerName, email, password, 'proveedor', JSON.stringify(providerData));
+        
+        if (resultado.exito) {
+          messageDiv.textContent = resultado.mensaje;
+          messageDiv.className = 'auth-message success';
+          
+          // Redirect to login after successful registration
+          setTimeout(() => {
+            window.location.href = 'auth.html';
+          }, 1500);
+        } else {
+          messageDiv.textContent = resultado.mensaje;
+          messageDiv.className = 'auth-message error';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

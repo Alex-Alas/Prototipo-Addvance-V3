@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Addvance - Registro de Empleado</title>
+  <!-- Google Fonts - Montserrat and Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom stylesheets -->
+  <link rel="stylesheet" href="auth.css">
+  <link rel="stylesheet" href="registro.css">
+</head>
+<body>
+  <!-- Header based on Ábaco aesthetic -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="logo-container">
+        <a href="landing.html">
+          <img src="assets/Logo oscuro ábaco.png" alt="Ábaco" class="logo">
+        </a>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="landing.html#productos">Productos</a></li>
+          <li><a href="landing.html#soluciones">Soluciones</a></li>
+          <li><a href="landing.html#recursos">Recursos</a></li>
+          <li><a href="landing.html#nosotros">Nosotros</a></li>
+          <li><a href="landing.html#ayuda">Centro de ayuda</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Registration Container -->
+  <div class="auth-container">
+    <!-- Registration Form for Employee -->
+    <div class="auth-form-container" id="register-form">
+      <h2>Registro de Empleado</h2>
+      <p class="subtitle">Únete a la plataforma Addvance como empleado</p>
+      
+      <form id="registerForm">
+        <!-- Información básica del usuario -->
+        <div class="form-section">
+          <h3>Información de la cuenta</h3>
+          
+          <div class="form-group">
+            <label for="registerEmail">Correo electrónico</label>
+            <input type="email" id="registerEmail" name="registerEmail" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="registerPassword">Contraseña</label>
+            <div class="password-input-container">
+              <input type="password" id="registerPassword" name="registerPassword" required>
+              <button type="button" class="toggle-password">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="registerConfirmPassword">Confirmar contraseña</label>
+            <div class="password-input-container">
+              <input type="password" id="registerConfirmPassword" name="registerConfirmPassword" required>
+              <button type="button" class="toggle-password">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Información de la empresa -->
+        <div class="form-section">
+          <h3>Información de la empresa</h3>
+          
+          <div class="form-group">
+            <label for="companyCode">Código de empresa</label>
+            <input type="text" id="companyCode" name="companyCode" required>
+            <small class="form-hint">Ingresa el código proporcionado por tu empresa</small>
+          </div>
+        </div>
+        
+        <!-- Información personal del empleado -->
+        <div class="form-section">
+          <h3>Información personal</h3>
+          
+          <div class="form-group">
+            <label for="employeeName">Nombre completo</label>
+            <input type="text" id="employeeName" name="employeeName" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="employeePosition">Cargo/Puesto</label>
+            <input type="text" id="employeePosition" name="employeePosition" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="employeeDepartment">Departamento</label>
+            <input type="text" id="employeeDepartment" name="employeeDepartment" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="employeePhone">Teléfono de contacto</label>
+            <input type="tel" id="employeePhone" name="employeePhone" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="employeeSkills">Habilidades (opcional)</label>
+            <textarea id="employeeSkills" name="employeeSkills" rows="3" placeholder="Ej: Excel, Programación, Diseño gráfico"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="employeeBio">Biografía breve (opcional)</label>
+            <textarea id="employeeBio" name="employeeBio" rows="3"></textarea>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <button type="submit" class="submit-btn">Registrar Empleado</button>
+        </div>
+        
+        <div class="form-footer">
+          <p>¿Ya tienes una cuenta? <a href="auth.html">Inicia sesión</a></p>
+        </div>
+      </form>
+      
+      <div class="auth-message" id="registerMessage"></div>
+    </div>
+  </div>
+  
+  <!-- Scripts -->
+  <script src="auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Toggle password visibility
+      const toggleButtons = document.querySelectorAll('.toggle-password');
+      toggleButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const input = button.previousElementSibling;
+          const icon = button.querySelector('i');
+          
+          if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+          } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+          }
+        });
+      });
+      
+      // Handle register form submission
+      document.getElementById('registerForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+        const confirmPassword = document.getElementById('registerConfirmPassword').value;
+        const employeeName = document.getElementById('employeeName').value;
+        const companyCode = document.getElementById('companyCode').value;
+        const messageDiv = document.getElementById('registerMessage');
+        
+        // Validate password match
+        if (password !== confirmPassword) {
+          messageDiv.textContent = 'Las contraseñas no coinciden';
+          messageDiv.className = 'auth-message error';
+          return;
+        }
+        
+        // Recopilar todos los datos del formulario para crear un objeto de empleado
+        const employeeData = {
+          nombre: employeeName,
+          correo: email,
+          codigoEmpresa: companyCode,
+          cargo: document.getElementById('employeePosition').value,
+          departamento: document.getElementById('employeeDepartment').value,
+          telefono: document.getElementById('employeePhone').value,
+          habilidades: document.getElementById('employeeSkills').value || '',
+          biografia: document.getElementById('employeeBio').value || ''
+        };
+        
+        // Registrar usuario con tipo 'empleado' y los datos adicionales
+        const resultado = registrarUsuario(employeeName, email, password, 'empleado', JSON.stringify(employeeData));
+        
+        if (resultado.exito) {
+          messageDiv.textContent = resultado.mensaje;
+          messageDiv.className = 'auth-message success';
+          
+          // Redirect to login after successful registration
+          setTimeout(() => {
+            window.location.href = 'auth.html';
+          }, 1500);
+        } else {
+          messageDiv.textContent = resultado.mensaje;
+          messageDiv.className = 'auth-message error';
+        }
+      });
+    });
+  </script>
