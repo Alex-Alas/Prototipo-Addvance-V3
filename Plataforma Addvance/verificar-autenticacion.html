@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificación del Sistema de Autenticación</title>
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      color: #333;
+      text-align: center;
+    }
+    .test-section {
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .result {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    .user-card {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: #f9f9f9;
+    }
+    .links {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .links a {
+      display: inline-block;
+      margin: 0 10px;
+      color: #0066cc;
+      text-decoration: none;
+    }
+    .links a:hover {
+      text-decoration: underline;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Verificación del Sistema de Autenticación</h1>
+    
+    <div class="test-section">
+      <h2>Crear Usuarios de Prueba</h2>
+      <button id="createUsersBtn">Crear Usuarios de Ejemplo</button>
+      <div id="createResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Verificar Usuarios Creados</h2>
+      <button id="verifyUsersBtn">Verificar Usuarios</button>
+      <div id="verifyResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Probar Inicio de Sesión</h2>
+      <div>
+        <label for="testEmail">Correo:</label>
+        <select id="testEmail">
+          <option value="empresa@ejemplo.com">empresa@ejemplo.com (Empresa)</option>
+          <option value="proveedor@ejemplo.com">proveedor@ejemplo.com (Proveedor)</option>
+          <option value="empleado@ejemplo.com">empleado@ejemplo.com (Empleado)</option>
+        </select>
+      </div>
+      <div>
+        <label for="testPassword">Contraseña:</label>
+        <input type="password" id="testPassword" value="empresa123">
+      </div>
+      <button id="testLoginBtn">Probar Inicio de Sesión</button>
+      <div id="loginResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Usuario Actual</h2>
+      <button id="checkCurrentUserBtn">Verificar Usuario Actual</button>
+      <div id="currentUserResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Cerrar Sesión</h2>
+      <button id="testLogoutBtn">Probar Cierre de Sesión</button>
+      <div id="logoutResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Ir a la Página de Autenticación</h2>
+      <p>Prueba el flujo completo de autenticación:</p>
+      <button id="goToAuthBtn">Ir a la Página de Autenticación</button>
+    </div>
+    
+    <div class="links">
+      <a href="auth.html">Página de autenticación</a>
+      <a href="index.html">Página principal</a>
+      <a href="crear-usuarios.html">Crear usuarios</a>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script src="usuarios-ejemplo.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Referencias a elementos del DOM
+      const createUsersBtn = document.getElementById('createUsersBtn');
+      const createResult = document.getElementById('createResult');
+      const verifyUsersBtn = document.getElementById('verifyUsersBtn');
+      const verifyResult = document.getElementById('verifyResult');
+      const testEmail = document.getElementById('testEmail');
+      const testPassword = document.getElementById('testPassword');
+      const testLoginBtn = document.getElementById('testLoginBtn');
+      const loginResult = document.getElementById('loginResult');
+      const checkCurrentUserBtn = document.getElementById('checkCurrentUserBtn');
+      const currentUserResult = document.getElementById('currentUserResult');
+      const testLogoutBtn = document.getElementById('testLogoutBtn');
+      const logoutResult = document.getElementById('logoutResult');
+      const goToAuthBtn = document.getElementById('goToAuthBtn');
+      
+      // Actualizar contraseña cuando cambia el correo
+      testEmail.addEventListener('change', () => {
+        const email = testEmail.value;
+        if (email === 'empresa@ejemplo.com') {
+          testPassword.value = 'empresa123';
+        } else if (email === 'proveedor@ejemplo.com') {
+          testPassword.value = 'proveedor123';
+        } else if (email === 'empleado@ejemplo.com') {
+          testPassword.value = 'empleado123';
+        }
+      });
+      
+      // Crear usuarios de ejemplo
+      createUsersBtn.addEventListener('click', () => {
+        const resultados = crearUsuariosEjemplo();
+        
+        let html = '<h3>Usuarios creados:</h3>';
+        resultados.forEach(item => {
+          const usuario = item.usuario;
+          const resultado = item.resultado;
+          
+          html += `
+            <div class="user-card">
+              <p><strong>Nombre:</strong> ${usuario.nombre}</p>
+              <p><strong>Correo:</strong> ${usuario.correo}</p>
+              <p><strong>Contraseña:</strong> ${usuario.contrasena}</p>
+              <p><strong>Tipo de perfil:</strong> ${usuario.tipoPerfil}</p>
+              <p><strong>Estado:</strong> <span class="${resultado.exito ? 'success' : 'error'}">${resultado.mensaje}</span></p>
+            </div>
+          `;
+        });
+        
+        createResult.innerHTML = html;
+      });
+      
+      // Verificar usuarios creados
+      verifyUsersBtn.addEventListener('click', () => {
+        const usuarios = obtenerTodosLosUsuarios();
+        
+        if (usuarios.length === 0) {
+          verifyResult.innerHTML = '<p class="error">No hay usuarios registrados. Por favor, crea usuarios primero.</p>';
+          return;
+        }
+        
+        let html = `<h3>Total de usuarios: ${usuarios.length}</h3>`;
+        html += '<table><tr><th>Nombre</th><th>Correo</th><th>Tipo de Perfil</th><th>Primer Inicio</th></tr>';
+        
+        usuarios.forEach(usuario => {
+          html += `
+            <tr>
+              <td>${usuario.nombre}</td>
+              <td>${usuario.correo}</td>
+              <td>${usuario.tipoPerfil}</td>
+              <td>${usuario.primerInicio ? 'Sí' : 'No'}</td>
+            </tr>
+          `;
+        });
+        
+        html += '</table>';
+        verifyResult.innerHTML = html;
+      });
+      
+      // Probar inicio de sesión
+      testLoginBtn.addEventListener('click', () => {
+        const email = testEmail.value;
+        const password = testPassword.value;
+        
+        const resultado = verificarInicioSesion(email, password);
+        
+        if (resultado.exito) {
+          loginResult.innerHTML = `
+            <p class="success">${resultado.mensaje}</p>
+            <p>Usuario: ${resultado.usuario.nombre}</p>
+            <p>Tipo de perfil: ${resultado.usuario.tipoPerfil}</p>
+            <p>Primer inicio: ${resultado.esPrimerInicio ? 'Sí' : 'No'}</p>
+          `;
+        } else {
+          loginResult.innerHTML = `<p class="error">${resultado.mensaje}</p>`;
+        }
+      });
+      
+      // Verificar usuario actual
+      checkCurrentUserBtn.addEventListener('click', () => {
+        const usuarioActual = obtenerUsuarioActual();
+        
+        if (usuarioActual) {
+          currentUserResult.innerHTML = `
+            <p class="success">Usuario actualmente en sesión:</p>
+            <p>Nombre: ${usuarioActual.nombre}</p>
+            <p>Correo: ${usuarioActual.correo}</p>
+            <p>Tipo de perfil: ${usuarioActual.tipoPerfil}</p>
+          `;
+        } else {
+          currentUserResult.innerHTML = '<p class="error">No hay ningún usuario con sesión iniciada.</p>';
+        }
+      });
+      
+      // Probar cierre de sesión
+      testLogoutBtn.addEventListener('click', () => {
+        const resultado = cerrarSesion();
+        
+        if (resultado.exito) {
+          logoutResult.innerHTML = `<p class="success">${resultado.mensaje}</p>`;
+        } else {
+          logoutResult.innerHTML = `<p class="error">${resultado.mensaje}</p>`;
+        }
+      });
+      
+      // Ir a la página de autenticación
+      goToAuthBtn.addEventListener('click', () => {
+        window.location.href = 'auth.html';
+      });
+    });
+  </script>
+</body>
+</html>
