@@ -57,7 +57,7 @@
       <h1>Escoja tipo de usuario</h1>
       <div class="button-group">
         <button id="empresaBtn">Empresa</button>
-        <button id="proveedorBtn" disabled>Proveedor</button>
+        <button id="proveedorBtn">Proveedor</button>
         <button id="empleadoBtn">Empleado</button>
       </div>
     </div>
@@ -73,11 +73,6 @@
         
         <h2>Proveedores recomendados</h2>
         <div class="network-profiles-grid" id="proveedoresGrid">
-          <!-- Profile cards will be dynamically generated here -->
-        </div>
-        
-        <h2>Empresas similares a ti</h2>
-        <div class="network-profiles-grid" id="similaresGrid">
           <!-- Profile cards will be dynamically generated here -->
         </div>
       </div>
@@ -98,13 +93,7 @@
             <div class="swiper-button-prev"></div>
           </div>
         </section>
-        <section class="carousel-section">
-          <div class="swiper similaresSwiper">
-            <div class="swiper-wrapper"></div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
-          </div>
-        </section>
+
       </div>
     </div>
     
@@ -144,6 +133,7 @@
             <div class="level-bar">
               <div class="level-progress"></div>
             </div>
+            <div class="company-info" id="uniqueCode">Código único: </div>
             <button class="more-info-btn">Más información</button>
           </div>
           <!-- Back side of profile card with additional info -->
