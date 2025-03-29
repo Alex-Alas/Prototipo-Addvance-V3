@@ -17,7 +17,7 @@
   --accent-color: #635bff;     /* Darker purple accent for better contrast */
   --accent-muted: #7578ff;     /* Less saturated version of accent color */
   --text-primary: #222222;     /* Darker main text color for better contrast */
-  --text-secondary: #666666;   /* Darker secondary text color for better contrast */
+  --text-secondary: #4d525b;   /* Darker secondary text color for better contrast */
   --neutral-bg: #F5F5F5;       /* Light background color */
   --neutral-border: #E0E0E0;   /* Border color */
   --text-light: #FFFFFF;       /* Light text on dark bg */
@@ -582,7 +582,7 @@ p {
 
 /* Benefits Sections */
 .benefits-section {
-  padding: 5rem 0;
+  padding: 6rem 0;
 }
 
 .companies-benefits {

@@ -75,13 +75,30 @@ document.addEventListener('DOMContentLoaded', () => {
   
   if (loginBtn) {
     loginBtn.addEventListener('click', () => {
+      // Si el menú móvil está activo, cerrarlo
+      if (mainNav && mainNav.classList.contains('active')) {
+        mainNav.classList.remove('active');
+        hamburgerMenu.innerHTML = '<i class="fas fa-bars"></i>';
+        // Devolver los botones de autenticación a su posición original
+        authButtons.classList.remove('mobile-visible');
+        headerContainer.appendChild(authButtons);
+      }
       window.location.href = 'auth.html';
     });
   }
   
   if (registerBtn) {
     registerBtn.addEventListener('click', () => {
-      window.location.href = 'auth.html?form=register';
+      // Si el menú móvil está activo, cerrarlo
+      if (mainNav && mainNav.classList.contains('active')) {
+        mainNav.classList.remove('active');
+        hamburgerMenu.innerHTML = '<i class="fas fa-bars"></i>';
+        // Devolver los botones de autenticación a su posición original
+        authButtons.classList.remove('mobile-visible');
+        headerContainer.appendChild(authButtons);
+      }
+      // Scroll suavemente a la sección 'Aprende con nosotros'
+      document.getElementById('aprende-con-nosotros').scrollIntoView({ behavior: 'smooth' });
     });
   }
   
@@ -89,7 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const ctaButton = document.querySelector('.cta-button');
   if (ctaButton) {
     ctaButton.addEventListener('click', () => {
-      window.location.href = 'auth.html?form=register';
+      // Scroll suavemente a la sección 'Aprende con nosotros'
+      document.getElementById('aprende-con-nosotros').scrollIntoView({ behavior: 'smooth' });
     });
   }
   

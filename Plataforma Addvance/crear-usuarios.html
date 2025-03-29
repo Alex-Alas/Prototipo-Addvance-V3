@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Usuarios de Prueba</title>
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .user-card {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: #f9f9f9;
+    }
+    .user-card h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    .user-card p {
+      margin: 5px 0;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    .links {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .links a {
+      display: inline-block;
+      margin: 0 10px;
+      color: #0066cc;
+      text-decoration: none;
+    }
+    .links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Crear Usuarios de Prueba</h1>
+    <button id="createUsersBtn">Crear Usuarios de Ejemplo</button>
+    <div id="result"></div>
+    
+    <div class="links">
+      <a href="auth.html">Ir a la página de autenticación</a>
+      <a href="index.html">Ir a la página principal</a>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const createUsersBtn = document.getElementById('createUsersBtn');
+      const resultDiv = document.getElementById('result');
+      
+      createUsersBtn.addEventListener('click', () => {
+        // Limpiar localStorage para evitar duplicados
+        localStorage.removeItem('usuarios');
+        localStorage.removeItem('notificaciones');
+        localStorage.removeItem('mensajes');
+        
+        // Inicializar localStorage
+        initializeLocalStorage();
+        
+        // Crear usuarios de ejemplo
+        const usuarios = [
+          {
+            nombre: 'Empresa ABC',
+            correo: 'empresa@ejemplo.com',
+            contrasena: 'empresa123',
+            tipoPerfil: 'empresa',
+            descripcion: 'Empresa dedicada a servicios tecnológicos'
+          },
+          {
+            nombre: 'Proveedor XYZ',
+            correo: 'proveedor@ejemplo.com',
+            contrasena: 'proveedor123',
+            tipoPerfil: 'proveedor',
+            descripcion: 'Proveedor de servicios de capacitación'
+          },
+          {
+            nombre: 'Juan Pérez',
+            correo: 'empleado@ejemplo.com',
+            contrasena: 'empleado123',
+            tipoPerfil: 'empleado',
+            descripcion: 'Empleado del departamento de TI'
+          }
+        ];
+        
+        // Registrar cada usuario
+        let html = '';
+        usuarios.forEach(usuario => {
+          const resultado = registrarUsuario(
+            usuario.nombre,
+            usuario.correo,
+            usuario.contrasena,
+            usuario.tipoPerfil,
+            usuario.descripcion
+          );
+          
+          html += `
+            <div class="user-card">
+              <h3>${usuario.nombre}</h3>
+              <p><strong>Correo:</strong> ${usuario.correo}</p>
+              <p><strong>Contraseña:</strong> ${usuario.contrasena}</p>
+              <p><strong>Tipo de perfil:</strong> ${usuario.tipoPerfil}</p>
+              <p><strong>Estado:</strong> <span class="${resultado.exito ? 'success' : 'error'}">${resultado.mensaje}</span></p>
+            </div>
+          `;
+        });
+        
+        resultDiv.innerHTML = html;
+      });
+    });
+  </script>
+</body>
+</html>
