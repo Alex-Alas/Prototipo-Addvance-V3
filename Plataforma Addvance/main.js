@@ -148,10 +148,7 @@ function initializeAllSwipers() {
     new Swiper('.proveedoresSwiper', swiperConfig);
   }
   
-  if (document.querySelector('.similaresSwiper')) {
-    createCarouselItems('Similar', 'similaresSwiper');
-    new Swiper('.similaresSwiper', swiperConfig);
-  }
+
   
   // Initialize proveedor swipers if they exist
   if (document.querySelector('.proveedorClientesSwiper')) {
@@ -1474,19 +1471,35 @@ document.addEventListener('DOMContentLoaded', function() {
  * @param {string} gridId - ID of the grid container
  * @param {number} count - Number of profiles to generate
  */
-function createNetworkProfiles(type, gridId, count = 8) {
+function createNetworkProfiles(type, gridId) {
   const gridContainer = document.getElementById(gridId);
   if (!gridContainer) return;
   
   // Clear existing profiles
   gridContainer.innerHTML = '';
   
-  for (let i = 1; i <= count; i++) {
-    const industry = getRandomIndustry();
-    const status = getRandomStatus();
-    const location = getRandomLocation();
-    const companyName = getCompanyName(type, i);
-    
+  // Get current user
+  const currentUser = obtenerUsuarioActual();
+  if (!currentUser) return;
+  
+  // Get connected users
+  const connectedUsers = getConnectedUsersDetails(currentUser.correo);
+  if (!connectedUsers || connectedUsers.length === 0) {
+    gridContainer.innerHTML = '<p>No hay conexiones establecidas aún.</p>';
+    return;
+  }
+  
+  // Filter users based on type and user role
+  const filteredUsers = connectedUsers.filter(user => {
+    if (currentUser.tipoPerfil === 'empresa') {
+      return user.tipoPerfil === 'proveedor';
+    } else if (currentUser.tipoPerfil === 'proveedor') {
+      return user.tipoPerfil === 'empresa';
+    }
+    return false;
+  });
+  
+  filteredUsers.forEach(user => {
     const profileCard = document.createElement('div');
     profileCard.className = 'network-profile-card';
     profileCard.innerHTML = `
@@ -1498,20 +1511,15 @@ function createNetworkProfiles(type, gridId, count = 8) {
         </svg>
       </div>
       <div class="profile-info">
-        <div class="profile-name">${companyName}</div>
-        <div class="profile-title">Industry: ${industry}</div>
-        <div class="profile-description">Status: ${status}</div>
-        <div class="profile-description">Location: ${location}</div>
+        <div class="profile-name">${user.nombre}</div>
+        <div class="profile-title">Industry: ${user.industria}</div>
+        <div class="profile-description">Email: ${user.correo}</div>
+        <div class="profile-description">Phone: ${user.telefono}</div>
       </div>
     `;
     
     gridContainer.appendChild(profileCard);
-    
-    // Add click event to show more details
-    profileCard.addEventListener('click', function() {
-      alert(`Connecting with ${companyName}\nIndustry: ${industry}\nLocation: ${location}\nStatus: ${status}`);
-    });
-  }
+  });
 }
 
 // Initialize network grids when DOM is loaded
@@ -1520,15 +1528,45 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Create network grids
   document.getElementById('networkOption').addEventListener('click', () => {
-    createNetworkProfiles('Empresa', 'empresasGrid');
-    createNetworkProfiles('Proveedor', 'proveedoresGrid');
-    createNetworkProfiles('Similar', 'similaresGrid');
+    const currentUser = obtenerUsuarioActual();
+    if (currentUser && currentUser.tipoPerfil === 'empresa') {
+      createNetworkProfiles('Proveedor', 'empresasGrid');
+    }
   });
   
   document.getElementById('proveedorNetworkOption').addEventListener('click', () => {
-    createNetworkProfiles('Cliente', 'clientesGrid');
-    createNetworkProfiles('Potencial', 'potencialesGrid');
+    const currentUser = obtenerUsuarioActual();
+    if (currentUser && currentUser.tipoPerfil === 'proveedor') {
+      createNetworkProfiles('Empresa', 'clientesGrid');
+    }
   });
+  
+  // Add click handlers for connection buttons
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('connect-btn')) {
+      const currentUser = obtenerUsuarioActual();
+      if (!currentUser) return;
+      
+      const profileCard = e.target.closest('.network-profile-card');
+      if (!profileCard) return;
+      
+      const userEmail = profileCard.querySelector('.profile-description').textContent.split(': ')[1];
+      
+      const result = createConnection(currentUser.correo, userEmail);
+      if (result.success) {
+        alert('Conexión establecida exitosamente');
+        // Refresh the network grid to show updated connections
+        if (currentUser.tipoPerfil === 'empresa') {
+          createNetworkProfiles('Proveedor', 'empresasGrid');
+        } else if (currentUser.tipoPerfil === 'proveedor') {
+          createNetworkProfiles('Empresa', 'clientesGrid');
+        }
+      } else {
+        alert(result.message);
+      }
+    }
+  });
+
 });
 
 // Reset quiz system to ensure it works

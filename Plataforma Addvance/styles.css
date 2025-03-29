@@ -548,7 +548,7 @@ button:disabled {
 /* Additional info text styling */
 .additional-info {
   font-weight: 500;
-  color: white;
+  color: #142c8c; /* Deep purple color */
   margin: 8px 0;
 }
 
@@ -583,7 +583,7 @@ button:disabled {
 /* Company info text */
 .company-info {
   margin: 10px 0;
-  color: white;
+  color: #142c8c; /* Deep purple color */
   font-weight: 500;
 }
 
@@ -642,7 +642,7 @@ button:disabled {
 /* Achievements table cell */
 .achievements-table td {
   padding: 12px;
-  color: white;
+  color: #142c8c; /* Deep purple color */
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 

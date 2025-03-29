@@ -3,6 +3,29 @@
  * Handles user registration, login, and data storage using localStorage
  */
 
+// Function to generate a unique 5-character code
+function generarCodigoUnico() {
+  const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let codigo;
+  let esUnico = false;
+  
+  while (!esUnico) {
+    codigo = '';
+    for (let i = 0; i < 5; i++) {
+      codigo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+    
+    // Check if code is unique among empresa users
+    const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+    esUnico = !usuarios.some(usuario => 
+      usuario.tipoPerfil === 'empresa' && 
+      usuario.datosAdicionales.codigoUnico === codigo
+    );
+  }
+  
+  return codigo;
+}
+
 // Initialize localStorage if it doesn't exist
 function initializeLocalStorage() {
   if (!localStorage.getItem('usuarios')) {
@@ -47,7 +70,10 @@ function registrarUsuario(nombre, correo, contrasena, tipoPerfil, descripcion = 
     correo,
     contrasena, // Note: In a real app, this should be hashed
     tipoPerfil,
-    datosAdicionales,
+    datosAdicionales: {
+      ...datosAdicionales,
+      codigoUnico: tipoPerfil === 'empresa' ? generarCodigoUnico() : null
+    },
     primerInicio: true,
     fechaRegistro: new Date().toISOString()
   };
