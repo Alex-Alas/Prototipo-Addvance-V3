@@ -177,6 +177,7 @@
         document.getElementById('register-form').style.display = 'none';
         document.getElementById('login-form').style.display = 'block';
       });
+    })
       
       // Toggle password visibility
       const toggleButtons = document.querySelectorAll('.toggle-password');
@@ -285,7 +286,6 @@
         const email = document.getElementById('registerEmail').value;
         const password = document.getElementById('registerPassword').value;
         const confirmPassword = document.getElementById('registerConfirmPassword').value;
-        const type = document.getElementById('registerType').value;
         const description = document.getElementById('registerDescription').value;
         const messageDiv = document.getElementById('registerMessage');
         
@@ -299,7 +299,7 @@
         messageDiv.textContent = 'Por favor, selecciona un tipo de perfil para continuar con el registro';
         messageDiv.className = 'auth-message info';
       });
-    }); // Close DOMContentLoaded event listener
+  }); // Close DOMContentLoaded event listener
   </script>
 </body>
 </html>

@@ -76,15 +76,13 @@ h1 {
   border-radius: 8px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 /* Selection box hover effect */
 .selection-box:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
 }
 
 /* Button group container */
@@ -215,7 +213,8 @@ button:disabled {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2rem;
+  padding: 0 3rem;
+  gap: 3rem;
 }
 
 .logo-container {
@@ -224,7 +223,7 @@ button:disabled {
 }
 
 .logo {
-  height: 40px;
+  height: 35px;
 }
 
 .main-nav ul {
@@ -248,6 +247,7 @@ button:disabled {
 .auth-buttons {
   display: flex;
   gap: 1rem;
+  margin-left: auto;
 }
 
 .login-btn {
@@ -351,6 +351,61 @@ button:disabled {
 .swiper-slide:hover {
   transform: scale(1.05);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Profile card flip styles */
+.profile-box.company-profile {
+  perspective: 1000px;
+  min-height: 400px;
+}
+
+.profile-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s;
+  min-height: 400px;
+}
+
+.profile-card.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.profile-card-front,
+.profile-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  padding: 20px;
+  background: var(--primary-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-card-back {
+  transform: rotateY(180deg);
+}
+
+.more-info-btn {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+}
+
+.more-info-btn:hover {
+  background: #5a52d5;
+  transform: translateY(-2px);
 }
 
 /* Expanded card state */
@@ -695,14 +750,17 @@ button:disabled {
 
 /* Logout button */
 .logout-button {
-  display: block;
-  width: 100%;
-  max-width: 200px;
-  margin: 20px auto;
-  background: var(--error-color);
+  background: var(--accent-color);
   color: white;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* Logout button hover effect */

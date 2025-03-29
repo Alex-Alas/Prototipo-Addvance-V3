@@ -8,37 +8,63 @@
  */
 
 
-// Menu visibility handling - Hide menu on scroll down, show on scroll up
+// Menu visibility handling - Hide header on scroll down, show on scroll up
 let lastScrollTop = 0;
-const menu = document.getElementById('empresaMenu');
 const header = document.querySelector('.site-header');
 
 window.addEventListener('scroll', () => {
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
   if (scrollTop > lastScrollTop && scrollTop > 100) {
-    menu.classList.add('hidden');
     header.classList.add('hidden');
   } else {
-    menu.classList.remove('hidden');
     header.classList.remove('hidden');
   }
   lastScrollTop = scrollTop;
 });
 
-// Handle login and register buttons
+// Handle navigation and section visibility
 document.addEventListener('DOMContentLoaded', () => {
-  const loginBtn = document.querySelector('.login-btn');
-  const registerBtn = document.querySelector('.register-btn');
-  
-  if (loginBtn) {
-    loginBtn.addEventListener('click', () => {
-      document.querySelector('.selection-box').style.display = 'block';
+  const perfilOption = document.getElementById('proveedorPerfilOption');
+  const networkOption = document.getElementById('proveedorNetworkOption');
+  const perfilSection = document.getElementById('proveedorPerfilSection');
+  const networkSection = document.getElementById('proveedorNetworkSection');
+
+  // Initialize profile card flip functionality
+  const initializeProfileCard = () => {
+    const moreInfoBtns = document.querySelectorAll('.more-info-btn');
+    const profileCard = document.querySelector('.profile-card');
+
+    moreInfoBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        profileCard.classList.toggle('is-flipped');
+      });
     });
-  }
-  
-  if (registerBtn) {
-    registerBtn.addEventListener('click', () => {
-      document.querySelector('.selection-box').style.display = 'block';
+  };
+
+  // Show Network section by default
+  perfilSection.style.display = 'none';
+  networkSection.style.display = 'block';
+
+  perfilOption.addEventListener('click', (e) => {
+    e.preventDefault();
+    perfilSection.style.display = 'block';
+    networkSection.style.display = 'none';
+    // Initialize profile card when profile section becomes visible
+    initializeProfileCard();
+  });
+
+  networkOption.addEventListener('click', (e) => {
+    e.preventDefault();
+    perfilSection.style.display = 'none';
+    networkSection.style.display = 'block';
+  });
+
+  // Handle logout
+  const logoutBtn = document.querySelector('.logout-button');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      // Add logout functionality here
+      console.log('Logging out...');
     });
   }
 });
@@ -162,12 +188,33 @@ function initializeAllSwipers() {
   }
 }
 
-// Initial page setup - empresa user selection
-document.getElementById('empresaBtn').addEventListener('click', () => {
-  document.querySelector('.selection-box').style.display = 'none';
-  document.getElementById('empresaMenu').style.display = 'flex';
-  document.getElementById('networkOption').click();
-  initializeAllSwipers(); // Reinitialize swipers
+// Initial page setup and header navigation
+document.addEventListener('DOMContentLoaded', () => {
+  // Hide all sections except Journey
+  const sections = ['networkSection', 'profileSection', 'rankingsSection', 'journeySection'];
+  sections.forEach(section => {
+    document.getElementById(section).style.display = section === 'journeySection' ? 'block' : 'none';
+  });
+
+  // Header navigation setup
+  const headerOptions = {
+    headerPerfilOption: 'profileSection',
+    headerJourneyOption: 'journeySection',
+    headerNetworkOption: 'networkSection',
+    headerRankingsOption: 'rankingsSection'
+  };
+
+  Object.entries(headerOptions).forEach(([optionId, sectionId]) => {
+    document.getElementById(optionId)?.addEventListener('click', (e) => {
+      e.preventDefault();
+      sections.forEach(section => {
+        document.getElementById(section).style.display = section === sectionId ? 'block' : 'none';
+      });
+    });
+  });
+
+  // Initialize swipers if needed
+  initializeAllSwipers();
 });
 
 // Menu option selection - Navigation between different sections
@@ -1216,6 +1263,21 @@ moreInfoButtons.forEach(button => {
   });
 });
 
+// Show proveedor profile section and initialize card flip
+document.getElementById('proveedorPerfilOption').addEventListener('click', function() {
+  document.getElementById('proveedorPerfilSection').style.display = 'block';
+  document.getElementById('proveedorNetworkSection').style.display = 'none';
+  
+  // Initialize profile card flip functionality
+  const moreInfoButtons = document.querySelectorAll('#proveedorPerfilSection .more-info-btn');
+  moreInfoButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const card = this.closest('.profile-card');
+      card.classList.toggle('flipped');
+    });
+  });
+});
+
 /**
  * Add scroll animations to various page elements
  * Shows elements with fade-in effect as they enter the viewport
@@ -1377,6 +1439,14 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeAllSwipers();
   
   createEmployeeList();
+
+  // Show Network section by default
+  document.getElementById('proveedorPerfilSection').style.display = 'none';
+  document.getElementById('proveedorNetworkSection').style.display = 'block';
+  document.getElementById('proveedorNetworkOption').classList.add('selected');
+  
+  // Initialize swipers for Network section
+  initializeAllSwipers();
 });
 
 // Inicialización global segura para las variables de la ventana

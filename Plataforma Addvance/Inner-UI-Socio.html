@@ -1,0 +1,123 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Addvance - Plataforma</title>
+  <!-- External CSS dependencies -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
+  <!-- Google Fonts - Updated for Ábaco aesthetic -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Custom stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header based on Ábaco aesthetic -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="logo-container">
+        <a href="#">
+          <img src="assets/Logo oscuro ábaco.png" alt="Ábaco" class="logo">
+        </a>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="#" id="proveedorPerfilOption">Perfil</a></li>
+          <li><a href="#" id="proveedorNetworkOption">Network</a></li>
+        </ul>
+      </nav>
+      <div class="auth-buttons">
+        <button class="logout-button">Cerrar sesión</button>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Main Content Container -->
+  <div class="container">
+    <!-- Proveedor Profile Section -->
+    <div id="proveedorPerfilSection" class="profile-section" style="display: none;">
+      <!-- Main profile info card - Flippable -->
+      <div class="profile-box company-profile">
+        <div class="profile-card">
+          <!-- Front side of profile card -->
+          <div class="profile-card-front">
+            <div class="profile-image">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M12 7v10M7 12h10"/>
+              </svg>
+            </div>
+            <h2>Perfil de Proveedor</h2>
+            <div class="company-info">Rubro: Servicios Tecnológicos</div>
+            <div class="company-info">Puntaje: 78</div>
+            <div class="company-info">Nivel 2</div>
+            <div class="level-bar">
+              <div class="level-progress" style="width: 45%"></div>
+            </div>
+            <button class="more-info-btn">Más información</button>
+          </div>
+          <!-- Back side of profile card with additional info -->
+          <div class="profile-card-back">
+            <div class="additional-info-title">Información adicional</div>
+            <div class="additional-info">Empresas cliente: 12</div>
+            <div class="additional-info">Número de teléfono: xxxx-xxxx</div>
+            <div class="additional-info">e-mail: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fe8e8c91889b9b9a918cbe9b949b938e9291d09d9193">[email&#160;protected]</a></div>
+            <button class="more-info-btn">Volver</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Servicios Ofrecidos section -->
+      <div class="profile-box achievements-section">
+        <details open>
+          <summary>Servicios Ofrecidos</summary>
+          <table class="achievements-table">
+            <tr><td>Servicio 1</td><td>Descripción breve</td></tr>
+            <tr><td>Servicio 2</td><td>Descripción breve</td></tr>
+            <tr><td>Servicio 3</td><td>Descripción breve</td></tr>
+          </table>
+        </details>
+      </div>
+    </div>
+    
+    <!-- Proveedor Network Section -->
+    <div id="proveedorNetworkSection" class="network-section">
+      <!-- Network grid - new design based on screenshot -->
+      <div class="network-grid-container">
+        <h2>Clientes actuales</h2>
+        <div class="network-profiles-grid" id="clientesGrid">
+          <!-- Profile cards will be dynamically generated here -->
+        </div>
+        
+        <h2>Clientes potenciales</h2>
+        <div class="network-profiles-grid" id="potencialesGrid">
+          <!-- Profile cards will be dynamically generated here -->
+        </div>
+      </div>
+      
+      <!-- Original carousels - hidden but maintained for functionality -->
+      <div style="display: none;">
+        <section class="carousel-section">
+          <div class="swiper proveedorClientesSwiper">
+            <div class="swiper-wrapper"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+          </div>
+        </section>
+        <section class="carousel-section">
+          <div class="swiper proveedorPotencialesSwiper">
+            <div class="swiper-wrapper"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  
+  <!-- External JavaScript dependencies -->
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+  <!-- Custom JavaScript -->
+  <script src="main.js"></script>
+</body>
+</html>
