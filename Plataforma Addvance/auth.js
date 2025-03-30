@@ -28,15 +28,161 @@ function generarCodigoUnico() {
 
 // Initialize localStorage if it doesn't exist
 function initializeLocalStorage() {
-  if (!localStorage.getItem('usuarios')) {
-    localStorage.setItem('usuarios', JSON.stringify([]));
+  // Verificar si existen los usuarios de ejemplo
+  const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+  const tieneUsuariosEjemplo = usuarios.some(u => 
+    u.correo === "empresa@ejemplo.com" || 
+    u.correo === "proveedor@ejemplo.com" || 
+    u.correo === "empleado@ejemplo.com"
+  );
+  
+  // Si no existen los usuarios de ejemplo, cargarlos
+  if (!tieneUsuariosEjemplo) {
+    if (!localStorage.getItem('usuarios')) {
+      localStorage.setItem('usuarios', JSON.stringify([]));
+    }
+    cargarUsuariosEjemplo();
   }
+  
   if (!localStorage.getItem('notificaciones')) {
     localStorage.setItem('notificaciones', JSON.stringify([]));
   }
   if (!localStorage.getItem('mensajes')) {
     localStorage.setItem('mensajes', JSON.stringify([]));
   }
+}
+
+// Cargar usuarios de ejemplo para facilitar pruebas
+function cargarUsuariosEjemplo() {
+  // Usuario de tipo empresa
+  const empresaEjemplo = {
+    nombre: "Empresa ABC",
+    correo: "empresa@ejemplo.com",
+    contrasena: "empresa123",
+    tipoPerfil: "empresa",
+    datosAdicionales: {
+      nit: "1234-567890-123-4",
+      anoFundacion: "2010",
+      sector: "tecnologia",
+      tamano: "mediana",
+      contacto: {
+        nombre: "Juan Pérez",
+        cargo: "Gerente General",
+        telefono: "2222-3333"
+      },
+      direccion: "Calle Principal #123, San Salvador",
+      sitioWeb: "www.empresaabc.com",
+      descripcion: "Empresa dedicada al desarrollo de soluciones tecnológicas",
+      intereses: "Innovación, Transformación digital",
+      codigoUnico: "ABC12"
+    },
+    primerInicio: false,
+    fechaRegistro: new Date().toISOString()
+  };
+  
+  // Usuario de tipo proveedor
+  const proveedorEjemplo = {
+    nombre: "Consultores XYZ",
+    correo: "proveedor@ejemplo.com",
+    contrasena: "proveedor123",
+    tipoPerfil: "proveedor",
+    datosAdicionales: {
+      nit: "9876-543210-987-6",
+      tipo: "consultoria",
+      especialidad: "Desarrollo web y móvil",
+      tamano: "pequena",
+      contacto: {
+        nombre: "María Rodríguez",
+        cargo: "Directora de Proyectos",
+        telefono: "7777-8888"
+      },
+      direccion: "Avenida Central #456, San Salvador",
+      sitioWeb: "www.consultoresxyz.com",
+      servicios: "Desarrollo de aplicaciones, consultoría tecnológica, capacitaciones",
+      experiencia: "Más de 10 años en el mercado tecnológico",
+      clientes: "Empresas nacionales e internacionales",
+      codigoUnico: null
+    },
+    primerInicio: false,
+    fechaRegistro: new Date().toISOString()
+  };
+  
+  // Usuario de tipo empleado
+  const empleadoEjemplo = {
+    nombre: "Carlos Gómez",
+    correo: "empleado@ejemplo.com",
+    contrasena: "empleado123",
+    tipoPerfil: "empleado",
+    datosAdicionales: {
+      codigoEmpresa: "ABC12",
+      cargo: "Desarrollador Senior",
+      departamento: "Tecnología",
+      telefono: "6666-5555",
+      habilidades: "JavaScript, React, Node.js",
+      biografia: "Desarrollador con 5 años de experiencia en aplicaciones web",
+      codigoUnico: null
+    },
+    primerInicio: false,
+    fechaRegistro: new Date().toISOString()
+  };
+  
+  // Obtener usuarios actuales
+  const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+  
+  // Eliminar usuarios de ejemplo existentes para evitar duplicados
+  const usuariosFiltrados = usuarios.filter(u => 
+    u.correo !== "empresa@ejemplo.com" && 
+    u.correo !== "proveedor@ejemplo.com" && 
+    u.correo !== "empleado@ejemplo.com"
+  );
+  
+  // Agregar los usuarios de ejemplo
+  usuariosFiltrados.push(empresaEjemplo, proveedorEjemplo, empleadoEjemplo);
+  localStorage.setItem('usuarios', JSON.stringify(usuariosFiltrados));
+  
+  // Inicializar notificaciones para los usuarios de ejemplo
+  const notificaciones = JSON.parse(localStorage.getItem('notificaciones')) || [];
+  
+  // Eliminar notificaciones de usuarios de ejemplo existentes
+  const notificacionesFiltradas = notificaciones.filter(n => 
+    n.usuario !== "empresa@ejemplo.com" && 
+    n.usuario !== "proveedor@ejemplo.com" && 
+    n.usuario !== "empleado@ejemplo.com"
+  );
+  
+  // Notificaciones para empresa
+  notificacionesFiltradas.push({
+    usuario: empresaEjemplo.correo,
+    notificaciones: [{
+      mensaje: `Bienvenido a Addvance, ${empresaEjemplo.nombre}!`,
+      leida: true,
+      fecha: new Date().toISOString()
+    }]
+  });
+  
+  // Notificaciones para proveedor
+  notificacionesFiltradas.push({
+    usuario: proveedorEjemplo.correo,
+    notificaciones: [{
+      mensaje: `Bienvenido a Addvance, ${proveedorEjemplo.nombre}!`,
+      leida: true,
+      fecha: new Date().toISOString()
+    }]
+  });
+  
+  // Notificaciones para empleado
+  notificacionesFiltradas.push({
+    usuario: empleadoEjemplo.correo,
+    notificaciones: [{
+      mensaje: `Bienvenido a Addvance, ${empleadoEjemplo.nombre}!`,
+      leida: true,
+      fecha: new Date().toISOString()
+    }]
+  });
+  
+  localStorage.setItem('notificaciones', JSON.stringify(notificacionesFiltradas));
+  
+  console.log('Usuarios de ejemplo cargados correctamente');
 }
 
 // Register a new user

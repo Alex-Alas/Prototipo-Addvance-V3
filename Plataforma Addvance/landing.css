@@ -14,8 +14,8 @@
 :root {
   --primary-color: #FFFFFF;    /* Main background - white */
   --secondary-color: #1A1A1A;  /* Secondary background - black */
-  --accent-color: #635bff;     /* Darker purple accent for better contrast */
-  --accent-muted: #7578ff;     /* Less saturated version of accent color */
+  --accent-color: #03346E;     /* Darker purple accent for better contrast */
+  --accent-muted: #03336ede;     /* Less saturated version of accent color */
   --text-primary: #222222;     /* Darker main text color for better contrast */
   --text-secondary: #4d525b;   /* Darker secondary text color for better contrast */
   --neutral-bg: #F5F5F5;       /* Light background color */
