@@ -29,17 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const perfilSection = document.getElementById('proveedorPerfilSection');
   const networkSection = document.getElementById('proveedorNetworkSection');
 
-  // Initialize profile card flip functionality
-  const initializeProfileCard = () => {
-    const moreInfoBtns = document.querySelectorAll('.more-info-btn');
-    const profileCard = document.querySelector('.profile-card');
-
-    moreInfoBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        profileCard.classList.toggle('is-flipped');
-      });
-    });
-  };
+  // Initialize profile cards when the page loads
+  // This will be handled by the global initializeProfileCardFlip function
 
   // Show Network section by default
   perfilSection.style.display = 'none';
@@ -190,11 +181,24 @@ function initializeAllSwipers() {
 
 // Initial page setup and header navigation
 document.addEventListener('DOMContentLoaded', () => {
-  // Hide all sections except Journey
-  const sections = ['networkSection', 'profileSection', 'rankingsSection', 'journeySection'];
-  sections.forEach(section => {
-    document.getElementById(section).style.display = section === 'journeySection' ? 'block' : 'none';
+  // Initialize with Journey section visible by default
+  hideAllEmpleadoSections();
+  document.getElementById('empleadoJourneySection').style.display = 'block';
+  
+  // Set Journey option as selected by default
+  empleadoMenuOptions.forEach(opt => {
+    document.getElementById(`${opt}Option`).classList.remove('selected');
   });
+  document.getElementById('empleadoJourneyOption').classList.add('selected');
+  
+  // Initialize the journey tabs - set search tab as active by default
+  document.getElementById('empleadoSearchTab').classList.add('active');
+  document.getElementById('empleadoAcquiredTab').classList.remove('active');
+  document.getElementById('empleadoSearchView').style.display = 'block';
+  document.getElementById('empleadoAcquiredView').style.display = 'none';
+  
+  // Initialize profile card flip functionality
+  initializeProfileCardFlip();
 
   // Header navigation setup
   const headerOptions = {
@@ -204,13 +208,26 @@ document.addEventListener('DOMContentLoaded', () => {
     headerRankingsOption: 'rankingsSection'
   };
 
+  const sections = ['networkSection', 'profileSection', 'rankingsSection', 'journeySection'];
+
   Object.entries(headerOptions).forEach(([optionId, sectionId]) => {
-    document.getElementById(optionId)?.addEventListener('click', (e) => {
-      e.preventDefault();
-      sections.forEach(section => {
-        document.getElementById(section).style.display = section === sectionId ? 'block' : 'none';
+    const element = document.getElementById(optionId);
+    if (element) {
+      element.addEventListener('click', (e) => {
+        e.preventDefault();
+        sections.forEach(section => {
+          const sectionElement = document.getElementById(section);
+          if (sectionElement) {
+            sectionElement.style.display = section === sectionId ? 'block' : 'none';
+          }
+        });
+        
+        // Initialize profile card flip if showing profile section
+        if (sectionId === 'profileSection') {
+          initializeProfileCardFlip();
+        }
       });
-    });
+    }
   });
 
   // Initialize swipers if needed
@@ -220,22 +237,30 @@ document.addEventListener('DOMContentLoaded', () => {
 // Menu option selection - Navigation between different sections
 const menuOptions = ['perfil', 'network', 'rankings', 'journey'];
 menuOptions.forEach(option => {
-  document.getElementById(`${option}Option`).addEventListener('click', () => {
-    menuOptions.forEach(opt => {
-      document.getElementById(`${opt}Option`).classList.remove('selected');
+  const optionElement = document.getElementById(`${option}Option`);
+  if (optionElement) {
+    optionElement.addEventListener('click', () => {
+      menuOptions.forEach(opt => {
+        const element = document.getElementById(`${opt}Option`);
+        if (element) {
+          element.classList.remove('selected');
+        }
+      });
+      optionElement.classList.add('selected');
+      
+      if (option === 'network') {
+        showSection('networkSection');
+      } else if (option === 'perfil') {
+        showSection('profileSection');
+        // Initialize profile card flip when profile section becomes visible
+        initializeProfileCardFlip();
+      } else if (option === 'rankings') {
+        showSection('rankingsSection');
+      } else if (option === 'journey') {
+        showSection('journeySection');
+      }
     });
-    document.getElementById(`${option}Option`).classList.add('selected');
-    
-    if (option === 'network') {
-      showSection('networkSection');
-    } else if (option === 'perfil') {
-      showSection('profileSection');
-    } else if (option === 'rankings') {
-      showSection('rankingsSection');
-    } else if (option === 'journey') {
-      showSection('journeySection');
-    }
-  });
+  }
 });
 
 /**
@@ -406,7 +431,7 @@ document.getElementById('empleadoBtn').disabled = false;
 document.getElementById('empleadoBtn').addEventListener('click', () => {
   document.querySelector('.selection-box').style.display = 'none';
   document.getElementById('empleadoMenu').style.display = 'flex';
-  document.getElementById('empleadoPerfilOption').click(); // Default to profile view
+  document.getElementById('empleadoJourneyOption').click(); // Default to journey view
 });
 
 // Employee menu option selection
@@ -430,6 +455,22 @@ empleadoMenuOptions.forEach(option => {
       updateEmpleadoRankingsList('empleados');
     }
   });
+});
+
+// Header navigation for empleado sections
+document.getElementById('headerPerfilOption').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('empleadoPerfilOption').click();
+});
+
+document.getElementById('headerJourneyOption').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('empleadoJourneyOption').click();
+});
+
+document.getElementById('headerRankingOption').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('empleadoRankingOption').click();
 });
 
 /**
@@ -1144,17 +1185,7 @@ document.addEventListener('DOMContentLoaded', function() {
     moduleContent.style.display = 'block';
   });
   
-  // También reinicializar cuando se cambie a la vista de journeys adquiridos
-  const empleadoAcquiredTab = document.getElementById('empleadoAcquiredTab');
-  if (empleadoAcquiredTab) {
-    empleadoAcquiredTab.addEventListener('click', function() {
-      console.log('Cambiando a vista de journeys adquiridos...');
-      setTimeout(() => {
-        configureLessonCardEvents();
-        initializeModuleRequirements();
-      }, 100);
-    });
-  }
+  // La inicialización al cambiar a la vista de journeys adquiridos ahora se maneja en setupJourneyTabs()
 });
 
 /**
@@ -1254,28 +1285,37 @@ document.getElementById('proveedorLogoutBtn').addEventListener('click', () => {
   hideAllProveedorSections();
 });
 
-// Handle profile card flip
-const moreInfoButtons = document.querySelectorAll('.more-info-btn');
-moreInfoButtons.forEach(button => {
-  button.addEventListener('click', function() {
-    const card = this.closest('.profile-card');
-    card.classList.toggle('flipped');
+/**
+ * Initializes the profile card flip functionality for all profile cards
+ * This function should be called on DOMContentLoaded and whenever profile sections become visible
+ */
+function initializeProfileCardFlip() {
+  const moreInfoButtons = document.querySelectorAll('.more-info-btn');
+  moreInfoButtons.forEach(button => {
+    // Remove existing event listeners to prevent duplicates
+    button.removeEventListener('click', handleProfileCardFlip);
+    // Add new event listener
+    button.addEventListener('click', handleProfileCardFlip);
   });
-});
+}
 
-// Show proveedor profile section and initialize card flip
+// Handler function for profile card flip
+function handleProfileCardFlip() {
+  const card = this.closest('.profile-card');
+  if (card) {
+    card.classList.toggle('flipped');
+  }
+}
+
+// Initialize profile cards on page load
+document.addEventListener('DOMContentLoaded', initializeProfileCardFlip);
+
+// Show proveedor profile section
 document.getElementById('proveedorPerfilOption').addEventListener('click', function() {
   document.getElementById('proveedorPerfilSection').style.display = 'block';
   document.getElementById('proveedorNetworkSection').style.display = 'none';
-  
-  // Initialize profile card flip functionality
-  const moreInfoButtons = document.querySelectorAll('#proveedorPerfilSection .more-info-btn');
-  moreInfoButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      const card = this.closest('.profile-card');
-      card.classList.toggle('flipped');
-    });
-  });
+  // Initialize profile card flip functionality when profile section becomes visible
+  initializeProfileCardFlip();
 });
 
 /**
@@ -1326,20 +1366,7 @@ if (rankingsSubmenu) {
   }
 }
 
-// Initialize employee journey
-document.getElementById('empleadoSearchTab').addEventListener('click', () => {
-  document.getElementById('empleadoAcquiredTab').classList.remove('active');
-  document.getElementById('empleadoSearchTab').classList.add('active');
-  document.getElementById('empleadoSearchView').style.display = 'block';
-  document.getElementById('empleadoAcquiredView').style.display = 'none';
-});
-
-document.getElementById('empleadoAcquiredTab').addEventListener('click', () => {
-  document.getElementById('empleadoSearchTab').classList.remove('active');
-  document.getElementById('empleadoAcquiredTab').classList.add('active');
-  document.getElementById('empleadoSearchView').style.display = 'none';
-  document.getElementById('empleadoAcquiredView').style.display = 'block';
-});
+// Initialize employee journey - This is now handled by setupJourneyTabs() function
 
 // Set up Duolingo-style module clicks
 document.addEventListener('DOMContentLoaded', function() {
@@ -1523,6 +1550,7 @@ document.addEventListener('DOMContentLoaded', function() {
   createEmployeeList();
   
   // Set up journey functionality
+  setupJourneyTabs();
   configureLessonCardEvents();
   configureQuizCardEvents();
   initializeJourneySystem();
@@ -1797,18 +1825,7 @@ document.addEventListener('DOMContentLoaded', function() {
     moduleContent.style.display = 'block';
   });
   
-  // También reinicializar cuando se cambie a la vista de journeys adquiridos
-  const empleadoAcquiredTab = document.getElementById('empleadoAcquiredTab');
-  if (empleadoAcquiredTab) {
-    empleadoAcquiredTab.addEventListener('click', function() {
-      console.log('Cambiando a vista de journeys adquiridos...');
-      setTimeout(() => {
-        configureLessonCardEvents();
-        configureQuizCardEvents();
-        initializeModuleRequirements();
-      }, 100);
-    });
-  }
+  // La inicialización al cambiar a la vista de journeys adquiridos ahora se maneja en setupJourneyTabs()
   
   // Asegurarnos de volver a configurar los eventos cuando se haga visible la sección empleadoAcquiredView
   const empleadoJourneyOption = document.getElementById('empleadoJourneyOption');
@@ -1966,13 +1983,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Agregar la habilitación forzada de botones de cuestionario
   setTimeout(forceEnableQuizButtons, 500);
   
-  // También al cambiar a la vista de journeys adquiridos
-  const empleadoAcquiredTab = document.getElementById('empleadoAcquiredTab');
-  if (empleadoAcquiredTab) {
-    empleadoAcquiredTab.addEventListener('click', function() {
-      setTimeout(forceEnableQuizButtons, 500);
-    });
-  }
+  // La habilitación de botones al cambiar a la vista de journeys adquiridos ahora se maneja en setupJourneyTabs()
 });
 
 // Función para crear niveles de lección según el módulo

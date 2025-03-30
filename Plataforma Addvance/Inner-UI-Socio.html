@@ -119,5 +119,18 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
   <!-- Custom JavaScript -->
   <script src="main.js"></script>
+  <script>
+    // Initialize profile card flip functionality when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeProfileCardFlip();
+    });
+    
+    // Also initialize when the profile section becomes visible
+    document.getElementById('proveedorPerfilOption').addEventListener('click', function() {
+      setTimeout(function() {
+        initializeProfileCardFlip();
+      }, 100); // Small delay to ensure DOM is updated
+    });
+  </script>
 </body>
 </html>

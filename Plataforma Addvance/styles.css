@@ -368,7 +368,7 @@ button:disabled {
   min-height: 400px;
 }
 
-.profile-card.is-flipped {
+.profile-card.flipped {
   transform: rotateY(180deg);
 }
 

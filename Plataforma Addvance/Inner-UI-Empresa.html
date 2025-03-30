@@ -27,10 +27,10 @@
           <li><a href="#" id="headerRankingsOption">Rankings</a></li>
         </ul>
       </nav>
-      <div class="auth-buttons">
-        <button class="login-btn">Ingresar</button>
-        <button class="register-btn">Registrate</button>
-      </div>
+    
+    <div class="menu-auth">
+      <button class="logout-button">Cerrar sesión</button>
+    </div>
     </div>
   </header>
   
@@ -44,9 +44,7 @@
       <button id="rankingsOption" class="menu-option">Rankings</button>
       <button id="journeyOption" class="menu-option">Journey</button>
     </div>
-    <div class="menu-auth">
-      <button class="logout-button">Cerrar sesión</button>
-    </div>
+    
   </div>
   
   <!-- Main Content Container -->
@@ -360,5 +358,89 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
   <!-- Custom JavaScript -->
   <script src="main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize profile card flip functionality
+      initializeProfileCardFlip();
+      
+      // Fix header navigation
+      const headerOptions = {
+        'headerPerfilOption': 'profileSection',
+        'headerJourneyOption': 'journeySection',
+        'headerNetworkOption': 'networkSection',
+        'headerRankingsOption': 'rankingsSection'
+      };
+      
+      // Function to hide all sections
+      function hideAllSections() {
+        document.getElementById('profileSection').style.display = 'none';
+        document.getElementById('journeySection').style.display = 'none';
+        document.getElementById('networkSection').style.display = 'none';
+        document.getElementById('rankingsSection').style.display = 'none';
+      }
+      
+      // Add event listeners to header options
+      Object.entries(headerOptions).forEach(([optionId, sectionId]) => {
+        const element = document.getElementById(optionId);
+        if (element) {
+          element.addEventListener('click', function(e) {
+            e.preventDefault();
+            hideAllSections();
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Initialize profile card flip if showing profile section
+            if (sectionId === 'profileSection') {
+              initializeProfileCardFlip();
+            }
+          });
+        }
+      });
+      
+      // Fix menu options
+      const menuOptions = {
+        'perfilOption': 'profileSection',
+        'networkOption': 'networkSection',
+        'rankingsOption': 'rankingsSection',
+        'journeyOption': 'journeySection'
+      };
+      
+      Object.entries(menuOptions).forEach(([optionId, sectionId]) => {
+        const element = document.getElementById(optionId);
+        if (element) {
+          element.addEventListener('click', function() {
+            // Update selected class
+            document.querySelectorAll('.menu-option').forEach(opt => {
+              opt.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            // Show the corresponding section
+            hideAllSections();
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Initialize profile card flip if showing profile section
+            if (sectionId === 'profileSection') {
+              initializeProfileCardFlip();
+            }
+          });
+        }
+      });
+      
+      // Fix journey tabs
+      document.getElementById('searchTab').addEventListener('click', function() {
+        document.getElementById('searchTab').classList.add('active');
+        document.getElementById('acquiredTab').classList.remove('active');
+        document.getElementById('searchView').style.display = 'block';
+        document.getElementById('acquiredView').style.display = 'none';
+      });
+      
+      document.getElementById('acquiredTab').addEventListener('click', function() {
+        document.getElementById('acquiredTab').classList.add('active');
+        document.getElementById('searchTab').classList.remove('active');
+        document.getElementById('acquiredView').style.display = 'block';
+        document.getElementById('searchView').style.display = 'none';
+      });
+    });
+  </script>
 </body>
 </html>
