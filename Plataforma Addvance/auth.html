@@ -8,8 +8,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Custom stylesheet -->
+  <!-- Addvance UI System - Base styles -->
+  <link rel="stylesheet" href="addvance-ui.css">
+  <!-- Custom stylesheets -->
   <link rel="stylesheet" href="auth.css">
+  <link rel="stylesheet" href="example-credentials.css">
+  <link rel="stylesheet" href="landing.css">
 </head>
 <body>
   <!-- Header based on Ábaco aesthetic -->
@@ -20,6 +24,9 @@
           <img src="assets/Logo oscuro ábaco.png" alt="Ábaco" class="logo">
         </a>
       </div>
+      <button class="hamburger-menu" aria-label="Menú de navegación">
+        <i class="fas fa-bars"></i>
+      </button>
       <nav class="main-nav">
         <ul>
           <li><a href="landing.html#productos">Productos</a></li>
@@ -29,43 +36,74 @@
           <li><a href="landing.html#ayuda">Centro de ayuda</a></li>
         </ul>
       </nav>
+      <div class="auth-buttons">
+        <button class="login-btn" id="loginHeaderBtn">Ingresar</button>
+        <button class="register-btn" id="registerHeaderBtn">Registrate</button>
+      </div>
     </div>
   </header>
 
   <!-- Authentication Container -->
-  <div class="auth-container">
-    <!-- Login Form -->
-    <div class="auth-form-container" id="login-form">
-      <h2>Iniciar Sesión</h2>
-      <p class="subtitle">Accede a tu cuenta para continuar</p>
-      
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="loginEmail">Correo electrónico</label>
-          <input type="email" id="loginEmail" name="loginEmail" required>
-        </div>
+  <section class="auth-section">
+    <div class="auth-container">
+      <!-- Login Form -->
+      <div class="auth-form-container" id="login-form">
+        <h2>Iniciar Sesión</h2>
+        <p class="subtitle">Accede a tu cuenta para continuar</p>
         
-        <div class="form-group">
-          <label for="loginPassword">Contraseña</label>
-          <div class="password-input-container">
-            <input type="password" id="loginPassword" name="loginPassword" required>
-            <button type="button" class="toggle-password">
-              <i class="fas fa-eye"></i>
-            </button>
+        <!-- Credenciales de ejemplo -->
+        <div class="example-credentials">
+          <h4>Credenciales de ejemplo:</h4>
+          <div class="credentials-list">
+            <div class="credential-item">
+              <span class="credential-type">Empresa:</span>
+              <span class="credential-email">empresa@ejemplo.com</span>
+              <span class="credential-password">empresa123</span>
+            </div>
+            <div class="credential-item">
+              <span class="credential-type">Proveedor:</span>
+              <span class="credential-email">proveedor@ejemplo.com</span>
+              <span class="credential-password">proveedor123</span>
+            </div>
+            <div class="credential-item">
+              <span class="credential-type">Empleado:</span>
+              <span class="credential-email">empleado@ejemplo.com</span>
+              <span class="credential-password">empleado123</span>
+            </div>
           </div>
         </div>
         
-        <div class="form-group">
-          <button type="submit" class="submit-btn">Iniciar Sesión</button>
-        </div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">Correo electrónico</label>
+            <div class="input-with-icon">
+              <i class="fas fa-envelope"></i>
+              <input type="email" id="loginEmail" name="loginEmail" placeholder="Ingresa tu correo" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="loginPassword">Contraseña</label>
+            <div class="password-input-container input-with-icon">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="loginPassword" name="loginPassword" placeholder="Ingresa tu contraseña" required>
+              <button type="button" class="toggle-password">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <button type="submit" class="submit-btn">Iniciar Sesión</button>
+          </div>
+          
+          <div class="form-footer">
+            <p>¿No tienes una cuenta? <a href="#" id="showRegister">Regístrate</a></p>
+          </div>
+        </form>
         
-        <div class="form-footer">
-          <p>¿No tienes una cuenta? <a href="#" id="showRegister">Regístrate</a></p>
-        </div>
-      </form>
-      
-      <div class="auth-message" id="loginMessage"></div>
-    </div>
+        <div class="auth-message" id="loginMessage"></div>
+      </div>
     
     <!-- Registration Form -->
     <div class="auth-form-container" id="register-form" style="display: none;">
@@ -74,60 +112,27 @@
       
       <form id="registerForm">
         <div class="form-group">
-          <label for="registerName">Nombre completo</label>
-          <input type="text" id="registerName" name="registerName" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="registerEmail">Correo electrónico</label>
-          <input type="email" id="registerEmail" name="registerEmail" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="registerPassword">Contraseña</label>
-          <div class="password-input-container">
-            <input type="password" id="registerPassword" name="registerPassword" required>
-            <button type="button" class="toggle-password">
-              <i class="fas fa-eye"></i>
-            </button>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="registerConfirmPassword">Confirmar contraseña</label>
-          <div class="password-input-container">
-            <input type="password" id="registerConfirmPassword" name="registerConfirmPassword" required>
-            <button type="button" class="toggle-password">
-              <i class="fas fa-eye"></i>
-            </button>
-          </div>
-        </div>
-        
-        <div class="form-group">
           <label>Selecciona tu tipo de perfil</label>
           <div class="profile-type-container">
-            <a href="registro-empresa.html" class="profile-type-option">
+            <div class="profile-type-option" data-type="empresa">
               <i class="fas fa-building"></i>
               <h4>Empresa</h4>
               <p>Para organizaciones que buscan servicios y capacitaciones</p>
-            </a>
-            <a href="registro-proveedor.html" class="profile-type-option">
+            </div>
+            <div class="profile-type-option" data-type="proveedor">
               <i class="fas fa-handshake"></i>
               <h4>Proveedor</h4>
               <p>Para proveedores de servicios y asociados</p>
-            </a>
-            <a href="registro-empleado.html" class="profile-type-option">
+            </div>
+            <div class="profile-type-option" data-type="empleado">
               <i class="fas fa-user-tie"></i>
               <h4>Empleado</h4>
               <p>Para empleados de empresas registradas</p>
-            </a>
+            </div>
           </div>
         </div>
         
-        <div class="form-group">
-          <label for="registerDescription">Descripción (opcional)</label>
-          <textarea id="registerDescription" name="registerDescription" rows="3"></textarea>
-        </div>
+        <div class="auth-message" id="registerMessage"></div>
         
         <div class="form-group">
           <button type="submit" class="submit-btn">Crear Cuenta</button>
@@ -137,10 +142,9 @@
           <p>¿Ya tienes una cuenta? <a href="#" id="showLogin">Inicia sesión</a></p>
         </div>
       </form>
-      
-      <div class="auth-message" id="registerMessage"></div>
     </div>
   </div>
+  </section>
   
   <!-- Welcome Modal -->
   <div class="modal" id="welcomeModal">
@@ -177,8 +181,7 @@
         document.getElementById('register-form').style.display = 'none';
         document.getElementById('login-form').style.display = 'block';
       });
-    })
-      
+    
       // Toggle password visibility
       const toggleButtons = document.querySelectorAll('.toggle-password');
       toggleButtons.forEach(button => {
@@ -222,6 +225,30 @@
         }
       });
 
+      // Hamburger menu functionality
+      const hamburgerMenu = document.querySelector('.hamburger-menu');
+      const mainNav = document.querySelector('.main-nav');
+      const authButtons = document.querySelector('.auth-buttons');
+      
+      if (hamburgerMenu) {
+        hamburgerMenu.addEventListener('click', () => {
+          mainNav.classList.toggle('active');
+          if (mainNav.classList.contains('active')) {
+            hamburgerMenu.innerHTML = '<i class="fas fa-times"></i>';
+            if (!document.querySelector('.auth-buttons.mobile-visible')) {
+              authButtons.classList.add('mobile-visible');
+              mainNav.appendChild(authButtons.cloneNode(true));
+            }
+          } else {
+            hamburgerMenu.innerHTML = '<i class="fas fa-bars"></i>';
+            const mobileAuthButtons = mainNav.querySelector('.auth-buttons');
+            if (mobileAuthButtons) {
+              mobileAuthButtons.remove();
+            }
+            authButtons.classList.remove('mobile-visible');
+          }
+        });
+      }
       
       // Handle login form submission
       document.getElementById('loginForm').addEventListener('submit', (e) => {
@@ -259,17 +286,43 @@
             // Close modal when clicking on X or button
             document.querySelector('.close-modal').addEventListener('click', () => {
               modal.style.display = 'none';
-              window.location.href = 'index.html';
+              // Redirigir según el tipo de perfil del usuario
+              if (usuario.tipoPerfil === 'empresa') {
+                window.location.href = 'Inner-UI-Empresa.html';
+              } else if (usuario.tipoPerfil === 'proveedor') {
+                window.location.href = 'Inner-UI-Socio.html';
+              } else if (usuario.tipoPerfil === 'empleado') {
+                window.location.href = 'Inner-UI-Empleado.html';
+              } else {
+                window.location.href = 'index.html';
+              }
             });
             
             document.querySelector('.modal-btn').addEventListener('click', () => {
               modal.style.display = 'none';
-              window.location.href = 'index.html';
+              // Redirigir según el tipo de perfil del usuario
+              if (usuario.tipoPerfil === 'empresa') {
+                window.location.href = 'Inner-UI-Empresa.html';
+              } else if (usuario.tipoPerfil === 'proveedor') {
+                window.location.href = 'Inner-UI-Socio.html';
+              } else if (usuario.tipoPerfil === 'empleado') {
+                window.location.href = 'Inner-UI-Empleado.html';
+              } else {
+                window.location.href = 'index.html';
+              }
             });
           } else {
-            // Redirect to main page after successful login
+            // Redirect to corresponding UI based on user type
             setTimeout(() => {
-              window.location.href = 'index.html';
+              if (resultado.usuario.tipoPerfil === 'empresa') {
+                window.location.href = 'Inner-UI-Empresa.html';
+              } else if (resultado.usuario.tipoPerfil === 'proveedor') {
+                window.location.href = 'Inner-UI-Socio.html';
+              } else if (resultado.usuario.tipoPerfil === 'empleado') {
+                window.location.href = 'Inner-UI-Empleado.html';
+              } else {
+                window.location.href = 'index.html';
+              }
             }, 1000);
           }
         } else {
@@ -278,28 +331,78 @@
         }
       });
       
+      // Manejo de selección de tipo de perfil
+      const profileOptions = document.querySelectorAll('.profile-type-option');
+      let selectedProfileType = null;
+      
+      profileOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          // Quitar la clase selected de todas las opciones
+          profileOptions.forEach(opt => opt.classList.remove('selected'));
+          // Añadir la clase selected a la opción clickeada
+          option.classList.add('selected');
+          // Guardar el tipo seleccionado
+          selectedProfileType = option.getAttribute('data-type');
+        });
+      });
+      
       // Handle register form submission
       document.getElementById('registerForm').addEventListener('submit', (e) => {
         e.preventDefault();
         
-        const name = document.getElementById('registerName').value;
-        const email = document.getElementById('registerEmail').value;
-        const password = document.getElementById('registerPassword').value;
-        const confirmPassword = document.getElementById('registerConfirmPassword').value;
-        const description = document.getElementById('registerDescription').value;
         const messageDiv = document.getElementById('registerMessage');
         
-        // Validate password match
-        if (password !== confirmPassword) {
-          messageDiv.textContent = 'Las contraseñas no coinciden';
+        // Verificar si se ha seleccionado un tipo de perfil
+        if (!selectedProfileType) {
+          messageDiv.textContent = 'Por favor, selecciona un tipo de perfil para continuar';
           messageDiv.className = 'auth-message error';
+          messageDiv.style.display = 'block';
           return;
         }
         
-        messageDiv.textContent = 'Por favor, selecciona un tipo de perfil para continuar con el registro';
-        messageDiv.className = 'auth-message info';
+        // Redireccionar a la página de registro correspondiente
+        window.location.href = `registro-${selectedProfileType}.html`;
       });
-  }); // Close DOMContentLoaded event listener
+      
+      // Mostrar mensaje informativo y configurar efectos visuales
+      const messageDiv = document.getElementById('registerMessage');
+      messageDiv.textContent = 'Selecciona un tipo de perfil y haz clic en "Crear Cuenta" para continuar';
+      messageDiv.className = 'auth-message info';
+      messageDiv.style.display = 'block';
+      
+      // Añadir efecto visual al seleccionar un perfil
+      profileOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          // Efecto visual para el icono
+          const icon = option.querySelector('i');
+          icon.style.transform = 'scale(1.2)';
+          setTimeout(() => {
+            icon.style.transform = 'scale(1)';
+          }, 300);
+          
+          // Actualizar mensaje
+          messageDiv.textContent = `Has seleccionado perfil de ${option.querySelector('h4').textContent}. Haz clic en "Crear Cuenta" para continuar.`;
+        });
+      });
+
+      // Header buttons functionality
+      const loginHeaderBtn = document.getElementById('loginHeaderBtn');
+      const registerHeaderBtn = document.getElementById('registerHeaderBtn');
+
+      if (loginHeaderBtn) {
+        loginHeaderBtn.addEventListener('click', () => {
+          document.getElementById('register-form').style.display = 'none';
+          document.getElementById('login-form').style.display = 'block';
+        });
+      }
+
+      if (registerHeaderBtn) {
+        registerHeaderBtn.addEventListener('click', () => {
+          document.getElementById('login-form').style.display = 'none';
+          document.getElementById('register-form').style.display = 'block';
+        });
+      }
+    }); // Close DOMContentLoaded event listener
   </script>
 </body>
 </html>

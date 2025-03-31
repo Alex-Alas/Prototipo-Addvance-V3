@@ -1,54 +1,155 @@
 /**
  * Messaging System for Addvance Platform
  * Handles direct messaging between users
+ * @module messaging
+ * @description Sistema de mensajería directa entre usuarios de la plataforma Addvance
+ * @requires auth.js - Para obtener información del usuario actual
+ * @requires localStorage - Para almacenar y recuperar mensajes
  */
 
+/**
+ * Inicializa el sistema de mensajería cuando se carga la página
+ */
 document.addEventListener('DOMContentLoaded', () => {
-  // Check if user is logged in
-  const currentUser = obtenerUsuarioActual();
-  if (currentUser) {
-    // Add messaging icon to header
-    createMessagingIcon();
+  try {
+    // Verificar si el usuario está autenticado
+    const currentUser = obtenerUsuarioActual();
+    if (currentUser) {
+      // Inicializar el almacenamiento de mensajes si no existe
+      initializeMessagingStorage();
+      // Añadir icono de mensajería al encabezado
+      createMessagingIcon();
+    }
+  } catch (error) {
+    console.error('Error al inicializar el sistema de mensajería:', error);
   }
 });
 
-// Create messaging icon in header
-function createMessagingIcon() {
-  // Check if messaging icon already exists
-  if (document.getElementById('messaging-icon')) return;
-  
-  // Get header container
-  const headerContainer = document.querySelector('.header-container') || 
-                          document.querySelector('.auth-buttons');
-  
-  if (!headerContainer) return;
-  
-  // Create messaging container
-  const messagingContainer = document.createElement('div');
-  messagingContainer.className = 'messaging-container';
-  
-  // Create messaging icon
-  const messagingIcon = document.createElement('div');
-  messagingIcon.id = 'messaging-icon';
-  messagingIcon.className = 'messaging-icon';
-  messagingIcon.innerHTML = `<i class="fas fa-envelope"></i>`;
-  messagingIcon.addEventListener('click', openMessagingModal);
-  
-  // Append to container
-  messagingContainer.appendChild(messagingIcon);
-  
-  // Insert before notification container if it exists
-  const notificationContainer = document.querySelector('.notification-container');
-  if (notificationContainer) {
-    headerContainer.insertBefore(messagingContainer, notificationContainer);
-  } else {
-    // Insert before auth buttons if they exist
-    const authButtons = document.querySelector('.auth-buttons');
-    if (authButtons) {
-      headerContainer.insertBefore(messagingContainer, authButtons);
-    } else {
-      headerContainer.appendChild(messagingContainer);
+/**
+ * Inicializa el almacenamiento de mensajes en localStorage si no existe
+ * @function initializeMessagingStorage
+ */
+function initializeMessagingStorage() {
+  try {
+    if (!localStorage.getItem('mensajes')) {
+      localStorage.setItem('mensajes', JSON.stringify([]));
+      console.log('Sistema de mensajería inicializado correctamente');
     }
+  } catch (error) {
+    console.error('Error al inicializar el almacenamiento de mensajes:', error);
+  }
+}
+
+/**
+ * Crea el icono de mensajería en el encabezado
+ * @function createMessagingIcon
+ * @returns {void}
+ */
+function createMessagingIcon() {
+  try {
+    // Verificar si el icono de mensajería ya existe
+    if (document.getElementById('messaging-icon')) return;
+    
+    // Obtener el contenedor del encabezado
+    const headerContainer = document.querySelector('.header-container') || 
+                            document.querySelector('.auth-buttons');
+    
+    if (!headerContainer) {
+      console.warn('No se encontró el contenedor del encabezado');
+      return;
+    }
+    
+    // Crear contenedor de mensajería
+    const messagingContainer = document.createElement('div');
+    messagingContainer.className = 'messaging-container';
+    
+    // Crear icono de mensajería
+    const messagingIcon = document.createElement('div');
+    messagingIcon.id = 'messaging-icon';
+    messagingIcon.className = 'messaging-icon';
+    messagingIcon.innerHTML = `<i class="fas fa-envelope"></i>`;
+    messagingIcon.setAttribute('title', 'Mensajes');
+    messagingIcon.addEventListener('click', openMessagingModal);
+    
+    // Añadir contador de mensajes no leídos
+    const unreadBadge = document.createElement('span');
+    unreadBadge.id = 'unread-messages-badge';
+    unreadBadge.className = 'unread-badge';
+    unreadBadge.style.display = 'none';
+    messagingIcon.appendChild(unreadBadge);
+    
+    // Añadir al contenedor
+    messagingContainer.appendChild(messagingIcon);
+    
+    // Insertar antes del contenedor de notificaciones si existe
+    const notificationContainer = document.querySelector('.notification-container');
+    if (notificationContainer) {
+      headerContainer.insertBefore(messagingContainer, notificationContainer);
+    } else {
+      // Insertar antes de los botones de autenticación si existen
+      const authButtons = document.querySelector('.auth-buttons');
+      if (authButtons) {
+        headerContainer.insertBefore(messagingContainer, authButtons);
+      } else {
+        headerContainer.appendChild(messagingContainer);
+      }
+    }
+    
+    // Actualizar contador de mensajes no leídos
+    updateUnreadMessagesBadge();
+  } catch (error) {
+    console.error('Error al crear el icono de mensajería:', error);
+  }
+}
+
+/**
+ * Actualiza el contador de mensajes no leídos
+ * @function updateUnreadMessagesBadge
+ */
+function updateUnreadMessagesBadge() {
+  try {
+    const currentUser = obtenerUsuarioActual();
+    if (!currentUser) return;
+    
+    const unreadBadge = document.getElementById('unread-messages-badge');
+    if (!unreadBadge) return;
+    
+    // Obtener mensajes no leídos
+    const unreadCount = getUnreadMessagesCount(currentUser.correo);
+    
+    if (unreadCount > 0) {
+      unreadBadge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+      unreadBadge.style.display = 'block';
+    } else {
+      unreadBadge.style.display = 'none';
+    }
+  } catch (error) {
+    console.error('Error al actualizar el contador de mensajes no leídos:', error);
+  }
+}
+
+/**
+ * Obtiene el número de mensajes no leídos para un usuario
+ * @function getUnreadMessagesCount
+ * @param {string} userEmail - Correo electrónico del usuario
+ * @returns {number} Número de mensajes no leídos
+ */
+function getUnreadMessagesCount(userEmail) {
+  try {
+    if (!userEmail) return 0;
+    
+    const mensajes = JSON.parse(localStorage.getItem('mensajes')) || [];
+    
+    // Filtrar mensajes no leídos dirigidos al usuario
+    const unreadMessages = mensajes.filter(msg => 
+      msg.para === userEmail && 
+      !msg.leido
+    );
+    
+    return unreadMessages.length;
+  } catch (error) {
+    console.error('Error al contar mensajes no leídos:', error);
+    return 0;
   }
 }
 
