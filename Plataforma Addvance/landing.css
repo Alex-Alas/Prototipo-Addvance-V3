@@ -3,36 +3,13 @@
  * Based on Ábaco's aesthetic
  */
 
-/* CSS Reset and Base Styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Global Variables */
-:root {
-  --primary-color: #FFFFFF;    /* Main background - white */
-  --secondary-color: #1A1A1A;  /* Secondary background - black */
-  --accent-color: #03346E;     /* Darker purple accent for better contrast */
-  --accent-muted: #03336ede;     /* Less saturated version of accent color */
-  --text-primary: #222222;     /* Darker main text color for better contrast */
-  --text-secondary: #4d525b;   /* Darker secondary text color for better contrast */
-  --neutral-bg: #F5F5F5;       /* Light background color */
-  --neutral-border: #E0E0E0;   /* Border color */
-  --text-light: #FFFFFF;       /* Light text on dark bg */
-  --shadow-color: rgba(0, 0, 0, 0.1);      /* Slightly stronger shadow */
-  --error-color: #FF6B6B;      /* Error/warning color */
-}
+/* Este archivo utiliza las variables globales definidas en addvance-ui.css */
+/* No es necesario redefinir las variables CSS aquí */
 
 /* Body and Typography */
 body {
-  font-family: 'Montserrat', 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  min-height: 100vh;
-  background: var(--primary-color);
-  color: var(--text-primary);
-  line-height: 1.6;
-  font-size: 16px;
+  /* Heredamos la mayoría de los estilos de body de addvance-ui.css */
+  /* Solo especificamos lo que es único para la landing */
   font-weight: 700;
 }
 
@@ -77,13 +54,8 @@ body {
   font-weight: 700;
 }
 
-/* Heading Typography */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Montserrat', 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-}
+/* Utilizamos los estilos de encabezados definidos en addvance-ui.css */
+/* Solo especificamos los ajustes específicos para la landing */
 
 /* Main heading style */
 h1 {

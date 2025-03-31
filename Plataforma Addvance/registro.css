@@ -1,6 +1,9 @@
 /**
  * Estilos adicionales para las páginas de registro específicas
  * Complementa los estilos base de auth.css
+ * 
+ * Este archivo utiliza los estilos base definidos en addvance-ui.css
+ * Solo contiene estilos específicos para las páginas de registro
  */
 
 /* Secciones del formulario */

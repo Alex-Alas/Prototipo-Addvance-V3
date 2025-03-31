@@ -2,8 +2,8 @@
  * Navigation Project Styles
  * Main stylesheet for the multi-user navigation platform
  * 
- * This file contains all styling for the application including:
- * - Base styling and typography
+ * Este archivo utiliza los estilos base definidos en addvance-ui.css y solo contiene
+ * estilos específicos para la aplicación de navegación multi-usuario:
  * - User selection interface
  * - Dashboard navigation menu
  * - Profile cards and info displays
@@ -13,44 +13,11 @@
  * - Responsive design adaptations
  */
 
-/* CSS Reset and Base Styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* No es necesario redefinir reset y estilos base, ya están en addvance-ui.css */
 
-/* Global Variables - Updated for Ábaco aesthetic */
-:root {
-  --primary-color: #FFFFFF;    /* Main background - white */
-  --secondary-color: #1A1A1A;  /* Secondary background - black */
-  --accent-color: #6C63FF;     /* Purple accent for interactive elements */
-  --text-primary: #333333;     /* Main text color - dark gray */
-  --text-secondary: #999999;   /* Secondary text color - light gray */
-  --neutral-bg: #F5F5F5;       /* Light background color */
-  --neutral-border: #E0E0E0;   /* Border color */
-  --text-light: #FFFFFF;       /* Light text on dark bg */
-  --shadow-color: rgba(0, 0, 0, 0.05);      /* Subtle shadow */
-  --error-color: #FF6B6B;      /* Error/warning color */
-}
+/* Las variables globales se heredan de addvance-ui.css */
 
-/* Body and Typography - Updated for Ábaco aesthetic */
-body {
-  font-family: 'Montserrat', 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  min-height: 100vh;
-  background: var(--primary-color);
-  color: var(--text-primary);
-  line-height: 1.6;
-  font-size: 16px;
-}
-
-/* Heading Typography - Updated for Ábaco aesthetic */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Montserrat', 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-}
+/* Solo definimos estilos específicos que no están en el sistema de diseño base */
 
 /* Main heading style - Updated for Ábaco aesthetic */
 h1 {
@@ -60,13 +27,20 @@ h1 {
   font-weight: 800;
 }
 
-/* Main container */
+/* Main container - adjusted for vertical menu */
 .container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
-  padding: 60px 20px;
+  padding: 20px;
+  margin-left: 60px; /* Space for collapsed menu */
+  transition: margin-left 0.3s ease;
+}
+
+/* Adjust container when menu is expanded */
+.menu.expanded ~ .container {
+  margin-left: 200px;
 }
 
 /* User selection box */
@@ -92,50 +66,105 @@ h1 {
   gap: 1.2rem;
 }
 
-/* Standard button styling - Updated for Ábaco aesthetic */
-button {
+/* Botones - Utilizando las clases de botones de addvance-ui.css */
+/* Para mantener la consistencia, se recomienda usar las clases .btn, .btn-primary, .btn-secondary, etc. */
+/* definidas en addvance-ui.css en lugar de estilizar directamente la etiqueta button */
+
+/* Estilos específicos para botones en la selección de usuario */
+.button-group button {
   padding: 0.9rem 2rem;
   font-size: 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--border-radius-md);
   background: var(--accent-color);
-  color: white;
+  color: var(--text-light);
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-md);
   font-family: 'Montserrat', 'Poppins', sans-serif;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-/* Button hover state - Updated for Ábaco aesthetic */
-button:hover:not(:disabled) {
-  background: #5a52d5;
-  box-shadow: 0 8px 15px rgba(108, 99, 255, 0.2);
+.button-group button:hover:not(:disabled) {
+  background: var(--accent-muted);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
-/* Disabled button state */
-button:disabled {
+.button-group button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* Navigation menu - Updated for Ábaco aesthetic */
+/* Vertical Navigation Menu - Updated for new minimalist design */
 .menu {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
+  height: 100vh;
+  width: 60px;
   background: var(--primary-color);
-  padding: 1rem;
-  display: none;
+  display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
   z-index: 1000;
+  overflow: hidden;
+  padding: 1rem 0;
+  border-right: 1px solid var(--neutral-border);
+}
+
+/* Menu expanded state */
+.menu.expanded {
+  width: 200px;
+  background-color: white;
+}
+
+/* Menu toggle button */
+.menu-toggle {
+  position: absolute;
+  top: 10px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  background: #6366F1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  border: none;
+  padding: 0;
+  font-size: 10px;
+}
+
+/* Menu section label */
+.menu-section-label {
+  color: #9CA3AF;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 15px 0 5px 0;
+  text-align: center;
+  width: 100%;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  padding-left: 15px;
+  text-align: left;
+}
+
+.menu.expanded .menu-section-label {
+  display: block;
+  opacity: 1;
 }
 
 /* Hidden menu state - for scroll behavior */
@@ -143,57 +172,144 @@ button:disabled {
   transform: translateY(-100%);
 }
 
-/* Menu option styling - Updated for Ábaco aesthetic */
+/* Menu options container */
+.menu-options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Menu option styling - Updated for minimalist vertical menu */
 .menu-option {
-  padding: 0.5rem 1.2rem;
+  width: 100%;
+  padding: 0.8rem 0;
   border: none;
   background: transparent;
-  color: var(--text-primary);
+  color: #9CA3AF;
   cursor: pointer;
   font-size: 1rem;
   transition: all 0.3s ease;
-  border-radius: 4px;
   font-weight: 500;
-  margin: 0 10px;
-}
-
-/* Menu option hover state - Updated for Ábaco aesthetic */
-.menu-option:hover {
-  color: var(--accent-color);
-}
-
-/* Selected menu option - Updated for Ábaco aesthetic */
-.menu-option.selected {
-  color: var(--accent-color);
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
+  margin: 5px 0;
 }
 
-.menu-option.selected::after {
+/* Menu option icon */
+.menu-option i {
+  font-size: 1.2rem;
+  margin-right: 0;
+  transition: all 0.3s ease;
+  color: #9CA3AF;
+}
+
+/* Menu option text */
+.menu-option span {
+  display: none;
+  margin-left: 1rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Show text when menu is expanded */
+.menu.expanded .menu-option span {
+  display: block;
+  opacity: 1;
+}
+
+.menu.expanded .menu-option {
+  justify-content: flex-start;
+  padding-left: 20px;
+}
+
+/* Adjust icon position when menu is expanded */
+.menu.expanded .menu-option i {
+  margin-right: 0.5rem;
+}
+
+/* Menu option hover state */
+.menu-option:hover {
+  color: #6366F1;
+  background-color: rgba(99, 102, 241, 0.1);
+}
+
+.menu-option:hover i {
+  color: #6366F1;
+}
+
+/* Selected menu option */
+.menu-option.selected {
+  color: #6366F1;
+  font-weight: 600;
+  background-color: rgba(99, 102, 241, 0.1);
+}
+
+.menu-option.selected i {
+  color: #6366F1;
+}
+
+/* Selected menu option indicator */
+.menu-option.selected::before {
   content: '';
   position: absolute;
-  bottom: -5px;
   left: 0;
-  width: 100%;
-  height: 2px;
-  background: var(--accent-color);
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: #6366F1;
+  border-radius: 0 4px 4px 0;
 }
 
-/* Employee menu */
+/* Active menu option */
+.menu-option.active {
+  color: #6366F1;
+  position: relative;
+  background-color: rgba(99, 102, 241, 0.1);
+}
+
+.menu-option.active i {
+  color: #6366F1;
+}
+
+.menu-option.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: #6366F1;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Employee menu - now vertical like main menu */
 #empleadoMenu {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  background: var(--primary-color);
-  backdrop-filter: blur(10px);
-  padding: 1rem;
-  display: none;
-  justify-content: center;
-  gap: 2rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease;
+  height: 100vh;
+  width: 60px;
+  background: var(--neutral-bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
   z-index: 1000;
+  overflow: hidden;
+  padding: 1rem 0;
+}
+
+/* Employee menu expanded state */
+#empleadoMenu.expanded {
+  width: 200px;
 }
 
 /* Header Styles */
@@ -285,14 +401,14 @@ button:disabled {
   box-shadow: 0 4px 8px rgba(108, 99, 255, 0.2);
 }
 
-/* Section containers */
+/* Section containers - adjusted for vertical menu */
 .network-section, .rankings-section, .profile-section, .journey-section {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
   animation: fadeIn 0.5s ease-out;
-  margin-top: 80px; /* Account for fixed header */
+  margin-top: 20px; /* Reduced top margin since header is removed */
 }
 
 /* Employee section display states */
@@ -748,26 +864,70 @@ button:disabled {
   font-weight: 500;
 }
 
+/* Menu auth container */
+.menu-auth {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+  padding-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 /* Logout button */
 .logout-button {
-  background: var(--accent-color);
-  color: white;
+  background: transparent;
+  color: #9CA3AF;
   border: none;
-  border-radius: 6px;
-  padding: 0.5rem 1rem;
+  padding: 0.8rem;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Logout button icon */
+.logout-button i {
+  font-size: 1.5rem;
+  margin-right: 0;
+  transition: all 0.3s ease;
+  color: #9CA3AF;
+}
+
+/* Logout button text */
+.logout-button span {
+  display: none;
+  margin-left: 1rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Show text when menu is expanded */
+.menu.expanded .logout-button span {
+  display: block;
+  opacity: 1;
+}
+
+/* Adjust icon position when menu is expanded */
+.menu.expanded .logout-button i {
+  margin-right: 0.5rem;
 }
 
 /* Logout button hover effect */
 .logout-button:hover {
-  background: #ff8080;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  color: #ff6b6b;
+  background-color: rgba(255, 107, 107, 0.1);
+}
+
+.logout-button:hover i {
+  color: #ff6b6b;
 }
 
 /* Rankings Section Styles */
