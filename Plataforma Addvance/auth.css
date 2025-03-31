@@ -9,11 +9,141 @@
 /* Las variables globales se heredan de addvance-ui.css */
 /* Los estilos base de body y tipografía se heredan de addvance-ui.css */
 
+/* Header Styles */
+.site-header {
+  background-color: var(--primary-color);
+  height: 82px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  width: 100%;
+  height: 100%;
+}
+
+.logo-container {
+  flex-shrink: 0;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+}
+
+.main-nav ul {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  align-items: center;
+}
+
+.main-nav a {
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  transition: color var(--transition-normal);
+  padding: 0.5rem 0;
+  display: inline-block;
+}
+
+.main-nav a:hover {
+  color: var(--accent-color);
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  height: 100%;
+}
+
+.login-btn {
+  background: transparent;
+  color: var(--text-primary);
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--transition-normal);
+  height: 42px;
+  display: flex;
+  align-items: center;
+}
+
+.login-btn:hover {
+  color: var(--accent-color);
+}
+
+.register-btn {
+  background: var(--primary-color);
+  color: var(--accent-color);
+  border: 2px solid var(--accent-color);
+  border-radius: var(--border-radius-md);
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  height: 42px;
+  display: flex;
+  align-items: center;
+}
+
+.register-btn:hover {
+  background: var(--accent-color);
+  color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.hamburger-menu {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: color var(--transition-normal);
+  padding: 0.5rem;
+  height: 42px;
+  width: 42px;
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger-menu:hover {
+  color: var(--accent-color);
+}
+
 /* Main heading style */
 h2 {
-  font-size: 32px;
+  font-size: 40px;
   font-weight: 700;
   margin-bottom: 1rem;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 /* Subtitle style */
@@ -21,11 +151,10 @@ h2 {
   font-size: 18px;
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
-  color: #4d525b;
+  color: var(--text-secondary);
   margin-bottom: 2rem;
+  line-height: 1.6;
 }
-
-/* Los estilos del header se heredan de addvance-ui.css */
 
 /* Authentication Container */
 .auth-container {
@@ -34,21 +163,79 @@ h2 {
   align-items: center;
   min-height: 100vh;
   padding: 120px 20px 60px;
+  background-color: var(--neutral-bg);
 }
 
 /* Auth Form Container */
 .auth-form-container {
   background: var(--primary-color);
-  border-radius: 8px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
   padding: 2.5rem;
   width: 100%;
   max-width: 500px;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
-/* Los estilos básicos de formularios se heredan de addvance-ui.css */
-/* Solo definimos ajustes específicos para los formularios de autenticación */
+/* Form Group Styles */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+/* Input Styles */
+.form-group input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid var(--neutral-border);
+  border-radius: var(--border-radius-md);
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  background-color: var(--primary-color);
+  transition: all var(--transition-normal);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.15);
+}
+
+.form-group input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+/* Input with Icon Container */
+.input-with-icon {
+  position: relative;
+}
+
+.input-with-icon i {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  transition: color var(--transition-normal);
+}
+
+.input-with-icon input {
+  padding-left: 2.8rem;
+}
+
+.input-with-icon input:focus + i {
+  color: var(--accent-color);
+}
 
 /* Password Input Container */
 .password-input-container {
@@ -60,25 +247,49 @@ h2 {
 /* Toggle Password Button */
 .toggle-password {
   position: absolute;
-  right: 10px;
+  right: 1rem;
   background: transparent;
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
   padding: 0.5rem;
-  font-size: 16px;
+  font-size: 1rem;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .toggle-password:hover {
   color: var(--accent-color);
+  transform: scale(1.1);
 }
 
-/* Submit Button - Utilizando clases de botones de addvance-ui.css */
+/* Submit Button */
 .submit-btn {
-  /* Extendemos la clase .btn-primary de addvance-ui.css */
   width: 100%;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  background: var(--accent-color);
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--border-radius-md);
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  margin-top: 1rem;
+}
+
+.submit-btn:hover {
+  background: var(--accent-muted);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
 }
 
 .profile-type-container {
@@ -93,25 +304,26 @@ h2 {
   min-width: 180px;
   padding: 25px 20px;
   border: 2px solid var(--neutral-border);
-  border-radius: 12px;
+  border-radius: var(--border-radius-lg);
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-md);
+  background: var(--primary-color);
 }
 
 .profile-type-option:hover {
   border-color: var(--accent-color);
-  background-color: rgba(99, 91, 255, 0.05);
+  background-color: var(--accent-light);
   transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(99, 91, 255, 0.1);
+  box-shadow: var(--shadow-lg);
 }
 
 .profile-type-option.selected {
   border-color: var(--accent-color);
-  background-color: rgba(99, 91, 255, 0.1);
+  background-color: var(--accent-light);
   transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(99, 91, 255, 0.2);
+  box-shadow: var(--shadow-xl);
 }
 
 .profile-type-option i {
@@ -142,29 +354,32 @@ h2 {
 .form-footer {
   text-align: center;
   margin-top: 1.5rem;
-  font-size: 14px;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
 }
 
 .form-footer a {
   color: var(--accent-color);
   text-decoration: none;
   font-weight: 600;
-  transition: color 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .form-footer a:hover {
+  color: var(--accent-muted);
   text-decoration: underline;
 }
 
 /* Auth Message */
 .auth-message {
-  margin: 1.5rem;
+  margin: 1.5rem 0;
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: var(--border-radius-md);
   text-align: center;
   font-weight: 500;
   display: none;
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn var(--transition-normal);
+  font-family: 'Poppins', sans-serif;
 }
 
 @keyframes fadeIn {
@@ -211,11 +426,11 @@ h2 {
   background-color: var(--primary-color);
   margin: 10% auto;
   padding: 2.5rem;
-  border-radius: 8px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-xl);
   max-width: 600px;
   position: relative;
-  animation: modalFadeIn 0.3s ease-out;
+  animation: modalFadeIn var(--transition-normal);
 }
 
 @keyframes modalFadeIn {
@@ -258,19 +473,79 @@ h2 {
 }
 
 /* Responsive Styles */
+@media (max-width: 992px) {
+  .main-nav {
+    display: none;
+  }
+
+  .hamburger-menu {
+    display: flex;
+  }
+
+  .main-nav.active {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 82px; /* Alinear con la altura del header */
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 82px); /* Altura restante de la ventana */
+    background-color: var(--primary-color);
+    padding: 2rem;
+    z-index: 999;
+  }
+
+  .main-nav.active ul {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .main-nav.active a {
+    font-size: 1.2rem;
+    width: 100%;
+    padding: 0.5rem 0;
+  }
+
+  .auth-buttons {
+    display: none;
+  }
+
+  .auth-buttons.mobile-visible {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+    width: 100%;
+  }
+
+  .auth-buttons.mobile-visible .login-btn,
+  .auth-buttons.mobile-visible .register-btn {
+    width: 100%;
+    justify-content: center;
+    height: 48px;
+  }
+}
+
 @media (max-width: 768px) {
+  .header-container {
+    padding: 0 1rem;
+  }
+
+  .logo-container {
+    height: 32px;
+  }
+
   .auth-form-container {
     padding: 2rem;
     max-width: 100%;
   }
   
-  .modal-content {
-    margin: 20% auto;
-    padding: 2rem;
-    width: 90%;
+  h2 {
+    font-size: 32px;
   }
   
-  .main-nav {
-    display: none;
+  .subtitle {
+    font-size: 16px;
   }
 }
