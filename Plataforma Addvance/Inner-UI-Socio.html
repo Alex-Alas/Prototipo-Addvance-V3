@@ -1,4 +1,5 @@
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,29 +8,38 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
   <!-- Google Fonts - Updated for Ábaco aesthetic -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Addvance UI System - Base styles -->
+  <link rel="stylesheet" href="addvance-ui.css">
   <!-- Custom stylesheet -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Header based on Ábaco aesthetic -->
-  <header class="site-header">
-    <div class="header-container">
-      <div class="logo-container">
-        <a href="#">
-          <img src="assets/Logo oscuro ábaco.png" alt="Ábaco" class="logo">
-        </a>
-      </div>
-      <nav class="main-nav">
-        <ul>
-          <li><a href="#" id="proveedorPerfilOption">Perfil</a></li>
-          <li><a href="#" id="proveedorNetworkOption">Network</a></li>
-        </ul>
-      </nav>
-      <div class="auth-buttons">
-        <button class="logout-button">Cerrar sesión</button>
-      </div>
+  <!-- Vertical Navigation Menu -->
+  <div id="proveedorMenu" class="menu">
+    <button class="menu-toggle" id="menuToggle">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+    <div class="menu-options">
+      <div class="menu-section-label">MENÚ</div>
+      <button id="proveedorPerfilOption" class="menu-option">
+        <i class="fas fa-user"></i>
+        <span>Perfil</span>
+      </button>
+      <button id="proveedorNetworkOption" class="menu-option">
+        <i class="fas fa-network-wired"></i>
+        <span>Network</span>
+      </button>
     </div>
-  </header>
+    <div class="menu-auth">
+      <div class="menu-section-label">OTROS</div>
+      <button class="logout-button">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Cerrar sesión</span>
+      </button>
+    </div>
+  </div>
   
   <!-- Main Content Container -->
   <div class="container">

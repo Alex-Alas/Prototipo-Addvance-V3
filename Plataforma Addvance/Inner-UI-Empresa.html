@@ -1,4 +1,5 @@
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,45 +8,44 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
   <!-- Google Fonts - Updated for Ábaco aesthetic -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Addvance UI System - Base styles -->
+  <link rel="stylesheet" href="addvance-ui.css">
   <!-- Custom stylesheet -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Header based on Ábaco aesthetic -->
-  <header class="site-header">
-    <div class="header-container">
-      <div class="logo-container">
-        <a href="#">
-          <img src="assets/Logo oscuro ábaco.png" alt="Ábaco" class="logo">
-        </a>
-      </div>
-      <nav class="main-nav">
-        <ul>
-          <li><a href="#" id="headerPerfilOption">Perfil</a></li>
-          <li><a href="#" id="headerJourneyOption">Journey</a></li>
-          <li><a href="#" id="headerNetworkOption">Network</a></li>
-          <li><a href="#" id="headerRankingsOption">Rankings</a></li>
-        </ul>
-      </nav>
-      <div class="auth-buttons">
-        <button class="login-btn">Ingresar</button>
-        <button class="register-btn">Registrate</button>
-      </div>
-    </div>
-  </header>
-  
+  <!-- Vertical Navigation Menu -->
   <div id="empresaMenu" class="menu">
-    <div class="menu-logo">
-      <img src="assets/Logo oscuro ábaco.png" alt="Ábaco" class="logo">
-    </div>
+    <button class="menu-toggle" id="menuToggle">
+      <i class="fas fa-chevron-right"></i>
+    </button>
     <div class="menu-options">
-      <button id="perfilOption" class="menu-option">Perfil</button>
-      <button id="networkOption" class="menu-option">Network</button>
-      <button id="rankingsOption" class="menu-option">Rankings</button>
-      <button id="journeyOption" class="menu-option">Journey</button>
+      <div class="menu-section-label">MENÚ</div>
+      <button id="perfilOption" class="menu-option">
+        <i class="fas fa-user"></i>
+        <span>Perfil</span>
+      </button>
+      <button id="networkOption" class="menu-option">
+        <i class="fas fa-network-wired"></i>
+        <span>Network</span>
+      </button>
+      <button id="rankingsOption" class="menu-option">
+        <i class="fas fa-chart-line"></i>
+        <span>Rankings</span>
+      </button>
+      <button id="journeyOption" class="menu-option">
+        <i class="fas fa-road"></i>
+        <span>Journey</span>
+      </button>
     </div>
     <div class="menu-auth">
-      <button class="logout-button">Cerrar sesión</button>
+      <div class="menu-section-label">OTROS</div>
+      <button class="logout-button">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Cerrar sesión</span>
+      </button>
     </div>
   </div>
   
