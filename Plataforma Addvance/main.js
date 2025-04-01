@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Section visibility handling - Shows one section at a time
 function showSection(sectionId) {
-  const sections = ['networkSection', 'profileSection', 'rankingsSection', 'journeySection'];
+  const sections = ['networkSection', 'profileSection', 'rankingsSection', 'cursoSection'];
   sections.forEach(section => {
     document.getElementById(section).style.display = 'none';
   });
@@ -184,17 +184,17 @@ function initializeAllSwipers() {
 
 // Initial page setup and header navigation
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize with Journey section visible by default
+  // Initialize with Curso section visible by default
   hideAllEmpleadoSections();
-  document.getElementById('empleadoJourneySection').style.display = 'block';
+  document.getElementById('empleadoCursoSection').style.display = 'block';
   
-  // Set Journey option as selected by default
+  // Set Curso option as selected by default
   empleadoMenuOptions.forEach(opt => {
     document.getElementById(`${opt}Option`).classList.remove('selected');
   });
-  document.getElementById('empleadoJourneyOption').classList.add('selected');
+  document.getElementById('empleadoCursoOption').classList.add('selected');
   
-  // Initialize the journey tabs - set search tab as active by default
+  // Initialize the curso tabs - set search tab as active by default
   document.getElementById('empleadoSearchTab').classList.add('active');
   document.getElementById('empleadoAcquiredTab').classList.remove('active');
   document.getElementById('empleadoSearchView').style.display = 'block';
@@ -206,12 +206,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Header navigation setup
   const headerOptions = {
     headerPerfilOption: 'profileSection',
-    headerJourneyOption: 'journeySection',
+    headerCursoOption: 'cursoSection',
     headerNetworkOption: 'networkSection',
     headerRankingsOption: 'rankingsSection'
   };
 
-  const sections = ['networkSection', 'profileSection', 'rankingsSection', 'journeySection'];
+  const sections = ['networkSection', 'profileSection', 'rankingsSection', 'cursoSection'];
 
   Object.entries(headerOptions).forEach(([optionId, sectionId]) => {
     const element = document.getElementById(optionId);
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Menu option selection - Navigation between different sections
-const menuOptions = ['perfil', 'network', 'rankings', 'journey'];
+const menuOptions = ['perfil', 'network', 'rankings', 'curso'];
 menuOptions.forEach(option => {
   const optionElement = document.getElementById(`${option}Option`);
   if (optionElement) {
@@ -259,8 +259,8 @@ menuOptions.forEach(option => {
         initializeProfileCardFlip();
       } else if (option === 'rankings') {
         showSection('rankingsSection');
-      } else if (option === 'journey') {
-        showSection('journeySection');
+      } else if (option === 'curso') {
+        showSection('cursoSection');
       }
     });
   }
@@ -388,13 +388,13 @@ function updateRankingsList(category) {
   }
 }
 
-// Journey section functionality - Handles journey view options
-document.getElementById('journeyOption').addEventListener('click', () => {
+// Curso section functionality - Handles curso view options
+document.getElementById('cursoOption').addEventListener('click', () => {
   menuOptions.forEach(opt => {
     document.getElementById(`${opt}Option`).classList.remove('selected');
   });
-  document.getElementById('journeyOption').classList.add('selected');
-  showSection('journeySection');
+  document.getElementById('cursoOption').classList.add('selected');
+  showSection('cursoSection');
 });
 
 // Journey submenu handling - Switches between search and acquired views

@@ -3,39 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Addvance - Plataforma</title>
+  <title>Nort3 - Plataforma</title>
   <!-- External CSS dependencies -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
   <!-- Google Fonts - Updated for Ábaco aesthetic -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Addvance UI System - Base styles -->
+  <!-- Nort3 UI System - Base styles -->
   <link rel="stylesheet" href="addvance-ui.css">
   <!-- Custom stylesheet -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <!-- Vertical Navigation Menu -->
-  <div id="proveedorMenu" class="menu">
+  <div id="socioMenu" class="menu">
     <button class="menu-toggle" id="menuToggle">
       <i class="fas fa-chevron-right"></i>
     </button>
     <div class="menu-options">
       <div class="menu-section-label">MENÚ</div>
-      <button id="proveedorPerfilOption" class="menu-option">
+      <button id="socioPerfilOption" class="menu-option">
         <i class="fas fa-user"></i>
         <span>Perfil</span>
       </button>
-      <button id="proveedorNetworkOption" class="menu-option">
+      <button id="socioNetworkOption" class="menu-option">
         <i class="fas fa-network-wired"></i>
         <span>Network</span>
       </button>
-      <button id="proveedorMessagingOption" class="menu-option">
+      <button id="socioMessagingOption" class="menu-option">
         <i class="fas fa-envelope"></i>
         <span>Mensajería</span>
       </button>
-      <button id="proveedorNotificationsOption" class="menu-option">
+      <button id="socioNotificationsOption" class="menu-option">
         <i class="fas fa-bell"></i>
         <span>Notificaciones</span>
       </button>
@@ -51,8 +51,8 @@
   
   <!-- Main Content Container -->
   <div class="container">
-    <!-- Proveedor Profile Section -->
-    <div id="proveedorPerfilSection" class="profile-section" style="display: none;">
+    <!-- Socio Profile Section -->
+    <div id="socioPerfilSection" class="profile-section" style="display: none;">
       <!-- Main profile info card - Flippable -->
       <div class="profile-box company-profile">
         <div class="profile-card">
@@ -64,7 +64,7 @@
                 <path d="M12 7v10M7 12h10"/>
               </svg>
             </div>
-            <h2>Perfil de Proveedor</h2>
+            <h2>Perfil de Socio</h2>
             <div class="company-info">Rubro: Servicios Tecnológicos</div>
             <div class="company-info">Puntaje: 78</div>
             <div class="company-info">Nivel 2</div>
@@ -97,8 +97,8 @@
       </div>
     </div>
     
-    <!-- Proveedor Network Section -->
-    <div id="proveedorNetworkSection" class="network-section">
+    <!-- Socio Network Section -->
+    <div id="socioNetworkSection" class="network-section">
       <!-- Network grid - new design based on screenshot -->
       <div class="network-grid-container">
         <h2>Clientes actuales</h2>
@@ -115,14 +115,14 @@
       <!-- Original carousels - hidden but maintained for functionality -->
       <div style="display: none;">
         <section class="carousel-section">
-          <div class="swiper proveedorClientesSwiper">
+          <div class="swiper socioClientesSwiper">
             <div class="swiper-wrapper"></div>
             <div class="swiper-button-next"></div>
             <div class="swiper-button-prev"></div>
           </div>
         </section>
         <section class="carousel-section">
-          <div class="swiper proveedorPotencialesSwiper">
+          <div class="swiper socioPotencialesSwiper">
             <div class="swiper-wrapper"></div>
             <div class="swiper-button-next"></div>
             <div class="swiper-button-prev"></div>
@@ -145,7 +145,7 @@
     // Initialize profile card flip functionality when the page loads
     document.addEventListener('DOMContentLoaded', function() {
       // Initialize profile card when profile section is visible
-      const perfilOption = document.getElementById('proveedorPerfilOption');
+      const perfilOption = document.getElementById('socioPerfilOption');
       if (perfilOption) {
         perfilOption.addEventListener('click', function() {
           // Initialize profile card when profile section becomes visible
@@ -154,7 +154,7 @@
       }
       
       // Initialize profile card if profile section is visible by default
-      if (document.getElementById('proveedorPerfilSection').style.display !== 'none') {
+      if (document.getElementById('socioPerfilSection').style.display !== 'none') {
         initializeProfileCardFlip();
       }
 
@@ -170,7 +170,7 @@
       });
 
       // Set Network option as active by default
-      const networkOption = document.getElementById('proveedorNetworkOption');
+      const networkOption = document.getElementById('socioNetworkOption');
       if (networkOption) {
         networkOption.classList.add('active');
       }

@@ -32,7 +32,7 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: var(--space-md);
   margin-left: 60px; /* Space for collapsed menu */
   transition: margin-left var(--transition-normal);
@@ -354,7 +354,7 @@ h1 {
 }
 
 /* Section containers - adjusted for vertical menu */
-.network-section, .rankings-section, .profile-section, .journey-section {
+.network-section, .rankings-section, .profile-section, .curso-section {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -365,7 +365,7 @@ h1 {
 
 /* Employee section display states */
 #empleadoPerfilSection, 
-#empleadoJourneySection, 
+#empleadoCursoSection, 
 #empleadoRankingSection {
   display: none;
 }
@@ -988,32 +988,45 @@ h1 {
   font-size: 0.9rem;
 }
 
-/* Journey Section Styles */
-.journey-section {
+/* Curso Section Styles */
+.curso-section {
   display: none;
 }
 
-/* Journey submenu */
-.journey-submenu {
+/* Curso submenu */
+.curso-submenu {
   display: flex;
   gap: var(--space-md);
   margin-bottom: var(--space-xl);
 }
 
-/* Journey submenu buttons */
-.journey-submenu button {
+/* Curso submenu buttons - Updated to match auth buttons */
+.curso-submenu button {
   flex: 1;
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-light);
-  border-radius: var(--border-radius-sm);
+  background: var(--primary-color);
+  color: var(--accent-color);
+  border-radius: var(--border-radius-md);
   backdrop-filter: blur(5px);
-  border: 1px solid var(--neutral-border);
+  border: 2px solid var(--accent-color);
   padding: var(--space-sm) var(--space-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-size: 1rem;
 }
 
-/* Journey submenu button active state */
-.journey-submenu button.active {
-  background: var(--secondary-color);
+/* Curso submenu button hover and active states */
+.curso-submenu button:hover {
+  background: var(--accent-color);
+  color: var(--text-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Curso submenu button active state */
+.curso-submenu button.active {
+  background: var(--accent-color);
+  color: var(--text-light);
   box-shadow: var(--shadow-lg);
 }
 
@@ -1025,7 +1038,6 @@ h1 {
 /* Search container heading */
 .search-container h2 {
   margin-bottom: 1rem;
-  color: var(--text-light);
   font-weight: 600;
 }
 
@@ -1042,15 +1054,15 @@ h1 {
   border: 1px solid var(--neutral-border);
 }
 
-/* Journey grid */
-.journey-grid {
+/* Curso grid */
+.curso-grid {
   display: grid;
   gap: var(--space-lg);
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
-/* Journey card */
-.journey-card {
+/* Curso card */
+.curso-card {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   border-radius: var(--border-radius-md);
@@ -1061,19 +1073,19 @@ h1 {
   transition: all var(--transition-normal);
 }
 
-/* Journey card hover effect */
-.journey-card:hover {
+/* Curso card hover effect */
+.curso-card:hover {
   transform: translateY(-5px);
   box-shadow: var(--shadow-xl);
 }
 
-/* Journey card expanded state */
-.journey-card.expanded {
+/* Curso card expanded state */
+.curso-card.expanded {
   grid-column: 1 / -1;
 }
 
-/* Journey details container */
-.journey-details-container {
+/* Curso details container */
+.curso-details-container {
   display: flex;
   justify-content: left;
   align-items: center;
@@ -1088,23 +1100,22 @@ h1 {
   border: 1px solid var(--neutral-border);
 }
 
-/* Journey card heading */
-.journey-card h3 {
+/* Curso card heading */
+.curso-card h3 {
   margin-bottom: 1rem;
-  color: var(--text-light);
   font-weight: 600;
 }
 
-/* Journey details */
-.journey-details {
+/* Curso details */
+.curso-details {
   display: none;
   margin-top: var(--space-lg);
   padding-top: var(--space-lg);
   border-top: 1px solid var(--neutral-border);
 }
 
-/* Journey card expanded details */
-.journey-card.expanded .journey-details {
+/* Curso card expanded details */
+.curso-card.expanded .curso-details {
   display: block;
 }
 
@@ -1182,7 +1193,7 @@ h1 {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Duolingo-style module styling for employee journeys */
+/* Duolingo-style module styling for employee cursos */
 .duolingo-module {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -2283,7 +2294,7 @@ h1 {
     min-width: 120px;
   }
   
-  .journey-submenu {
+  .curso-submenu {
     flex-direction: column;
   }
 }
