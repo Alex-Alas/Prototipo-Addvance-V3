@@ -35,6 +35,14 @@
         <i class="fas fa-chart-line"></i>
         <span>Ranking</span>
       </button>
+      <button id="empleadoMessagingOption" class="menu-option">
+        <i class="fas fa-envelope"></i>
+        <span>Mensajería</span>
+      </button>
+      <button id="empleadoNotificationsOption" class="menu-option">
+        <i class="fas fa-bell"></i>
+        <span>Notificaciones</span>
+      </button>
     </div>
     <div class="menu-auth">
       <div class="menu-section-label"></div>
@@ -99,8 +107,8 @@
         </details>
       </div>
 
-      <!-- Logout button -->
-      <button id="empleadoLogoutBtn" class="logout-button">Logout</button>
+      <!-- Cambiar cuenta button -->
+      <button id="empleadoLogoutBtn" class="logout-button">Cambiar cuenta</button>
     </div>
     
     <!-- Empleado Journey Section - With Duolingo-style learning path -->
@@ -336,6 +344,17 @@
         acquiredTab.classList.remove('active');
       }
     });
+    
+    // Implementar funcionalidad de cerrar sesión
+    const logoutButton = document.querySelector('.logout-button');
+    if (logoutButton) {
+      logoutButton.addEventListener('click', function() {
+        // Llamar a la función cerrarSesion de auth.js
+        cerrarSesion();
+        // Redirigir a la página de autenticación
+        window.location.href = 'auth.html';
+      });
+    }
   </script>
 </body>
 </html>

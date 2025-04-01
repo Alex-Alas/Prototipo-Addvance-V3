@@ -246,18 +246,18 @@ h2 {
 
 /* Toggle Password Button */
 .toggle-password {
-  position: absolute;
-  right: 1rem;
+  position: relative;
+  right: 11%;
   background: transparent;
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  padding: 0.5rem;
-  font-size: 1rem;
   transition: all var(--transition-normal);
-  display: flex;
+  display: static;
   align-items: center;
   justify-content: center;
+  height: 100%;
+  max-height: 42px;
 }
 
 .toggle-password:hover {

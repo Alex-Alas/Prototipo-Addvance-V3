@@ -50,12 +50,15 @@ document.addEventListener('DOMContentLoaded', () => {
     networkSection.style.display = 'block';
   });
 
-  // Handle logout
-  const logoutBtn = document.querySelector('.logout-button');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-      // Add logout functionality here
-      console.log('Logging out...');
+  // Handle logout for menu sidebar buttons
+  const logoutBtns = document.querySelectorAll('.logout-button');
+  if (logoutBtns.length > 0) {
+    logoutBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Cerrar sesión y redirigir a la página de autenticación
+        cerrarSesion();
+        window.location.href = 'auth.html';
+      });
     });
   }
 });
@@ -316,14 +319,10 @@ function getCompanyName(prefix, index) {
   return prefix + ' ' + index;
 }
 
-// Logout functionality - Returns to user selection screen
+// Logout functionality - Cierra sesión y redirige a la página de autenticación
 document.getElementById('logoutBtn').addEventListener('click', () => {
-  document.querySelector('.selection-box').style.display = 'block';
-  document.getElementById('empresaMenu').style.display = 'none';
-  document.getElementById('networkSection').style.display = 'none';
-  document.getElementById('profileSection').style.display = 'none';
-  document.getElementById('rankingsSection').style.display = 'none';
-  document.getElementById('journeySection').style.display = 'none';
+  cerrarSesion();
+  window.location.href = 'auth.html';
 });
 
 /**
@@ -1232,11 +1231,10 @@ document.querySelector('#empleadoRankingSection .rankings-submenu').addEventList
   }
 });
 
-// Employee logout
+// Employee logout - Cierra sesión y redirige a la página de autenticación
 document.getElementById('empleadoLogoutBtn').addEventListener('click', () => {
-  document.querySelector('.selection-box').style.display = 'block';
-  document.getElementById('empleadoMenu').style.display = 'none';
-  hideAllEmpleadoSections();
+  cerrarSesion();
+  window.location.href = 'auth.html';
 });
 
 // Enable the proveedor button
