@@ -65,11 +65,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Section visibility handling - Shows one section at a time
 function showSection(sectionId) {
-  const sections = ['networkSection', 'profileSection', 'rankingsSection', 'cursoSection'];
-  sections.forEach(section => {
-    document.getElementById(section).style.display = 'none';
+  // Ocultar todas las secciones
+  document.querySelectorAll('.container > div').forEach(section => {
+    section.style.display = 'none';
   });
-  document.getElementById(sectionId).style.display = 'block';
+
+  // Mostrar la sección seleccionada
+  const selectedSection = document.getElementById(sectionId);
+  if (selectedSection) {
+    selectedSection.style.display = 'block';
+    
+    // Remover clase active de todas las opciones del menú
+    document.querySelectorAll('.menu-option').forEach(option => {
+      option.classList.remove('active');
+    });
+
+    // Agregar clase active a la opción seleccionada
+    const selectedOption = document.getElementById(sectionId.replace('Section', 'Option'));
+    if (selectedOption) {
+      selectedOption.classList.add('active');
+    }
+
+    // Inicializar componentes específicos según la sección
+    switch(sectionId) {
+      case 'profileSection':
+        initializeProfileCardFlip();
+        break;
+      case 'networkSection':
+        createNetworkProfiles('empresas', 'empresasGrid');
+        createNetworkProfiles('proveedores', 'proveedoresGrid');
+        break;
+      case 'rankingsSection':
+        updateRankingsList('todas');
+        break;
+      case 'achievementsSection':
+        const currentUser = obtenerUsuarioActual();
+        if (currentUser && currentUser.tipoPerfil === 'empresa') {
+          const achievementsManager = new AchievementsManager(currentUser.correo);
+          achievementsManager.updateAchievementsFeed();
+        }
+        break;
+      case 'cursoSection':
+        initializeJourneySystem();
+        break;
+    }
+  }
 }
 
 /**
@@ -2140,3 +2180,118 @@ function createLessonLevels(moduleTitle, lessonContainer) {
     lessonContainer.appendChild(levelDiv);
   });
 }
+
+// Integración de la lógica de logros
+document.addEventListener('DOMContentLoaded', function() {
+  const achievementsOption = document.getElementById('achievementsOption');
+  const achievementsSection = document.getElementById('achievementsSection');
+  
+  if (achievementsOption && achievementsSection) {
+    const currentUser = obtenerUsuarioActual();
+    if (currentUser && currentUser.tipoPerfil === 'empresa') {
+      // Inicializar el gestor de logros
+      const achievementsManager = new AchievementsManager(currentUser.correo);
+      
+      // Agregar evento de clic para mostrar la sección de logros
+      achievementsOption.addEventListener('click', () => {
+        // Ocultar todas las secciones
+        document.querySelectorAll('.container > div').forEach(section => {
+          section.style.display = 'none';
+        });
+        
+        // Mostrar la sección de logros
+        achievementsSection.style.display = 'block';
+        
+        // Actualizar el feed de logros
+        achievementsManager.updateAchievementsFeed();
+        
+        // Actualizar la clase activa en el menú
+        document.querySelectorAll('.menu-option').forEach(option => {
+          option.classList.remove('active');
+        });
+        achievementsOption.classList.add('active');
+      });
+    }
+  }
+});
+
+// Función para verificar y otorgar logros
+function checkAndAwardAchievements() {
+  const currentUser = obtenerUsuarioActual();
+  if (!currentUser || currentUser.tipoPerfil !== 'empresa') return;
+  
+  const achievementsManager = new AchievementsManager(currentUser.correo);
+  
+  // Verificar logros basados en eventos
+  document.dispatchEvent(new CustomEvent('profileUpdated', {
+    detail: {
+      nombre: currentUser.nombre,
+      direccion: currentUser.direccion,
+      telefono: currentUser.telefono,
+      industria: currentUser.industria,
+      descripcion: currentUser.descripcion
+    }
+  }));
+  
+  // Verificar logros de empleados
+  const employees = obtenerEmpleados(currentUser.correo) || [];
+  document.dispatchEvent(new CustomEvent('employeeAdded', {
+    detail: { count: employees.length }
+  }));
+  
+  // Verificar logros de conexiones
+  const connections = obtenerConexiones(currentUser.correo) || [];
+  document.dispatchEvent(new CustomEvent('connectionCreated', {
+    detail: { count: connections.length }
+  }));
+  
+  // Verificar logros de mensajes
+  const messages = obtenerMensajes(currentUser.correo) || [];
+  document.dispatchEvent(new CustomEvent('messageSent', {
+    detail: { count: messages.length }
+  }));
+}
+
+// Verificar logros al cargar la página
+document.addEventListener('DOMContentLoaded', checkAndAwardAchievements);
+
+// Verificar logros después de acciones relevantes
+document.addEventListener('profileUpdated', () => checkAndAwardAchievements());
+document.addEventListener('employeeAdded', () => checkAndAwardAchievements());
+document.addEventListener('connectionCreated', () => checkAndAwardAchievements());
+document.addEventListener('messageSent', () => checkAndAwardAchievements());
+
+// Añadir al inicio del archivo (después de DOMContentLoaded)
+document.addEventListener('DOMContentLoaded', function() {
+  // Configurar event listeners para todos los botones del menú
+  document.getElementById('perfilOption').addEventListener('click', function() {
+    showSection('profileSection');
+  });
+  
+  document.getElementById('cursoOption').addEventListener('click', function() {
+    showSection('cursoSection');
+  });
+  
+  document.getElementById('networkOption').addEventListener('click', function() {
+    showSection('networkSection');
+  });
+  
+  document.getElementById('rankingsOption').addEventListener('click', function() {
+    showSection('rankingsSection');
+  });
+  
+  document.getElementById('achievementsOption').addEventListener('click', function() {
+    showSection('achievementsSection');
+  });
+  
+  document.getElementById('empresaMessagingOption').addEventListener('click', function() {
+    showSection('messagingSection');
+  });
+  
+  document.getElementById('empresaNotificationsOption').addEventListener('click', function() {
+    showSection('notificationsSection');
+  });
+  
+  // Mostrar la sección de curso por defecto
+  showSection('cursoSection');
+});
