@@ -363,5 +363,31 @@
   <script src="connections.js"></script>
   <script src="main.js"></script>
   <script src="profile-manager.js"></script>
+  <script src="menu-toggle.js"></script>
+  <script>
+    // Initialize profile card flip functionality when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize profile card when profile section is visible
+      const perfilOption = document.getElementById('perfilOption');
+      if (perfilOption) {
+        perfilOption.addEventListener('click', function() {
+          // Initialize profile card when profile section becomes visible
+          initializeProfileCard();
+          // Initialize profile card flip functionality
+          initializeProfileCardFlip();
+        });
+      }
+      
+      // Initialize profile card if profile section is visible by default
+      if (document.getElementById('profileSection').style.display !== 'none') {
+        initializeProfileCard();
+        // Initialize profile card flip functionality
+        initializeProfileCardFlip();
+      }
+      
+      // Initialize profile card flip functionality when the page loads
+      initializeProfileCardFlip();
+    });
+  </script>
 </body>
 </html>
