@@ -71,23 +71,42 @@ function loadUserProfile() {
  */
 function initializeProfileCard() {
   try {
+    console.log('Inicializando tarjetas de perfil...');
     const moreInfoBtns = document.querySelectorAll('.more-info-btn');
     const profileCards = document.querySelectorAll('.profile-card');
     
+    console.log(`Encontradas ${profileCards.length} tarjetas de perfil y ${moreInfoBtns.length} botones`);
+    
     if (profileCards.length === 0) return;
+    
+    // Eliminar eventos previos para evitar duplicados
+    moreInfoBtns.forEach(btn => {
+      btn.removeEventListener('click', handleCardFlip);
+    });
     
     // Añadir evento a cada botón para voltear su tarjeta correspondiente
     moreInfoBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        // Encontrar la tarjeta de perfil más cercana al botón
-        const profileCard = btn.closest('.profile-card');
-        if (profileCard) {
-          profileCard.classList.toggle('is-flipped');
-        }
-      });
+      btn.addEventListener('click', handleCardFlip);
     });
+    
+    console.log('Eventos de tarjetas de perfil inicializados correctamente');
   } catch (error) {
     console.error('Error al inicializar las tarjetas de perfil:', error);
+  }
+}
+
+/**
+ * Maneja el evento de clic para voltear la tarjeta de perfil
+ * @function handleCardFlip
+ * @param {Event} event - El evento de clic
+ * @returns {void}
+ */
+function handleCardFlip(event) {
+  // Encontrar la tarjeta de perfil más cercana al botón
+  const profileCard = event.currentTarget.closest('.profile-card');
+  if (profileCard) {
+    profileCard.classList.toggle('flipped');
+    console.log('Tarjeta volteada:', profileCard);
   }
 }
 
