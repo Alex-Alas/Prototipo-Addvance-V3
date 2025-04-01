@@ -18,7 +18,7 @@ body {
   font-size: 18px;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 2rem;
+  margin-bottom: 0 !important;
 }
 
 .main-nav a {
@@ -88,7 +88,7 @@ p {
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
   color: #4d525b;
-  margin-bottom: 2rem;
+  margin-bottom: 0 !important;
 }
 
 /* Header Styles */
@@ -251,8 +251,11 @@ p {
   cursor: pointer;
   transition: all 0.3s ease;
   letter-spacing: 0.5px;
-  margin-top: 2rem;
+  margin-top: 0 !important;
   display: inline-block;
+  margin: 10px !important;
+  width: auto !important;
+  height: auto !important;
 }
 
 .cta-button:hover {
@@ -577,6 +580,7 @@ p {
   
   .subtitle {
     font-size: 16px;
+    margin-bottom: 0 !important;
   }
 }
 
@@ -716,4 +720,28 @@ p {
   color: var(--accent-color);
   margin-right: 0.75rem;
   font-size: 1.2rem;
+}
+/* Estilos del logo Nort3 */
+.nort3-logo {
+  height: 24px;
+  opacity: 1;
+  transition: all 0.3s ease-in-out;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .nort3-logo {
+    height: 28px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nort3-logo {
+    height: 32px;
+  }
+}
+
+.nort3-logo:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
 }
