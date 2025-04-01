@@ -132,7 +132,7 @@
             <div class="level-bar">
               <div class="level-progress"></div>
             </div>
-            <div class="company-info" id="uniqueCode">Código único: </div>
+            <div class="company-info" id="uniqueCode">Código único: <span id="companyCode"></span></div>
             <button class="more-info-btn">Más información</button>
           </div>
           <!-- Back side of profile card with additional info -->
@@ -404,6 +404,14 @@
       const cursoOption = document.getElementById('cursoOption');
       if (cursoOption) {
         cursoOption.classList.add('active');
+      }
+
+      // Initialize company code display
+      const companyCodeSpan = document.getElementById('companyCode');
+      if (companyCodeSpan && !companyCodeSpan.textContent) {
+        // In a real application, this would be loaded from the backend
+        // associated with the company's account
+        companyCodeSpan.textContent = 'ABC123'; // Example static code
       }
     });
     
