@@ -251,9 +251,8 @@ p {
   cursor: pointer;
   transition: all 0.3s ease;
   letter-spacing: 0.5px;
-  margin-top: 0 !important;
+  margin-top: 25px !important;
   display: inline-block;
-  margin: 10px !important;
   width: auto !important;
   height: auto !important;
 }
