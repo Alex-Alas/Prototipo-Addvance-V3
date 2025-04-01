@@ -37,7 +37,7 @@
       </button>
     </div>
     <div class="menu-auth">
-      <div class="menu-section-label">OTROS</div>
+      <div class="menu-section-label"></div>
       <button class="logout-button">
         <i class="fas fa-sign-out-alt"></i>
         <span>Cerrar sesión</span>
@@ -104,7 +104,7 @@
     </div>
     
     <!-- Empleado Journey Section - With Duolingo-style learning path -->
-    <div id="empleadoJourneySection" class="journey-section">
+    <div id="empleadoJourneySection" class="journey-section" style="display: block;">
       <!-- Journey view tabs -->
       <div class="journey-submenu">
         <button id="empleadoSearchTab" class="menu-option active">Búsqueda</button>
@@ -112,7 +112,7 @@
       </div>
 
       <!-- Journey search view -->
-      <div id="empleadoSearchView">
+      <div id="empleadoSearchView" style="display: block;">
         <div class="search-container">
           <h2>¿Qué Journey estás buscando?</h2>
           <input type="text" class="search-bar" placeholder="Buscar journey...">
@@ -290,5 +290,52 @@
   <script src="profile-manager.js"></script>
   <script src="menu-toggle.js"></script>
   <script src="empleado-navigation.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize profile card flip functionality
+      const perfilOption = document.getElementById('empleadoPerfilOption');
+      if (perfilOption) {
+        perfilOption.addEventListener('click', function() {
+          initializeProfileCardFlip();
+        });
+      }
+
+      // Set Journey section as visible by default
+      const journeySection = document.getElementById('empleadoJourneySection');
+      if (journeySection) {
+        journeySection.style.display = 'block';
+      }
+
+      // Set Journey option as active by default
+      const journeyOption = document.getElementById('empleadoJourneyOption');
+      if (journeyOption) {
+        journeyOption.classList.add('active');
+      }
+
+      // Set search view as visible by default
+      const searchView = document.getElementById('empleadoSearchView');
+      if (searchView) {
+        searchView.style.display = 'block';
+      }
+
+      // Set acquired view as hidden by default
+      const acquiredView = document.getElementById('empleadoAcquiredView');
+      if (acquiredView) {
+        acquiredView.style.display = 'none';
+      }
+
+      // Set search tab as active by default
+      const searchTab = document.getElementById('empleadoSearchTab');
+      if (searchTab) {
+        searchTab.classList.add('active');
+      }
+
+      // Set acquired tab as inactive by default
+      const acquiredTab = document.getElementById('empleadoAcquiredTab');
+      if (acquiredTab) {
+        acquiredTab.classList.remove('active');
+      }
+    });
+  </script>
 </body>
 </html>

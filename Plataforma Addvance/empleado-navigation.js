@@ -3,69 +3,129 @@
  * Handles the navigation between different sections in the Empleado UI
  */
 
+// Employee Navigation Handler
 document.addEventListener('DOMContentLoaded', function() {
-  // Initialize empleado navigation
-  initializeEmpleadoNavigation();
-  // Initialize journey tabs navigation
-  initializeJourneyTabs();
+    // Get all menu options
+    const perfilOption = document.getElementById('empleadoPerfilOption');
+    const journeyOption = document.getElementById('empleadoJourneyOption');
+    const rankingOption = document.getElementById('empleadoRankingOption');
+
+    // Get all sections
+    const perfilSection = document.getElementById('empleadoPerfilSection');
+    const journeySection = document.getElementById('empleadoJourneySection');
+    const rankingSection = document.getElementById('empleadoRankingSection');
+
+    // Function to hide all sections
+    function hideAllSections() {
+        if (perfilSection) perfilSection.style.display = 'none';
+        if (journeySection) journeySection.style.display = 'none';
+        if (rankingSection) rankingSection.style.display = 'none';
+    }
+
+    // Function to show a specific section
+    function showSection(section) {
+        hideAllSections();
+        if (section) section.style.display = 'block';
+    }
+
+    // Add click handlers to menu options
+    if (perfilOption) {
+        perfilOption.addEventListener('click', function() {
+            showSection(perfilSection);
+            initializeProfileCardFlip();
+        });
+    }
+
+    if (journeyOption) {
+        journeyOption.addEventListener('click', function() {
+            showSection(journeySection);
+        });
+    }
+
+    if (rankingOption) {
+        rankingOption.addEventListener('click', function() {
+            showSection(rankingSection);
+        });
+    }
+
+    // Set Journey section as visible by default
+    showSection(journeySection);
+
+    // Initialize journey tabs
+    const searchTab = document.getElementById('empleadoSearchTab');
+    const acquiredTab = document.getElementById('empleadoAcquiredTab');
+    const searchView = document.getElementById('empleadoSearchView');
+    const acquiredView = document.getElementById('empleadoAcquiredView');
+
+    if (searchTab && acquiredTab && searchView && acquiredView) {
+        // Set search tab as active by default
+        searchTab.classList.add('active');
+        acquiredTab.classList.remove('active');
+        searchView.style.display = 'block';
+        acquiredView.style.display = 'none';
+
+        // Add click handlers for tabs
+        searchTab.addEventListener('click', function() {
+            searchTab.classList.add('active');
+            acquiredTab.classList.remove('active');
+            searchView.style.display = 'block';
+            acquiredView.style.display = 'none';
+        });
+
+        acquiredTab.addEventListener('click', function() {
+            acquiredTab.classList.add('active');
+            searchTab.classList.remove('active');
+            acquiredView.style.display = 'block';
+            searchView.style.display = 'none';
+        });
+    }
 });
 
 // Function to initialize empleado navigation
 function initializeEmpleadoNavigation() {
-  // Get menu option elements
+  // Get all menu options
   const perfilOption = document.getElementById('empleadoPerfilOption');
   const journeyOption = document.getElementById('empleadoJourneyOption');
   const rankingOption = document.getElementById('empleadoRankingOption');
   
-  // Get section elements
+  // Get all sections
   const perfilSection = document.getElementById('empleadoPerfilSection');
   const journeySection = document.getElementById('empleadoJourneySection');
   const rankingSection = document.getElementById('empleadoRankingSection');
   
-  // Function to show a section and hide others
-  function showSection(sectionToShow) {
-    // Hide all sections first
+  // Function to hide all sections
+  function hideAllSections() {
     perfilSection.style.display = 'none';
     journeySection.style.display = 'none';
     rankingSection.style.display = 'none';
-    
-    // Show the selected section
-    sectionToShow.style.display = 'block';
-    
-    // Remove active class from all menu options
-    perfilOption.classList.remove('active');
-    journeyOption.classList.remove('active');
-    rankingOption.classList.remove('active');
   }
   
-  // Add click event listeners to menu options
-  if (perfilOption) {
-    perfilOption.addEventListener('click', function(e) {
-      e.preventDefault();
-      showSection(perfilSection);
-      perfilOption.classList.add('active');
-    });
+  // Function to show a specific section
+  function showSection(section) {
+    hideAllSections();
+    section.style.display = 'block';
   }
   
-  if (journeyOption) {
-    journeyOption.addEventListener('click', function(e) {
-      e.preventDefault();
-      showSection(journeySection);
-      journeyOption.classList.add('active');
-    });
-  }
+  // Add click handlers to menu options
+  perfilOption.addEventListener('click', function() {
+    showSection(perfilSection);
+    initializeProfileCardFlip();
+  });
   
-  if (rankingOption) {
-    rankingOption.addEventListener('click', function(e) {
-      e.preventDefault();
-      showSection(rankingSection);
-      rankingOption.classList.add('active');
-    });
-  }
+  journeyOption.addEventListener('click', function() {
+    showSection(journeySection);
+    // Initialize Journey Manager when switching to Journey section
+    if (typeof JourneyManager !== 'undefined') {
+      JourneyManager.init();
+    }
+  });
   
-  // Show journey section by default
+  rankingOption.addEventListener('click', function() {
+    showSection(rankingSection);
+  });
+  
+  // Set Journey section as visible by default
   showSection(journeySection);
-  journeyOption.classList.add('active');
 }
 
 // Function to initialize journey tabs navigation
