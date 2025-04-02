@@ -14,6 +14,16 @@
   <link rel="stylesheet" href="addvance-ui.css">
   <!-- Custom stylesheet -->
   <link rel="stylesheet" href="styles.css">
+  <!-- JavaScript Dependencies -->
+  <script src="js/data/courseData.js"></script>
+  <script src="js/paginasData.js"></script>
+  <script src="js/data/userData.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/empleado-style.css">
+  <link rel="stylesheet" href="css/paginas-style.css">
 </head>
 <body>
   <!-- Vertical Navigation Menu -->
@@ -150,9 +160,11 @@
   <script src="courseData.js"></script>
   <script src="courses-manager.js"></script>
   <script src="js/assigned-courses-display.js"></script>
+  <script src="js/paginasData.js"></script>
   
   <!-- Custom CSS -->
   <link rel="stylesheet" href="css/assigned-courses.css">
+  <link rel="stylesheet" href="css/paginas-style.css">
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Function to hide all sections
@@ -241,7 +253,7 @@
         });
       }
 
-      // Function to load employee-specific courses
+      // Function to initialize and load employee courses
       function loadEmployeeCourses() {
         const employeeCoursesList = document.getElementById('employeeCoursesList');
         if (!employeeCoursesList) return;
@@ -322,7 +334,7 @@
             const assignment = employeeAssignments[currentEmployeeId].find(a => a.courseId === courseId);
             if (assignment) {
               progress = assignment.progress || 0;
-              completedEvents = assignment.completedEvents || 0;
+              completedEvents = assignment.completedItems || 0;
             }
           }
           
@@ -331,6 +343,9 @@
         
         // Add click event listeners to toggle course content
         addCourseToggleListeners();
+        
+        // Calculate and apply module unlocking based on progress
+        updateModuleUnlockStatus();
       }
       
       // Function to create a course card with the new structure
@@ -378,9 +393,17 @@
           return '<div class="modulo-container">No hay módulos disponibles</div>';
         }
         
+        // Get current employee progress data
+        const currentEmployeeId = getCurrentUserId();
+        const progress = JSON.parse(localStorage.getItem(`employee_progress_${currentEmployeeId}`) || '{}');
+        const courseProgress = progress[course.id] || { modules: {} };
+        
         return course.modules.map((module, index) => {
           const isLocked = index > 0;
           let lessonsList = '';
+          
+          // Get module progress
+          const moduleProgress = courseProgress.modules[module.id] || { lessons: {}, quiz: { completed: false } };
           
           // Generate lesson list if module has lessons
           if (module.lessons && Array.isArray(module.lessons)) {
@@ -388,17 +411,62 @@
               <div class="lecciones-container">
                 <h4>Lecciones</h4>
                 ${module.lessons.map((lesson, lessonIndex) => {
+                  // Check if this lesson is completed
+                  const lessonCompleted = moduleProgress.lessons[lesson.id] && moduleProgress.lessons[lesson.id].completed;
+                  const buttonClass = lessonCompleted ? 'comenzar-leccion-btn completed' : 'comenzar-leccion-btn';
+                  const buttonText = lessonCompleted ? '✓ Completada' : 'Comenzar';
+                  
                   return `
                     <div class="leccion-item" data-lesson-id="${lesson.id}" data-module-id="${module.id}">
                       <div class="leccion-header">
                         <span>Lección ${lessonIndex + 1}: ${lesson.title}</span>
                       </div>
-                      <button class="comenzar-leccion-btn" data-lesson-id="${lesson.id}" data-module-id="${module.id}">Comenzar</button>
+                      <button class="${buttonClass}" data-lesson-id="${lesson.id}" data-module-id="${module.id}" ${lessonCompleted ? 'disabled' : ''}>${buttonText}</button>
                     </div>
                   `;
                 }).join('')}
               </div>
             `;
+          }
+          
+          // Generate quiz section if the module has a quiz property
+          let quizSection = '';
+          if (module.quiz) {
+            // Check if quiz is completed
+            const quizCompleted = moduleProgress.quiz && moduleProgress.quiz.completed;
+            const quizScore = moduleProgress.quiz && moduleProgress.quiz.score ? moduleProgress.quiz.score : 0;
+            const buttonClass = quizCompleted ? 'comenzar-quiz-btn completed' : 'comenzar-quiz-btn';
+            const buttonText = quizCompleted ? '✓ Completado' : 'Comenzar';
+            
+            quizSection = `
+              <div class="quiz-container">
+                <h4>Quizz</h4>
+                <div class="quiz-item" data-quiz-id="${module.quiz.id}" data-module-id="${module.id}">
+                  <div class="quiz-header">
+                    <span>${module.quiz.title || 'Evaluación del módulo'}</span>
+                    ${quizCompleted ? `<span class="quiz-score">(${quizScore} puntos)</span>` : ''}
+                  </div>
+                  <button class="${buttonClass}" data-quiz-id="${module.quiz.id}" data-module-id="${module.id}" ${quizCompleted ? 'disabled' : ''}>${buttonText}</button>
+                </div>
+              </div>
+            `;
+          }
+          
+          // Calculate module points from completed lessons and quiz
+          let modulePoints = 0;
+          
+          // Add points from completed lessons (10 points each)
+          if (module.lessons && Array.isArray(module.lessons)) {
+            module.lessons.forEach(lesson => {
+              if (moduleProgress.lessons[lesson.id] && moduleProgress.lessons[lesson.id].completed) {
+                modulePoints += 10;
+              }
+            });
+          }
+          
+          // Add points from completed quiz
+          if (moduleProgress.quiz && moduleProgress.quiz.completed && moduleProgress.quiz.score) {
+            modulePoints += moduleProgress.quiz.score;
           }
           
           return `
@@ -407,8 +475,9 @@
                 <span>Módulo ${index + 1}: ${module.title}</span>
                 ${isLocked ? '<span>Bloqueado</span>' : ''}
               </div>
-              <div class="modulo-points">Puntos obtenidos: 0</div>
+              <div class="modulo-points">Puntos obtenidos: ${modulePoints}</div>
               ${lessonsList}
+              ${quizSection}
             </div>
           `;
         }).join('');
@@ -443,22 +512,34 @@
               }
             });
           });
+          
+          // Add event listeners for quiz buttons
+          const quizButtons = card.querySelectorAll('.comenzar-quiz-btn');
+          quizButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+              e.stopPropagation();
+              const quizId = button.dataset.quizId;
+              const moduleId = button.dataset.moduleId;
+              const courseId = card.dataset.courseId;
+              
+              if (quizId && moduleId && courseId) {
+                openQuizModal(courseId, moduleId, quizId, button);
+              }
+            });
+          });
         });
       }
       
       // Function to open the lesson modal and load lesson content
       function openLessonModal(courseId, moduleId, lessonId, buttonElement) {
-        // Get course data
-        const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
-        if (!courseDetails) return;
+        // Get lesson's páginas using paginasManager
+        const paginas = window.paginasManager.getPaginasByLesson(courseId, moduleId, lessonId);
         
-        // Get module data
-        const module = courseDetails.modules?.find(m => m.id === moduleId);
-        if (!module) return;
-        
-        // Get lesson data
-        const lesson = module.lessons?.find(l => l.id === lessonId);
-        if (!lesson) return;
+        if (!paginas || paginas.length === 0) {
+          console.error(`No páginas found for lesson ${lessonId} in module ${moduleId} of course ${courseId}`);
+          alert('No se encontró contenido para esta lección.');
+          return;
+        }
         
         // Create modal if it doesn't exist
         let lessonModal = document.getElementById('lessonModal');
@@ -470,15 +551,30 @@
           document.body.appendChild(lessonModal);
         }
         
+        // Get course and lesson info for the header
+        const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
+        let lessonTitle = '';
+        
+        if (courseDetails) {
+          const module = courseDetails.modules?.find(m => m.id === moduleId);
+          if (module) {
+            const lesson = module.lessons?.find(l => l.id === lessonId);
+            if (lesson) {
+              lessonTitle = lesson.title;
+            }
+          }
+        }
+        
         // Define initial page
-        const totalPages = lesson.pages ? lesson.pages.length : 0;
+        const totalPages = paginas.length;
         const initialPage = 0;
+        const initialPageContent = paginas[initialPage];
         
         // Create modal content
         lessonModal.innerHTML = `
           <div class="lesson-modal-content">
             <div class="lesson-modal-header">
-              <h3>${lesson.title}</h3>
+              <h3>${lessonTitle}</h3>
               <div class="lesson-progress-container">
                 <div class="lesson-progress-bar">
                   <div class="lesson-progress-fill" style="width: ${totalPages > 0 ? (1 / totalPages) * 100 : 0}%"></div>
@@ -487,7 +583,8 @@
               </div>
             </div>
             <div class="lesson-modal-body">
-              ${totalPages > 0 ? lesson.pages[initialPage].content : 'No hay contenido disponible para esta lección.'}
+              <h3>${initialPageContent.header}</h3>
+              ${initialPageContent.body}
             </div>
             <div class="lesson-modal-footer">
               <button id="closeLesson" class="lesson-btn">Cerrar</button>
@@ -507,7 +604,7 @@
           courseId,
           moduleId,
           lessonId,
-          lesson,
+          paginas,
           currentPage: initialPage,
           totalPages,
           buttonElement
@@ -541,7 +638,7 @@
       function navigateLesson(lessonData, direction) {
         if (!lessonData) return;
         
-        const { lesson, currentPage, totalPages } = lessonData;
+        const { paginas, currentPage, totalPages } = lessonData;
         let newPage = currentPage;
         
         if (direction === 'prev' && currentPage > 0) {
@@ -555,10 +652,16 @@
         // Update current page in lessonData
         lessonData.currentPage = newPage;
         
+        // Get the new page content
+        const pageContent = paginas[newPage];
+        
         // Update modal content
         const lessonModalBody = document.querySelector('.lesson-modal-body');
-        if (lessonModalBody && lesson.pages && lesson.pages[newPage]) {
-          lessonModalBody.innerHTML = lesson.pages[newPage].content;
+        if (lessonModalBody && pageContent) {
+          lessonModalBody.innerHTML = `
+            <h3>${pageContent.header}</h3>
+            ${pageContent.body}
+          `;
         }
         
         // Update progress bar
@@ -586,116 +689,613 @@
         }
       }
       
-      // Function to close the lesson modal and update progress
+      // Function to close the lesson modal
       function closeLessonModal(lessonData) {
-        if (!lessonData) return;
-        
-        const { courseId, moduleId, lessonId, currentPage, totalPages, buttonElement } = lessonData;
         const lessonModal = document.getElementById('lessonModal');
-        
-        // Check if lesson was completed (reached the last page)
-        const isCompleted = currentPage === totalPages - 1;
-        
-        if (isCompleted) {
-          // Award points
-          const pointsAwarded = 5 * totalPages;
+        if (lessonModal) {
+          lessonModal.style.display = 'none';
           
-          // Update button text to "Repasar"
-          if (buttonElement) {
-            buttonElement.textContent = 'Repasar';
-            buttonElement.classList.add('completed');
-            
-            // Find and update points display in module container
-            const moduleContainer = buttonElement.closest('.modulo-container');
-            if (moduleContainer) {
-              const pointsElement = moduleContainer.querySelector('.modulo-points');
-              if (pointsElement) {
-                // Extract current points
-                const currentPointsMatch = pointsElement.textContent.match(/Puntos obtenidos: (\d+)/);
-                let currentPoints = currentPointsMatch ? parseInt(currentPointsMatch[1]) : 0;
-                
-                // Check if points were already awarded for this lesson
-                if (!buttonElement.classList.contains('points-awarded')) {
-                  currentPoints += pointsAwarded;
-                  buttonElement.classList.add('points-awarded');
-                }
-                
-                pointsElement.textContent = `Puntos obtenidos: ${currentPoints}`;
-                
-                // Update completed events counter for the course
-                const courseCard = moduleContainer.closest('.curso-adquirido-empleado');
-                if (courseCard) {
-                  const completedEventsElement = courseCard.querySelector('.completed-events span');
-                  if (completedEventsElement) {
-                    const currentEventsCount = parseInt(completedEventsElement.textContent.split(' ')[0]);
-                    completedEventsElement.textContent = `${currentEventsCount + 1} eventos completados con éxito`;
-                  }
-                }
-                
-                // Update in localStorage
-                updateLessonProgressInStorage(courseId, moduleId, lessonId, true, pointsAwarded);
+          // Remove event listeners to avoid memory leaks
+          const closeButton = document.getElementById('closeLesson');
+          const prevButton = document.getElementById('prevPage');
+          const nextButton = document.getElementById('nextPage');
+          
+          if (closeButton) closeButton.removeEventListener('click', function() { closeLessonModal(lessonData); });
+          if (prevButton) prevButton.removeEventListener('click', function() { navigateLesson(lessonData, 'prev'); });
+          if (nextButton) nextButton.removeEventListener('click', function() { navigateLesson(lessonData, 'next'); });
+          
+          // Mark lesson as completed if we reached the last page
+          if (lessonData.currentPage === lessonData.totalPages - 1) {
+            markLessonCompleted(lessonData.courseId, lessonData.moduleId, lessonData.lessonId, lessonData.buttonElement);
+          }
+        }
+      }
+      
+      // Function to mark a lesson as completed
+      function markLessonCompleted(courseId, moduleId, lessonId, buttonElement) {
+        // Get current employee progress
+        const currentEmployeeId = getCurrentUserId();
+        const progress = JSON.parse(localStorage.getItem(`employee_progress_${currentEmployeeId}`) || '{}');
+        
+        // Initialize course progress if needed
+        if (!progress[courseId]) {
+          progress[courseId] = { modules: {}, overallProgress: 0 };
+        }
+        
+        // Initialize module progress if needed
+        if (!progress[courseId].modules[moduleId]) {
+          progress[courseId].modules[moduleId] = { 
+            lessons: {}, 
+            quiz: { completed: false, score: 0 },
+            status: 'in-progress'
+          };
+        }
+        
+        // Mark lesson as completed
+        progress[courseId].modules[moduleId].lessons[lessonId] = {
+          completed: true,
+          completedAt: new Date().toISOString()
+        };
+        
+        // Update module status based on lessons and quiz completion
+        updateModuleStatus(progress[courseId].modules[moduleId], courseId, moduleId);
+        
+        // Save progress
+        localStorage.setItem(`employee_progress_${currentEmployeeId}`, JSON.stringify(progress));
+        
+        // Update UI if button element is provided
+        if (buttonElement) {
+          buttonElement.classList.add('completed');
+          buttonElement.innerHTML = '✓ Completada';
+          buttonElement.disabled = true;
+        }
+        
+        // Update course progress indicators
+        updateCourseProgress(courseId);
+        
+        // Add to completed events
+        incrementSuccessfulEvents(courseId);
+        
+        console.log(`Lesson ${lessonId} in module ${moduleId} of course ${courseId} marked as completed.`);
+      }
+      
+      // Function to update course progress indicators
+      function updateCourseProgress(courseId) {
+        // Get current employee progress
+        const currentEmployeeId = getCurrentUserId();
+        const progress = JSON.parse(localStorage.getItem(`employee_progress_${currentEmployeeId}`) || '{}');
+        
+        if (!progress[courseId]) return;
+        
+        // Get course card
+        const courseCard = document.querySelector(`.curso-adquirido-empleado[data-course-id="${courseId}"]`);
+        if (!courseCard) return;
+        
+        // Get course details from database
+        const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
+        if (!courseDetails) return;
+        
+        // Count total items, completions, and calculate overall progress
+        let totalItems = 0;
+        let completedItems = 0;
+        let totalPoints = 0;
+        let completedModules = 0;
+        
+        // Process modules to count items and calculate progress
+        courseDetails.modules.forEach(module => {
+          // Get module progress
+          const moduleProgress = progress[courseId].modules[module.id] || { 
+            lessons: {}, 
+            quiz: { completed: false },
+            status: 'not-started',
+            progress: 0
+          };
+          
+          // If module is complete, count it
+          if (moduleProgress.status === 'completed') {
+            completedModules++;
+          }
+          
+          // Count lessons
+          if (module.lessons && Array.isArray(module.lessons)) {
+            module.lessons.forEach(lesson => {
+              totalItems++;
+              
+              // Check if lesson is completed
+              if (moduleProgress.lessons[lesson.id] && moduleProgress.lessons[lesson.id].completed) {
+                completedItems++;
+                totalPoints += 10; // Each lesson is worth 10 points
               }
+            });
+          }
+          
+          // Count quizzes
+          if (module.quiz) {
+            totalItems++;
+            
+            // Check if quiz is completed
+            if (moduleProgress.quiz && moduleProgress.quiz.completed) {
+              completedItems++;
+              totalPoints += moduleProgress.quiz.score || 0; // Add quiz score
+            }
+          }
+        });
+        
+        // Calculate percentage
+        const progressPercentage = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+        
+        // Update progress bar
+        const progressBar = courseCard.querySelector('.progress-bar .progress');
+        if (progressBar) {
+          progressBar.style.width = `${progressPercentage}%`;
+        }
+        
+        // Update course overall progress in storage
+        progress[courseId].overallProgress = progressPercentage;
+        progress[courseId].totalPoints = totalPoints;
+        progress[courseId].completedModules = completedModules;
+        progress[courseId].totalModules = courseDetails.modules.length;
+        localStorage.setItem(`employee_progress_${currentEmployeeId}`, JSON.stringify(progress));
+        
+        // Update completed events text
+        const completedEventsElement = courseCard.querySelector('.completed-events span');
+        if (completedEventsElement) {
+          completedEventsElement.textContent = `${completedItems} eventos completados con éxito`;
+        }
+        
+        console.log(`Course progress updated: ${completedItems}/${totalItems} items (${progressPercentage.toFixed(1)}%)`);
+        
+        // Check if course is completed to unlock final test
+        if (progressPercentage >= 80) {
+          const finalTestContainer = courseCard.querySelector('.prueba-final-container');
+          if (finalTestContainer) {
+            finalTestContainer.classList.remove('locked');
+            finalTestContainer.querySelector('span:last-child').textContent = '';
+          }
+        }
+        
+        // Update assignments in localStorage
+        const assignments = JSON.parse(localStorage.getItem('employeeAssignments') || '{}');
+        if (!assignments[currentEmployeeId]) {
+          assignments[currentEmployeeId] = [];
+        }
+        
+        let assignment = assignments[currentEmployeeId].find(a => a.courseId === courseId);
+        if (!assignment) {
+          assignment = { courseId };
+          assignments[currentEmployeeId].push(assignment);
+        }
+        
+        assignment.progress = progressPercentage;
+        assignment.points = totalPoints;
+        assignment.completedItems = completedItems;
+        assignment.totalItems = totalItems;
+        assignment.completedModules = completedModules;
+        assignment.lastUpdated = new Date().toISOString();
+        
+        localStorage.setItem('employeeAssignments', JSON.stringify(assignments));
+        
+        // Update in employee data structure for consistency
+        syncProgressWithEmployeeData(currentEmployeeId, courseId, {
+          progress: progressPercentage,
+          points: totalPoints,
+          completedItems,
+          totalItems
+        });
+      }
+      
+      // Function to sync progress with the employee data structure
+      function syncProgressWithEmployeeData(employeeId, courseId, progressData) {
+        const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+        const empleadoIndex = usuarios.findIndex(u => u.correo === employeeId && u.tipoPerfil === 'empleado');
+        
+        if (empleadoIndex >= 0) {
+          const empleado = usuarios[empleadoIndex];
+          
+          // Initialize progress tracking if needed
+          if (!empleado.datosAdicionales.progresoCursos) {
+            empleado.datosAdicionales.progresoCursos = {};
+          }
+          
+          // Update progress data
+          empleado.datosAdicionales.progresoCursos[courseId] = {
+            ...progressData,
+            lastUpdated: new Date().toISOString()
+          };
+          
+          // Save back to localStorage
+          usuarios[empleadoIndex] = empleado;
+          localStorage.setItem('usuarios', JSON.stringify(usuarios));
+        }
+      }
+      
+      // Function to get current user ID
+      function getCurrentUserId() {
+        const currentUser = obtenerUsuarioActual();
+        return currentUser ? currentUser.correo : 'empleado-ejemplo';
+      }
+
+      // Function to open the quiz modal and load questions
+      function openQuizModal(courseId, moduleId, quizId, buttonElement) {
+        // Find course and module
+        const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
+        if (!courseDetails) {
+          console.error(`Course not found: ${courseId}`);
+          return;
+        }
+        
+        const module = courseDetails.modules?.find(m => m.id === moduleId);
+        if (!module) {
+          console.error(`Module not found: ${moduleId} in course ${courseId}`);
+          return;
+        }
+        
+        // Verify quiz exists
+        if (!module.quiz || module.quiz.id !== quizId) {
+          console.error(`Quiz not found: ${quizId} in module ${moduleId}`);
+          return;
+        }
+        
+        // Get questions from module quiz
+        const allQuestions = module.quiz.questions;
+        if (!allQuestions || allQuestions.length === 0) {
+          alert('No hay preguntas disponibles para este quiz.');
+          return;
+        }
+        
+        // Randomly select 5 questions (or fewer if less than 5 are available)
+        const selectedQuestions = randomSelectQuestions(allQuestions, Math.min(5, allQuestions.length));
+        
+        // Create modal if it doesn't exist
+        let quizModal = document.getElementById('quizModal');
+        if (!quizModal) {
+          quizModal = document.createElement('div');
+          quizModal.id = 'quizModal';
+          quizModal.className = 'quiz-modal';
+          
+          document.body.appendChild(quizModal);
+        }
+        
+        // Create modal content
+        quizModal.innerHTML = `
+          <div class="quiz-modal-content">
+            <div class="quiz-modal-header">
+              <h3>${module.quiz.title || `Quiz - ${module.title}`}</h3>
+              <button id="closeQuiz" class="quiz-btn close-btn">Cerrar</button>
+            </div>
+            <div class="quiz-modal-body">
+              <form id="quizForm">
+                ${generateQuizQuestionsHTML(selectedQuestions)}
+              </form>
+            </div>
+            <div class="quiz-modal-footer">
+              <button id="finalizarQuiz" class="quiz-btn">Finalizar</button>
+            </div>
+          </div>
+        `;
+        
+        // Show modal
+        quizModal.style.display = 'flex';
+        
+        // Store quiz data for scoring
+        const quizData = {
+          courseId,
+          moduleId,
+          quizId,
+          questions: selectedQuestions,
+          buttonElement
+        };
+        
+        // Add event listeners
+        const closeButton = document.getElementById('closeQuiz');
+        const finalizarButton = document.getElementById('finalizarQuiz');
+        
+        if (closeButton) {
+          closeButton.addEventListener('click', function() {
+            confirmCloseQuiz(quizData);
+          });
+        }
+        
+        if (finalizarButton) {
+          finalizarButton.addEventListener('click', function() {
+            finalizeQuiz(quizData);
+          });
+        }
+      }
+      
+      // Function to generate HTML for quiz questions
+      function generateQuizQuestionsHTML(questions) {
+        return questions.map((question, qIndex) => {
+          return `
+            <div class="quiz-question" data-question-index="${qIndex}">
+              <p class="question-text">${qIndex + 1}. ${question.question}</p>
+              <div class="quiz-options">
+                ${question.options.map((option, oIndex) => {
+                  return `
+                    <div class="quiz-option">
+                      <input type="radio" id="q${qIndex}_o${oIndex}" name="question_${qIndex}" value="${oIndex}" data-correct="${question.correctAnswer === oIndex ? 'true' : 'false'}">
+                      <label for="q${qIndex}_o${oIndex}">${option}</label>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+      
+      // Function to randomly select questions from a pool
+      function randomSelectQuestions(questionPool, count) {
+        // Clone the array to avoid modifying the original
+        const pool = [...questionPool];
+        const selected = [];
+        
+        // Select random questions
+        while (selected.length < count && pool.length > 0) {
+          const randomIndex = Math.floor(Math.random() * pool.length);
+          selected.push(pool.splice(randomIndex, 1)[0]);
+        }
+        
+        return selected;
+      }
+      
+      // Function to confirm quiz closure
+      function confirmCloseQuiz(quizData) {
+        // Show confirmation dialog
+        if (confirm('Si continua por cerrar la prueba todo progreso se pierde')) {
+          closeQuizModal();
+        }
+      }
+      
+      // Function to finalize quiz and calculate score
+      function finalizeQuiz(quizData) {
+        const quizForm = document.getElementById('quizForm');
+        const questions = quizForm.querySelectorAll('.quiz-question');
+        
+        // Check if all questions are answered
+        let allAnswered = true;
+        let unansweredQuestions = [];
+        
+        questions.forEach((question, index) => {
+          const answered = question.querySelector('input[type="radio"]:checked');
+          if (!answered) {
+            allAnswered = false;
+            unansweredQuestions.push(index + 1);
+          }
+        });
+        
+        if (!allAnswered) {
+          // Ask if user wants to continue anyway
+          if (!confirm(`No has respondido todas las preguntas (Preguntas sin responder: ${unansweredQuestions.join(', ')}), ¿deseas finalizar la prueba?`)) {
+            return;
+          }
+        }
+        
+        // Calculate score
+        let correctAnswers = 0;
+        questions.forEach(question => {
+          const selectedOption = question.querySelector('input[type="radio"]:checked');
+          if (selectedOption && selectedOption.dataset.correct === 'true') {
+            correctAnswers++;
+          }
+        });
+        
+        const totalQuestions = questions.length;
+        const score = (correctAnswers / totalQuestions) * 100;
+        const passed = score >= 60;
+        
+        // Show score message
+        alert(`Has obtenido ${correctAnswers} de ${totalQuestions} respuestas correctas (${score.toFixed(1)}%).\n${passed ? '¡Felicidades! Has aprobado la prueba.' : 'No has alcanzado el puntaje necesario para aprobar.'}`);
+        
+        // Update progress if passed
+        if (passed) {
+          markQuizCompleted(quizData.courseId, quizData.moduleId, quizData.buttonElement, correctAnswers);
+        }
+        
+        // Close modal
+        closeQuizModal();
+      }
+      
+      // Function to close the quiz modal
+      function closeQuizModal() {
+        const quizModal = document.getElementById('quizModal');
+        if (quizModal) {
+          quizModal.style.display = 'none';
+        }
+      }
+      
+      // Function to mark a quiz as completed
+      function markQuizCompleted(courseId, moduleId, buttonElement, correctAnswers) {
+        // Get current employee progress
+        const currentEmployeeId = getCurrentUserId();
+        const progress = JSON.parse(localStorage.getItem(`employee_progress_${currentEmployeeId}`) || '{}');
+        
+        // Initialize course progress if needed
+        if (!progress[courseId]) {
+          progress[courseId] = { modules: {}, overallProgress: 0 };
+        }
+        
+        // Initialize module progress if needed
+        if (!progress[courseId].modules[moduleId]) {
+          progress[courseId].modules[moduleId] = { 
+            lessons: {},
+            quiz: { completed: false, score: 0 },
+            status: 'in-progress'
+          };
+        }
+        
+        // Mark quiz as completed and set score
+        progress[courseId].modules[moduleId].quiz = {
+          completed: true,
+          completedAt: new Date().toISOString(),
+          score: correctAnswers * 10, // Each correct answer is worth 10 points
+          correctAnswers: correctAnswers
+        };
+        
+        // Update module status based on lessons and quiz completion
+        updateModuleStatus(progress[courseId].modules[moduleId], courseId, moduleId);
+        
+        // Save progress
+        localStorage.setItem(`employee_progress_${currentEmployeeId}`, JSON.stringify(progress));
+        
+        // Update UI if button element is provided
+        if (buttonElement) {
+          buttonElement.classList.add('completed');
+          buttonElement.innerHTML = '✓ Completado';
+          buttonElement.disabled = true;
+          
+          // Update module points display
+          const moduleContainer = buttonElement.closest('.modulo-container');
+          if (moduleContainer) {
+            const pointsElement = moduleContainer.querySelector('.modulo-points');
+            if (pointsElement) {
+              // Calculate total module points
+              const modulePoints = calculateModulePoints(progress[courseId].modules[moduleId]);
+              pointsElement.textContent = `Puntos obtenidos: ${modulePoints}`;
             }
           }
         }
         
-        // Close the modal
-        if (lessonModal) {
-          lessonModal.style.display = 'none';
-        }
+        // Update course progress and successful events counter
+        updateCourseProgress(courseId);
+        incrementSuccessfulEvents(courseId);
+        
+        console.log(`Quiz in module ${moduleId} of course ${courseId} marked as completed with ${correctAnswers} correct answers.`);
       }
       
-      // Function to update lesson progress in localStorage
-      function updateLessonProgressInStorage(courseId, moduleId, lessonId, completed, points) {
-        // Get current user (employee) information
-        const currentUser = obtenerUsuarioActual();
-        const currentEmployeeId = currentUser ? currentUser.correo : 'empleado-ejemplo';
+      // Function to calculate module points
+      function calculateModulePoints(moduleProgress) {
+        let points = 0;
         
-        // Get employee assignments
-        const employeeAssignments = JSON.parse(localStorage.getItem('employeeAssignments') || '{}');
-        if (!employeeAssignments[currentEmployeeId]) {
-          employeeAssignments[currentEmployeeId] = [];
+        // Add points from completed lessons (10 points each)
+        if (moduleProgress.lessons) {
+          Object.values(moduleProgress.lessons).forEach(lesson => {
+            if (lesson.completed) {
+              points += 10;
+            }
+          });
         }
         
-        // Find or create course assignment
-        let courseAssignment = employeeAssignments[currentEmployeeId].find(a => a.courseId === courseId);
-        if (!courseAssignment) {
-          courseAssignment = {
-            courseId,
-            status: 'active',
-            progress: 0,
-            completedEvents: 0,
-            lessons: {},
-            started: true
-          };
-          employeeAssignments[currentEmployeeId].push(courseAssignment);
+        // Add points from completed quiz
+        if (moduleProgress.quiz && moduleProgress.quiz.completed) {
+          points += moduleProgress.quiz.score || 0;
         }
         
-        // Initialize lessons if not present
-        if (!courseAssignment.lessons) {
-          courseAssignment.lessons = {};
-        }
+        return points;
+      }
+      
+      // Function to update module status based on completion
+      function updateModuleStatus(moduleProgress, courseId, moduleId) {
+        // Get course and module details
+        const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
+        if (!courseDetails) return;
         
-        // Update lesson data
-        if (!courseAssignment.lessons[lessonId]) {
-          courseAssignment.lessons[lessonId] = {
-            completed: false,
-            points: 0
-          };
-        }
+        const moduleDetails = courseDetails.modules.find(m => m.id === moduleId);
+        if (!moduleDetails) return;
         
-        // Only update if not already completed
-        if (!courseAssignment.lessons[lessonId].completed) {
-          courseAssignment.lessons[lessonId].completed = completed;
-          courseAssignment.lessons[lessonId].points = points;
+        // Count total items and completed items
+        let totalItems = 0;
+        let completedItems = 0;
+        
+        // Count lessons
+        if (moduleDetails.lessons) {
+          totalItems += moduleDetails.lessons.length;
           
-          if (completed) {
-            courseAssignment.completedEvents = (courseAssignment.completedEvents || 0) + 1;
+          moduleDetails.lessons.forEach(lesson => {
+            if (moduleProgress.lessons[lesson.id] && moduleProgress.lessons[lesson.id].completed) {
+              completedItems++;
+            }
+          });
+        }
+        
+        // Count quiz
+        if (moduleDetails.quiz) {
+          totalItems++;
+          if (moduleProgress.quiz && moduleProgress.quiz.completed) {
+            completedItems++;
           }
         }
         
-        // Save back to localStorage
-        localStorage.setItem('employeeAssignments', JSON.stringify(employeeAssignments));
+        // Determine status
+        if (completedItems === 0) {
+          moduleProgress.status = 'not-started';
+        } else if (completedItems === totalItems) {
+          moduleProgress.status = 'completed';
+        } else {
+          moduleProgress.status = 'in-progress';
+        }
+        
+        // Calculate progress percentage
+        moduleProgress.progress = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+      }
+      
+      // Function to increment successful events counter
+      function incrementSuccessfulEvents(courseId) {
+        const courseCard = document.querySelector(`.curso-adquirido-empleado[data-course-id="${courseId}"]`);
+        if (!courseCard) return;
+        
+        const completedEventsElement = courseCard.querySelector('.completed-events span');
+        if (completedEventsElement) {
+          const currentEvents = parseInt(completedEventsElement.textContent.match(/\d+/)[0] || 0);
+          completedEventsElement.textContent = `${currentEvents + 1} eventos completados con éxito`;
+        }
+        
+        // Update in storage
+        const currentEmployeeId = getCurrentUserId();
+        const assignments = JSON.parse(localStorage.getItem('employeeAssignments') || '{}');
+        
+        if (!assignments[currentEmployeeId]) {
+          assignments[currentEmployeeId] = [];
+        }
+        
+        const courseAssignment = assignments[currentEmployeeId].find(a => a.courseId === courseId);
+        if (courseAssignment) {
+          courseAssignment.completedEvents = (courseAssignment.completedEvents || 0) + 1;
+          localStorage.setItem('employeeAssignments', JSON.stringify(assignments));
+        }
+      }
+
+      // Function to update the locked/unlocked status of modules based on progress
+      function updateModuleUnlockStatus() {
+        const currentEmployeeId = getCurrentUserId();
+        const progress = JSON.parse(localStorage.getItem(`employee_progress_${currentEmployeeId}`) || '{}');
+        const courseCards = document.querySelectorAll('.curso-adquirido-empleado');
+        
+        courseCards.forEach(card => {
+          const courseId = card.dataset.courseId;
+          if (!courseId) return;
+          
+          const courseProgress = progress[courseId] || { modules: {} };
+          const moduleContainers = card.querySelectorAll('.modulo-container');
+          
+          // The first module is always unlocked
+          if (moduleContainers.length > 0) {
+            moduleContainers[0].classList.remove('locked');
+            moduleContainers[0].querySelector('.modulo-header span:last-child')?.remove();
+          }
+          
+          // For other modules, check if previous module is completed
+          for (let i = 1; i < moduleContainers.length; i++) {
+            const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
+            if (!courseDetails || !courseDetails.modules || courseDetails.modules.length <= i) continue;
+            
+            const prevModuleId = courseDetails.modules[i-1].id;
+            const prevModuleProgress = courseProgress.modules[prevModuleId];
+            
+            // If previous module is completed, unlock this one
+            if (prevModuleProgress && prevModuleProgress.status === 'completed') {
+              moduleContainers[i].classList.remove('locked');
+              moduleContainers[i].querySelector('.modulo-header span:last-child')?.remove();
+            }
+          }
+          
+          // Check if final test should be unlocked (80% course completion)
+          const finalTestContainer = card.querySelector('.prueba-final-container');
+          if (finalTestContainer && courseProgress.overallProgress >= 80) {
+            finalTestContainer.classList.remove('locked');
+            finalTestContainer.querySelector('span:last-child').textContent = '';
+          }
+        });
       }
     });
     
@@ -801,6 +1401,158 @@
     
     .comenzar-leccion-btn.completed {
       background: #28a745;
+    }
+    
+    /* Quiz Styles */
+    .quiz-container {
+      margin: 15px 0;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+    
+    .quiz-container h4 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    
+    .quiz-item {
+      padding: 10px;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .quiz-header {
+      font-weight: 500;
+    }
+    
+    .comenzar-quiz-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .comenzar-quiz-btn:hover {
+      background: #c82333;
+    }
+    
+    .comenzar-quiz-btn.completed {
+      background: #28a745;
+    }
+    
+    /* Quiz Modal Styles */
+    .quiz-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .quiz-modal-content {
+      background-color: white;
+      width: 80%;
+      max-width: 800px;
+      max-height: 90vh;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .quiz-modal-header {
+      padding: 15px;
+      background-color: #dc3545;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .quiz-modal-header h3 {
+      margin: 0;
+    }
+    
+    .quiz-modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      max-height: 60vh;
+    }
+    
+    .quiz-modal-footer {
+      padding: 15px;
+      border-top: 1px solid #e9ecef;
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .quiz-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .close-btn {
+      background-color: transparent;
+      color: white;
+      border: 1px solid white;
+    }
+    
+    .close-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    #finalizarQuiz {
+      background-color: #28a745;
+      color: white;
+    }
+    
+    #finalizarQuiz:hover {
+      background-color: #218838;
+    }
+    
+    .quiz-question {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .question-text {
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+    
+    .quiz-options {
+      margin-left: 20px;
+    }
+    
+    .quiz-option {
+      margin-bottom: 8px;
+    }
+    
+    .quiz-option input[type="radio"] {
+      margin-right: 10px;
+    }
+    
+    .quiz-question.unanswered {
+      background-color: #fff8f8;
+      padding: 10px;
+      border-left: 3px solid #dc3545;
     }
     
     /* Lesson Modal Styles */
