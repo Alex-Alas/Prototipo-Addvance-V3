@@ -170,6 +170,11 @@ const AssignedCoursesDisplay = {
     if (assignmentIndex !== -1) {
       employeeAssignments[currentEmployeeId][assignmentIndex].status = 'active';
       employeeAssignments[currentEmployeeId][assignmentIndex].started = true; // Set started to true
+      
+      // Initialize completedEvents counter if it doesn't exist
+      if (employeeAssignments[currentEmployeeId][assignmentIndex].completedEvents === undefined) {
+        employeeAssignments[currentEmployeeId][assignmentIndex].completedEvents = 0;
+      }
     } else {
       // Create a new assignment if it doesn't exist
       employeeAssignments[currentEmployeeId].push({
@@ -178,7 +183,8 @@ const AssignedCoursesDisplay = {
         progress: 0,
         startDate: new Date().toISOString(),
         lastAccessDate: new Date().toISOString(),
-        started: true // Set started to true
+        started: true, // Set started to true
+        completedEvents: 0 // Initialize completed events counter
       });
     }
     localStorage.setItem('employeeAssignments', JSON.stringify(employeeAssignments));
@@ -251,14 +257,23 @@ const AssignedCoursesDisplay = {
     const currentUser = this.getCurrentUser();
     const currentEmployeeId = currentUser ? currentUser.correo : 'empleado-ejemplo';
     
-    // Get progress information if available
+    // Get progress information and started status if available
     let progress = 0;
+    let started = false;
+    let completedEvents = 0;
     const employeeAssignments = JSON.parse(localStorage.getItem('employeeAssignments') || '{}');
     if (employeeAssignments[currentEmployeeId]) {
       const assignment = employeeAssignments[currentEmployeeId].find(a => a.courseId === courseId);
       if (assignment) {
         progress = assignment.progress || 0;
+        started = assignment.started || false;
+        completedEvents = assignment.completedEvents || 0;
       }
+    }
+    
+    // Only display courses that have been started
+    if (!started) {
+      return; // Skip this course if it hasn't been started
     }
     
     // Check if the course card already exists
@@ -274,29 +289,51 @@ const AssignedCoursesDisplay = {
       
       // Create new course card
       courseCard = document.createElement('div');
-      courseCard.className = 'curso-empleado';
+      courseCard.className = 'curso-empleado curso-adquirido-empleado';
       courseCard.dataset.courseId = courseId;
       employeeCoursesList.appendChild(courseCard);
     }
     
-    // Update the course card content
+    // Update the course card content with the new structure
     courseCard.innerHTML = `
       <div class="curso-empleado-card">
-        <h3>${courseDetails.title}</h3>
-        <p>Duración: ${courseDetails.duration}</p>
-        <p>${courseDetails.description}</p>
-        <div class="progress-bar">
-          <div class="progress" style="width: ${progress}%"></div>
+        <div class="curso-header">
+          <h3>${courseDetails.title}</h3>
         </div>
-        <p>${progress}% completado</p>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress" style="width: ${progress}%"></div>
+          </div>
+          <p>${progress}% completado</p>
+        </div>
+        <div class="course-stats">
+          <div class="completed-events">
+            <i class="fas fa-check-circle"></i>
+            <span>${completedEvents} eventos completados</span>
+          </div>
+          <div class="course-duration">
+            <i class="fas fa-clock"></i>
+            <span>Duración: ${courseDetails.duration}</span>
+          </div>
+        </div>
+        <p class="course-description">${courseDetails.description}</p>
         <button class="continue-btn">Continuar curso</button>
       </div>
     `;
     
+    // Make the entire card clickable
+    courseCard.addEventListener('click', (e) => {
+      // Prevent triggering if clicking on the button (button has its own handler)
+      if (!e.target.classList.contains('continue-btn')) {
+        this.continueCourse(courseId);
+      }
+    });
+    
     // Add event listener to the continue button
     const continueBtn = courseCard.querySelector('.continue-btn');
     if (continueBtn) {
-      continueBtn.addEventListener('click', () => {
+      continueBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent the card click event from firing
         // Handle continue course logic
         this.continueCourse(courseId);
       });
