@@ -235,7 +235,6 @@
       <!-- Journey search view -->
       <div id="searchView" style="display: block;">
         <div class="search-container">
-<<<<<<< Updated upstream
           <div class="search-filter-container">
   <h2>¿Qué Curso estás buscando?</h2>
   <div class="search-header">
@@ -254,10 +253,6 @@
       </select>
     </div>
   </div>
-=======
-          <h2>¿Qué Journey estás buscando?</h2>
-          <input type="text" class="search-bar" placeholder="Buscar journey...">
->>>>>>> Stashed changes
         </div>
         <div class="journey-grid">
           <!-- Journey cards will be dynamically populated here -->
@@ -609,6 +604,70 @@
     }
   </script>
 
+  <style>
+    /* Ensure visibility of course elements */
+    #cursoSection {
+      display: block;
+    }
+
+    #searchView {
+      display: block;
+    }
+
+    .journey-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      min-height: 200px; /* Ensure grid is visible even when empty */
+    }
+
+    .curso-visual-empresa {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+      display: block; /* Ensure visibility */
+    }
+
+    .curso-visual-empresa:hover {
+      transform: translateY(-5px);
+    }
+
+    .curso-visual-empresa h3 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 1.2em;
+    }
+
+    .curso-visual-empresa .time-to-complete {
+      color: #666;
+      font-size: 0.9em;
+      margin-bottom: 10px;
+    }
+
+    .curso-visual-empresa .summary {
+      color: #444;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    .curso-visual-empresa .acquire-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .curso-visual-empresa .acquire-btn:hover {
+      background: #0056b3;
+    }
+  </style>
   <style>
     /* Ensure visibility of course elements */
     #cursoSection {
