@@ -209,16 +209,17 @@
     </div>
     
     <!-- Curso Section - Learning opportunities -->
-    <div id="cursoSection" class="curso-section" style="display: block;">
-      <!-- Curso view tabs -->
-      <div class="curso-submenu">
+    <div id="cursoSection" class="journey-section" style="display: block;">
+      <!-- Journey view tabs -->
+      <div class="journey-submenu">
         <button id="searchTab" class="menu-option active">Búsqueda</button>
         <button id="acquiredTab" class="menu-option">Adquiridos</button>
       </div>
 
-      <!-- Curso search view -->
-      <div id="searchView">
+      <!-- Journey search view -->
+      <div id="searchView" style="display: block;">
         <div class="search-container">
+<<<<<<< Updated upstream
           <div class="search-filter-container">
   <h2>¿Qué Curso estás buscando?</h2>
   <div class="search-header">
@@ -237,173 +238,21 @@
       </select>
     </div>
   </div>
+=======
+          <h2>¿Qué Journey estás buscando?</h2>
+          <input type="text" class="search-bar" placeholder="Buscar journey...">
+>>>>>>> Stashed changes
         </div>
-        <div class="curso-grid">
-          <div class="curso-card">
-            <h3>Curso 1</h3>
-            <p>Descripción breve del curso</p>
-            <div class="curso-details">
-              <div class='curso-details-container'>
-                <p>Duración: 4 semanas</p>
-              </div>
-              <p>Nivel: Básico</p>
-              <p>Participantes: Mínimo 3</p>
-              <p><b>Precio:</b> $$$</p>
-              <p>Descripción detallada del curso y sus beneficios para la empresa. Incluye mejoras en productividad y desarrollo de habilidades específicas.</p>
-              <button class="purchase-btn">Comprar Curso</button>
-            </div>
-          </div>
-          <div class="curso-card">
-            <h3>Curso 2</h3>
-            <p>Descripción breve del curso</p>
-            <div class="curso-details">
-              <p>Duración: 6 semanas</p>
-              <p>Nivel: Intermedio</p>
-              <p>Participantes: Mínimo 3</p>
-              <p>Descripción detallada del curso y sus beneficios para la empresa. Incluye mejoras en liderazgo y trabajo en equipo.</p>
-              <p>Precio: $$$</p>
-              <button class="purchase-btn">Comprar Curso</button>
-            </div>
-          </div>
-          <div class="curso-card">
-            <h3>Curso 3</h3>
-            <p>Descripción breve del curso</p>
-            <div class="curso-details">
-              <p><b>Duración:</b> 8 semanas</p>
-              <p>Nivel: Avanzado</p>
-              <p>Participantes: Mínimo 3</p>
-              <p>Descripción detallada del curso y sus beneficios para la empresa. Enfocado en innovación y resolución de problemas complejos.</p>
-              <p>Precio:$$$</p>
-              <button class="purchase-btn">Comprar Curso</button>
-            </div>
-          </div>
-          <div class="curso-card">
-            <h3>Curso 4</h3>
-            <p>Descripción breve del curso</p>
-            <div class="curso-details">
-              <p>Duración: 5 semanas</p>
-              <p>Nivel: Básico</p>
-              <p>Participantes: Mínimo 3</p>
-              <p>Descripción detallada del curso y sus beneficios para la empresa. Orientado a mejorar la comunicación y habilidades de presentación.</p>
-              <p>Precio: $$$</p>
-              <button class="purchase-btn">Comprar Curso</button>
-            </div>
-          </div>
+        <div class="journey-grid">
+          <!-- Journey cards will be dynamically populated here -->
         </div>
       </div>
 
-      <!-- Acquired cursos view -->
+      <!-- Acquired journeys view -->
       <div id="acquiredView" style="display: none;">
-        <div class="curso-grid">
-          <div class="curso-card">
-            <h3>Curso Adquirido 1</h3>
-            <p>Estado: En progreso</p>
-            <p class="deadline">Fecha límite para agendar: 30-06-2023</p>
-            <select class="schedule-dropdown">
-              <option>Seleccionar horario para workshop</option>
-              <option>Mañana 9:00 AM</option>
-              <option>Tarde 2:00 PM</option>
-            </select>
-            <div class="curso-details">
-              <table class="participants-table">
-                <thead>
-                  <tr>
-                    <th>Participante</th>
-                    <th>Progreso</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Participante 1</td>
-                    <td>75%</td>
-                    <td>Activo</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="curso-card">
-            <h3>Curso Adquirido 2</h3>
-            <p>Estado: En progreso</p>
-            <select class="schedule-dropdown">
-              <option>Seleccionar horario</option>
-              <option>Mañana 9:00 AM</option>
-              <option>Tarde 2:00 PM</option>
-            </select>
-            <div class="curso-details">
-              <table class="participants-table">
-                <thead>
-                  <tr>
-                    <th>Participante</th>
-                    <th>Progreso</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Participante 1</td>
-                    <td>75%</td>
-                    <td>Activo</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="curso-card">
-            <h3>Curso Adquirido 3</h3>
-            <p>Estado: En progreso</p>
-            <select class="schedule-dropdown">
-              <option>Seleccionar horario</option>
-              <option>Mañana 9:00 AM</option>
-              <option>Tarde 2:00 PM</option>
-            </select>
-            <div class="curso-details">
-              <table class="participants-table">
-                <thead>
-                  <tr>
-                    <th>Participante</th>
-                    <th>Progreso</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Participante 1</td>
-                    <td>75%</td>
-                    <td>Activo</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="curso-card">
-            <h3>Curso Adquirido 4</h3>
-            <p>Estado: En progreso</p>
-            <select class="schedule-dropdown">
-              <option>Seleccionar horario</option>
-              <option>Mañana 9:00 AM</option>
-              <option>Tarde 2:00 PM</option>
-            </select>
-            <div class="curso-details">
-              <table class="participants-table">
-                <thead>
-                  <tr>
-                    <th>Participante</th>
-                    <th>Progreso</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Participante 1</td>
-                    <td>75%</td>
-                    <td>Activo</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+        <h2 style="margin-bottom: 20px;">Adquiridos</h2>
+        <div class="journey-grid">
+          <!-- Acquired journey cards will be dynamically populated here -->
         </div>
       </div>
     </div>
@@ -525,6 +374,7 @@
   <script src="main.js"></script>
   <script src="profile-manager.js"></script>
   <script src="menu-toggle.js"></script>
+<<<<<<< Updated upstream
   <script src="js/empresa-navigation.js"></script>
   <script src="js/curso-manager.js"></script>
   <script>
@@ -586,8 +436,226 @@
         cerrarSesion();
         // Redirigir a la página de autenticación
         window.location.href = 'auth.html';
+=======
+  <script type="module">
+    console.log('Starting script execution');
+    
+    try {
+      // Import courseData with absolute path
+      const { courseData } = await import('./courseData.js');
+      console.log('courseData imported successfully:', courseData);
+
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded event triggered');
+
+        // Function to hide all sections
+        function hideAllSections() {
+          const sections = [
+            'profileSection',
+            'cursoSection',
+            'networkSection',
+            'rankingsSection',
+            'achievementsSection',
+            'empresaMessagingSection',
+            'empresaNotificationsSection'
+          ];
+          
+          sections.forEach(sectionId => {
+            const section = document.getElementById(sectionId);
+            if (section) {
+              section.style.display = 'none';
+            }
+          });
+        }
+
+        // Function to show a specific section
+        function showSection(sectionId) {
+          console.log('Showing section:', sectionId);
+          hideAllSections();
+          const section = document.getElementById(sectionId);
+          if (section) {
+            section.style.display = 'block';
+          }
+        }
+
+        // Function to create course card
+        function createCourseCard(course) {
+          console.log('Creating card for course:', course);
+          const courseCard = document.createElement('div');
+          courseCard.className = 'curso-visual-empresa';
+          
+          courseCard.innerHTML = `
+            <h3>${course.title}</h3>
+            <p class="time-to-complete">Duración: ${course.estimatedTime}</p>
+            <p class="summary">${course.description}</p>
+            <button class="acquire-btn" data-course-id="${course.id}">Adquirir curso</button>
+          `;
+
+          return courseCard;
+        }
+
+        // Function to load and display courses
+        function loadCourses() {
+          console.log('Loading courses...');
+          const searchView = document.getElementById('searchView');
+          console.log('searchView element:', searchView);
+          
+          const journeyGrid = searchView.querySelector('.journey-grid');
+          console.log('journeyGrid element:', journeyGrid);
+          
+          if (!journeyGrid) {
+            console.error('Journey grid not found!');
+            return;
+          }
+
+          // Clear existing content
+          journeyGrid.innerHTML = '';
+          console.log('Available courses:', courseData.courses);
+
+          // Load and display all courses
+          courseData.courses.forEach(course => {
+            const courseCard = createCourseCard(course);
+            journeyGrid.appendChild(courseCard);
+            console.log('Added course card:', course.title);
+          });
+        }
+
+        // Initialize profile card flip functionality
+        const perfilOption = document.getElementById('perfilOption');
+        if (perfilOption) {
+          perfilOption.addEventListener('click', function() {
+            initializeProfileCardFlip();
+            showSection('profileSection');
+          });
+        }
+
+        // Add click event listeners to all menu options
+        const menuOptions = document.querySelectorAll('#empresaMenu .menu-option');
+        menuOptions.forEach(option => {
+          option.addEventListener('click', function() {
+            console.log('Menu option clicked:', this.id);
+            // Remove active class from all options
+            menuOptions.forEach(opt => opt.classList.remove('active'));
+            // Add active class to clicked option
+            this.classList.add('active');
+            
+            // Show corresponding section based on the option ID
+            let sectionId;
+            switch(this.id) {
+              case 'perfilOption':
+                sectionId = 'profileSection';
+                break;
+              case 'cursoOption':
+                sectionId = 'cursoSection';
+                loadCourses(); // Load courses when curso section is shown
+                break;
+              case 'networkOption':
+                sectionId = 'networkSection';
+                break;
+              case 'rankingsOption':
+                sectionId = 'rankingsSection';
+                break;
+              case 'achievementsOption':
+                sectionId = 'achievementsSection';
+                break;
+              case 'empresaMessagingOption':
+                sectionId = 'empresaMessagingSection';
+                break;
+              case 'empresaNotificationsOption':
+                sectionId = 'empresaNotificationsSection';
+                break;
+            }
+            showSection(sectionId);
+          });
+        });
+
+        // Set initial state - show Curso section by default and load courses
+        console.log('Setting initial state');
+        hideAllSections();
+        showSection('cursoSection');
+        loadCourses();
+        
+        // Set Curso option as active by default
+        const cursoOption = document.getElementById('cursoOption');
+        if (cursoOption) {
+          cursoOption.classList.add('active');
+        }
+
+        // Initialize company code display
+        const companyCodeSpan = document.getElementById('companyCode');
+        if (companyCodeSpan && !companyCodeSpan.textContent) {
+          companyCodeSpan.textContent = 'ABC123';
+        }
+>>>>>>> Stashed changes
       });
+    } catch (error) {
+      console.error('Error in script execution:', error);
     }
   </script>
+
+  <style>
+    /* Ensure visibility of course elements */
+    #cursoSection {
+      display: block;
+    }
+
+    #searchView {
+      display: block;
+    }
+
+    .journey-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      min-height: 200px; /* Ensure grid is visible even when empty */
+    }
+
+    .curso-visual-empresa {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+      display: block; /* Ensure visibility */
+    }
+
+    .curso-visual-empresa:hover {
+      transform: translateY(-5px);
+    }
+
+    .curso-visual-empresa h3 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 1.2em;
+    }
+
+    .curso-visual-empresa .time-to-complete {
+      color: #666;
+      font-size: 0.9em;
+      margin-bottom: 10px;
+    }
+
+    .curso-visual-empresa .summary {
+      color: #444;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    .curso-visual-empresa .acquire-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .curso-visual-empresa .acquire-btn:hover {
+      background: #0056b3;
+    }
+  </style>
 </body>
 </html>
