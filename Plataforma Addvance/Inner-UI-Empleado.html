@@ -125,7 +125,7 @@
         </div>
         <div class="journey-grid">
           <!-- Journey cards will be dynamically populated here -->
-        </div>
+              </div>
       </div>
 
       <!-- Employee's assigned courses view -->
@@ -134,11 +134,11 @@
         <div id="employeeCoursesList">
           <!-- Los cursos asignados al empleado se cargarán aquí dinámicamente -->
           <p class="no-courses-message">No tienes cursos asignados actualmente.</p>
-              </div>
             </div>
           </div>
-  </div>
-  
+        </div>
+      </div>
+
   <!-- External JavaScript dependencies -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cloudflare-static/email-decode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
@@ -864,7 +864,7 @@
           <div class="curso-header">
             <h3>${course.title}</h3>
             <i class="fas fa-chevron-down toggle-icon"></i>
-            </div>
+              </div>
           <div class="progress-container">
             <div class="progress-bar">
               <div class="progress" style="width: ${progress}%"></div>
@@ -874,18 +874,18 @@
             <div class="completed-events">
               <i class="fas fa-check-circle"></i>
               <span>${completedEvents} eventos completados con éxito</span>
-        </div>
-              </div>
+            </div>
+            </div>
           <div class="curso-content">
             ${generateModulesHTML(course)}
             <div class="prueba-final-container ${progress < 80 ? 'locked' : ''}">
               <div class="modulo-header">
                 <span>Prueba Final</span>
                 <span>${progress < 80 ? 'Bloqueado' : ''}</span>
-            </div>
+          </div>
               <div class="modulo-points">Puntos obtenidos: 0</div>
               <button class="comenzar-modulo-btn">Comenzar</button>
-          </div>
+        </div>
             </div>
         `;
         
@@ -947,13 +947,13 @@
                     <div class="leccion-item" data-lesson-id="${lesson.id}" data-module-id="${module.id}">
                       <div class="leccion-header">
                         <span>Lección ${lessonIndex + 1}: ${lesson.title}</span>
-            </div>
+              </div>
                       <button class="${buttonClass}" data-lesson-id="${lesson.id}" data-module-id="${module.id}" 
                         ${isLocked ? 'disabled' : ''} ${lessonCompleted ? 'disabled' : ''}>${buttonText}</button>
-          </div>
+            </div>
                   `;
                 }).join('')}
-        </div>
+          </div>
             `;
           }
           
@@ -973,7 +973,7 @@
                   <div class="quiz-header">
                     <span>${module.quiz.title || 'Evaluación del módulo'}</span>
                     ${quizCompleted ? `<span class="quiz-score">(${quizScore} puntos)</span>` : ''}
-              </div>
+            </div>
                   <button class="${buttonClass}" data-quiz-id="${module.quiz.id}" data-module-id="${module.id}" 
                     ${isLocked ? 'disabled' : ''} ${quizCompleted ? 'disabled' : ''}>${buttonText}</button>
             </div>
@@ -1012,7 +1012,7 @@
               <div class="modulo-header">
                 <span>Módulo ${index + 1}: ${module.title}</span>
                 ${moduleProgress.status === 'completed' ? '<span class="completion-badge" title="Módulo completado">✓</span>' : ''}
-            </div>
+        </div>
               ${moduleStatus}
               <div class="modulo-points">Puntos obtenidos: ${modulePoints}</div>
               ${lessonsList}
@@ -1066,6 +1066,18 @@
               }
             });
           });
+          
+          // Add event listeners for final test buttons
+          const finalTestButton = card.querySelector('.prueba-final-btn');
+          if (finalTestButton && !finalTestButton.disabled) {
+            finalTestButton.addEventListener('click', function(e) {
+              e.stopPropagation();
+              const courseId = card.dataset.courseId;
+              if (courseId) {
+                openFinalTestModal(courseId, finalTestButton);
+              }
+            });
+          }
         });
       }
       
@@ -1120,7 +1132,7 @@
               </div>
                 <span class="lesson-progress-text">Página 1/${totalPages}</span>
             </div>
-            </div>
+          </div>
             <div class="lesson-modal-body">
               <h3>${initialPageContent.header}</h3>
               ${initialPageContent.body}
@@ -1131,8 +1143,8 @@
                 <button id="prevPage" class="lesson-btn" disabled>Anterior</button>
                 <button id="nextPage" class="lesson-btn" ${totalPages <= 1 ? 'disabled' : ''}>Siguiente</button>
             </div>
-            </div>
           </div>
+        </div>
         `;
         
         // Show modal
@@ -1504,15 +1516,15 @@
             <div class="quiz-modal-header">
               <h3>${module.quiz.title || `Quiz - ${module.title}`}</h3>
               <button id="closeQuiz" class="quiz-btn close-btn">Cerrar</button>
-          </div>
+            </div>
             <div class="quiz-modal-body">
               <form id="quizForm">
                 ${generateQuizQuestionsHTML(selectedQuestions)}
               </form>
-        </div>
+          </div>
             <div class="quiz-modal-footer">
               <button id="finalizarQuiz" class="quiz-btn">Finalizar</button>
-      </div>
+        </div>
     </div>
         `;
         
@@ -1557,10 +1569,10 @@
                     <div class="quiz-option">
                       <input type="radio" id="q${qIndex}_o${oIndex}" name="question_${qIndex}" value="${oIndex}" data-correct="${question.correctAnswer === oIndex ? 'true' : 'false'}">
                       <label for="q${qIndex}_o${oIndex}">${option}</label>
-      </div>
+              </div>
                   `;
                 }).join('')}
-    </div>
+            </div>
             </div>
           `;
         }).join('');
@@ -2164,13 +2176,20 @@
           progress[course.id].overallProgress = overallProgress;
           localStorage.setItem(`employee_progress_${currentEmployeeId}`, JSON.stringify(progress));
           
+          // Check for final test completion status
+          const finalTestCompleted = courseProgress.finalTest && courseProgress.finalTest.completed;
+          const finalTestScore = finalTestCompleted ? courseProgress.finalTest.score : 0;
+          const finalTestButtonClass = finalTestCompleted ? 'prueba-final-btn completed' : 'prueba-final-btn';
+          const finalTestButtonText = finalTestCompleted ? '✓ Completado' : 'Realizar Prueba Final';
+          const finalTestPointsText = finalTestCompleted ? `Puntos obtenidos: ${finalTestScore}` : 'Completa al menos el 80% del curso para desbloquear la prueba final.';
+          
           // Create course card HTML
           coursesHTML += `
             <div id="curso-${course.id}" class="curso-adquirido-empleado" data-course-id="${course.id}">
               <div class="curso-header">
                 <div class="curso-title">
                   <h3>${course.title}</h3>
-                  <div class="curso-categoria">${course.category}</div>
+                  <div class="curso-categoria">${course.category || 'Sin categoría'}</div>
               </div>
                 <div class="curso-progress">
                   <div class="progress-bar">
@@ -2185,13 +2204,14 @@
                   ${generateModulesHTML(course)}
             </div>
                 
-                <div class="prueba-final-container ${overallProgress < 80 ? 'locked' : ''}">
+                <div class="prueba-final-container ${overallProgress < 80 ? 'locked' : ''} ${finalTestCompleted ? 'completed' : ''}">
                   <div class="modulo-header">
                     <span>Prueba Final: ${course.title}</span>
-                    <span>${overallProgress < 80 ? 'Bloqueado' : ''}</span>
+                    ${overallProgress < 80 ? '<span>Bloqueado</span>' : ''}
+                    ${finalTestCompleted ? '<span class="completion-badge" title="Prueba Final Completada">✓</span>' : ''}
               </div>
-                  <div class="modulo-points">Completa al menos el 80% del curso para desbloquear la prueba final.</div>
-                  <button class="prueba-final-btn" ${overallProgress < 80 ? 'disabled' : ''}>Realizar Prueba Final</button>
+                  <div class="modulo-points">${finalTestPointsText}</div>
+                  <button class="${finalTestButtonClass}" ${overallProgress < 80 || finalTestCompleted ? 'disabled' : ''}>${finalTestButtonText}</button>
             </div>
           </div>
         </div>
@@ -2207,6 +2227,336 @@
         window.parent.postMessage({ type: 'contentLoaded' }, '*');
         
         console.log('Assigned courses loaded successfully');
+      }
+
+      // Add event listeners to the final test buttons when courses are loaded
+      function addFinalTestListeners() {
+        const finalTestButtons = document.querySelectorAll('.prueba-final-btn');
+        finalTestButtons.forEach(button => {
+          button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const courseId = this.closest('.curso-adquirido-empleado').dataset.courseId;
+            if (courseId) {
+              openFinalTestModal(courseId, button);
+            }
+          });
+        });
+      }
+
+      // Function to open the final test modal with questions from all modules
+      function openFinalTestModal(courseId, buttonElement) {
+        console.log(`Opening final test for course ${courseId}`);
+        
+        // Find course
+        const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
+        if (!courseDetails) {
+          console.error(`Course not found: ${courseId}`);
+          return;
+        }
+        
+        // Get all questions from all modules
+        const allQuestions = [];
+        courseDetails.modules.forEach(module => {
+          if (module.quiz && module.quiz.questions) {
+            module.quiz.questions.forEach(question => {
+              allQuestions.push({
+                ...question,
+                moduleId: module.id
+              });
+            });
+          }
+        });
+        
+        if (!allQuestions || allQuestions.length === 0) {
+          alert('No hay preguntas disponibles para la prueba final.');
+          return;
+        }
+        
+        // Randomly select 10 questions (or fewer if less than 10 are available)
+        const selectedQuestions = randomSelectQuestions(allQuestions, Math.min(10, allQuestions.length));
+        
+        // Create modal if it doesn't exist
+        let finalTestModal = document.getElementById('finalTestModal');
+        if (!finalTestModal) {
+          finalTestModal = document.createElement('div');
+          finalTestModal.id = 'finalTestModal';
+          finalTestModal.className = 'quiz-modal final-test-modal';
+          
+          document.body.appendChild(finalTestModal);
+        }
+        
+        // Create modal content
+        finalTestModal.innerHTML = `
+          <div class="quiz-modal-content">
+            <div class="quiz-modal-header">
+              <h3>Prueba Final: ${courseDetails.title}</h3>
+              <button id="closeFinalTest" class="quiz-btn close-btn">Cerrar</button>
+            </div>
+            <div class="quiz-modal-body">
+              <div class="final-test-intro">
+                <p>Esta prueba final consta de ${selectedQuestions.length} preguntas seleccionadas de todos los módulos del curso.</p>
+                <p>Para aprobar necesitas al menos el 60% de respuestas correctas.</p>
+              </div>
+              <form id="finalTestForm">
+                ${generateQuizQuestionsHTML(selectedQuestions)}
+              </form>
+          </div>
+            <div class="quiz-modal-footer">
+              <button id="finalizarFinalTest" class="quiz-btn">Finalizar Prueba</button>
+        </div>
+    </div>
+        `;
+        
+        // Show modal
+        finalTestModal.style.display = 'flex';
+        
+        // Store final test data for scoring
+        const finalTestData = {
+          courseId,
+          questions: selectedQuestions,
+          buttonElement
+        };
+        
+        // Add event listeners
+        const closeButton = document.getElementById('closeFinalTest');
+        const finalizarButton = document.getElementById('finalizarFinalTest');
+        
+        if (closeButton) {
+          closeButton.addEventListener('click', function() {
+            confirmCloseFinalTest(finalTestData);
+          });
+        }
+        
+        if (finalizarButton) {
+          finalizarButton.addEventListener('click', function() {
+            finalizeFinalTest(finalTestData);
+          });
+        }
+      }
+      
+      // Function to confirm final test closure
+      function confirmCloseFinalTest(finalTestData) {
+        // Show confirmation dialog
+        if (confirm('Si continua por cerrar la prueba final, todo progreso se perderá. ¿Está seguro?')) {
+          closeFinalTestModal();
+        }
+      }
+      
+      // Function to close the final test modal
+      function closeFinalTestModal() {
+        const finalTestModal = document.getElementById('finalTestModal');
+        if (finalTestModal) {
+          finalTestModal.style.display = 'none';
+        }
+      }
+      
+      // Function to finalize final test and calculate score
+      function finalizeFinalTest(finalTestData) {
+        const finalTestForm = document.getElementById('finalTestForm');
+        const questions = finalTestForm.querySelectorAll('.quiz-question');
+        
+        // Check if all questions are answered
+        let allAnswered = true;
+        let unansweredQuestions = [];
+        
+        questions.forEach((question, index) => {
+          const answered = question.querySelector('input[type="radio"]:checked');
+          if (!answered) {
+            allAnswered = false;
+            unansweredQuestions.push(index + 1);
+          }
+        });
+        
+        if (!allAnswered) {
+          // Ask if user wants to continue anyway
+          if (!confirm(`No has respondido todas las preguntas (Preguntas sin responder: ${unansweredQuestions.join(', ')}). ¿Deseas finalizar la prueba final?`)) {
+            return;
+          }
+        }
+        
+        // Calculate score
+        let correctAnswers = 0;
+        questions.forEach(question => {
+          const selectedOption = question.querySelector('input[type="radio"]:checked');
+          if (selectedOption && selectedOption.dataset.correct === 'true') {
+            correctAnswers++;
+          }
+        });
+        
+        const totalQuestions = questions.length;
+        const scorePercentage = (correctAnswers / totalQuestions) * 100;
+        const passed = scorePercentage >= 60;
+        const pointsEarned = correctAnswers * 10; // 10 points per correct answer
+        
+        // Show score message
+        alert(`Has obtenido ${correctAnswers} de ${totalQuestions} respuestas correctas (${scorePercentage.toFixed(1)}%).\n${passed ? `¡Felicidades! Has aprobado la prueba final con ${pointsEarned} puntos.` : 'No has alcanzado el puntaje necesario para aprobar.'}`);
+        
+        // Update progress if passed
+        if (passed) {
+          markFinalTestCompleted(finalTestData.courseId, finalTestData.buttonElement, pointsEarned);
+        }
+        
+        // Close modal
+        closeFinalTestModal();
+      }
+      
+      // Function to mark a final test as completed
+      function markFinalTestCompleted(courseId, buttonElement, pointsEarned) {
+        console.log(`Marking final test as completed for course ${courseId} with ${pointsEarned} points`);
+        
+        // Get current employee progress
+        const currentEmployeeId = getCurrentUserId();
+        const progress = JSON.parse(localStorage.getItem(`employee_progress_${currentEmployeeId}`) || '{}');
+        
+        // Initialize course progress if needed
+        if (!progress[courseId]) {
+          progress[courseId] = { modules: {}, overallProgress: 0 };
+        }
+        
+        // Update final test completion status
+        progress[courseId].finalTest = {
+          completed: true,
+          score: pointsEarned,
+          completionDate: new Date().toISOString()
+        };
+        
+        // Increment course completion counter
+        if (!progress[courseId].completionCount) {
+          progress[courseId].completionCount = 1;
+        } else {
+          progress[courseId].completionCount++;
+        }
+        
+        // Save progress
+        localStorage.setItem(`employee_progress_${currentEmployeeId}`, JSON.stringify(progress));
+        
+        // Update UI
+        if (buttonElement) {
+          buttonElement.textContent = '✓ Completado';
+          buttonElement.disabled = true;
+          buttonElement.classList.add('completed');
+          
+          // Update points displayed
+          const pointsElement = buttonElement.closest('.prueba-final-container').querySelector('.modulo-points');
+          if (pointsElement) {
+            pointsElement.textContent = `Puntos obtenidos: ${pointsEarned}`;
+          }
+          
+          // Add completion badge to the header
+          const moduleHeader = buttonElement.closest('.prueba-final-container').querySelector('.modulo-header');
+          if (moduleHeader && !moduleHeader.querySelector('.completion-badge')) {
+            const badge = document.createElement('span');
+            badge.className = 'completion-badge';
+            badge.innerHTML = '✓';
+            badge.title = 'Prueba Final Completada';
+            moduleHeader.appendChild(badge);
+          }
+          
+          // Mark the container as completed
+          buttonElement.closest('.prueba-final-container').classList.add('completed');
+        }
+        
+        // Update overall course progress display
+        updateCourseOverallProgress(courseId);
+        
+        // Trigger event for course completion
+        const courseCompletedEvent = new CustomEvent('finalTestCompleted', {
+          detail: {
+            courseId,
+            employeeId: currentEmployeeId,
+            score: pointsEarned,
+            completionDate: new Date().toISOString()
+          }
+        });
+        document.dispatchEvent(courseCompletedEvent);
+        
+        console.log(`Final test completed for course ${courseId}`);
+      }
+      
+      // Update overall course progress display
+      function updateCourseOverallProgress(courseId) {
+        const courseCard = document.querySelector(`.curso-adquirido-empleado[data-course-id="${courseId}"]`);
+        if (!courseCard) return;
+        
+        const progressFill = courseCard.querySelector('.progress-fill');
+        const progressPercentage = courseCard.querySelector('.progress-percentage');
+        
+        if (!progressFill || !progressPercentage) return;
+        
+        // Get current employee progress
+        const currentEmployeeId = getCurrentUserId();
+        const progress = JSON.parse(localStorage.getItem(`employee_progress_${currentEmployeeId}`) || '{}');
+        
+        // Get course details
+        const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
+        if (!courseDetails) return;
+        
+        // Calculate new overall progress
+        const overallProgress = calculateOverallProgress(courseDetails, progress[courseId] || {});
+        
+        // Update UI
+        progressFill.style.width = `${overallProgress}%`;
+        progressPercentage.textContent = `${overallProgress}%`;
+        
+        // Update progress in localStorage
+        if (progress[courseId]) {
+          progress[courseId].overallProgress = overallProgress;
+          localStorage.setItem(`employee_progress_${currentEmployeeId}`, JSON.stringify(progress));
+        }
+      }
+
+      // Add CSS for the final test modal
+      document.addEventListener('DOMContentLoaded', function() {
+        const finalTestStyle = document.createElement('style');
+        finalTestStyle.textContent = `
+          .final-test-modal {
+            z-index: 1002;
+          }
+          
+          .final-test-intro {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+          }
+          
+          .prueba-final-container.completed {
+            border-color: #28a745;
+            background-color: rgba(40, 167, 69, 0.05);
+          }
+          
+          .prueba-final-btn.completed {
+            background-color: #28a745;
+          }
+        `;
+        document.head.appendChild(finalTestStyle);
+      });
+
+      // Update the overall progress calculation to include final test
+      function calculateOverallProgress(course, courseProgress) {
+        if (!course || !course.modules) return 0;
+        
+        // Count modules with completed status
+        let completedModules = 0;
+        let totalModules = course.modules.length;
+        
+        // Check each module's completion status
+        for (const moduleId in courseProgress.modules) {
+          const moduleProgress = courseProgress.modules[moduleId];
+          if (moduleProgress && moduleProgress.status === 'completed') {
+            completedModules++;
+          }
+        }
+        
+        // Calculate base progress from modules
+        let moduleProgress = (completedModules / totalModules) * 100;
+        
+        // Add bonus for final test completion if applicable
+        const finalTestBonus = (courseProgress.finalTest && courseProgress.finalTest.completed) ? 10 : 0;
+        
+        // Ensure overall progress doesn't exceed 100%
+        return Math.min(Math.round(moduleProgress + finalTestBonus), 100);
       }
     });
     
