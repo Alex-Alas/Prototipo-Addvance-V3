@@ -102,12 +102,14 @@ const AssignedCoursesDisplay = {
       const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
       if (!courseDetails) return;
       
-      // Get progress information if available
+      // Get progress information and started status if available
       let progress = 0;
+      let started = false;
       if (employeeAssignments[currentEmployeeId]) {
         const assignment = employeeAssignments[currentEmployeeId].find(a => a.courseId === courseId);
         if (assignment) {
           progress = assignment.progress || 0;
+          started = assignment.started || false;
         }
       }
       
@@ -127,7 +129,7 @@ const AssignedCoursesDisplay = {
         <div class="curso-summary">
           <p>${courseDetails.description}</p>
         </div>
-        <button class="comenzar-curso-btn">Comenzar curso</button>
+        <button class="comenzar-curso-btn">${started ? 'Continuar curso' : 'Comenzar curso'}</button>
       `;
       
       coursesGrid.appendChild(courseCard);
@@ -167,6 +169,7 @@ const AssignedCoursesDisplay = {
     let assignmentIndex = employeeAssignments[currentEmployeeId].findIndex(a => a.courseId === courseId);
     if (assignmentIndex !== -1) {
       employeeAssignments[currentEmployeeId][assignmentIndex].status = 'active';
+      employeeAssignments[currentEmployeeId][assignmentIndex].started = true; // Set started to true
     } else {
       // Create a new assignment if it doesn't exist
       employeeAssignments[currentEmployeeId].push({
@@ -174,10 +177,21 @@ const AssignedCoursesDisplay = {
         status: 'active',
         progress: 0,
         startDate: new Date().toISOString(),
-        lastAccessDate: new Date().toISOString()
+        lastAccessDate: new Date().toISOString(),
+        started: true // Set started to true
       });
     }
     localStorage.setItem('employeeAssignments', JSON.stringify(employeeAssignments));
+    
+    // Also update the employee_course_assignments structure
+    const assignments = JSON.parse(localStorage.getItem('employee_course_assignments') || '{}');
+    if (assignments[currentEmployeeId]) {
+      const assignmentIdx = assignments[currentEmployeeId].findIndex(a => a.courseId === courseId);
+      if (assignmentIdx !== -1) {
+        assignments[currentEmployeeId][assignmentIdx].started = true;
+        localStorage.setItem('employee_course_assignments', JSON.stringify(assignments));
+      }
+    }
     
     // 2. Create or update the course in the 'Mis Cursos' tab
     this.createOrUpdateCourseInAcquiredTab(courseId, courseDetails);

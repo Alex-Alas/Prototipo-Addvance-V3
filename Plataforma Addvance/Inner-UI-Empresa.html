@@ -746,11 +746,22 @@
           
           // Get progress information if available
           let progress = 0;
+          let started = false;
           const employeeAssignments = JSON.parse(localStorage.getItem('employeeAssignments') || '{}');
           if (employeeAssignments[employeeId]) {
             const assignment = employeeAssignments[employeeId].find(a => a.courseId === courseId);
             if (assignment) {
               progress = assignment.progress || 0;
+              started = assignment.started || false;
+            }
+          }
+          
+          // Also check employee_course_assignments for started status
+          const courseAssignments = JSON.parse(localStorage.getItem('employee_course_assignments') || '{}');
+          if (!started && courseAssignments[employeeId]) {
+            const assignment = courseAssignments[employeeId].find(a => a.courseId === courseId);
+            if (assignment && assignment.started) {
+              started = true;
             }
           }
           
@@ -765,7 +776,7 @@
               </div>
               <span class="progress-text">${progress}%</span>
             </td>
-            <td>${progress > 0 ? 'Activo' : 'Inactivo'}</td>
+            <td>${started || progress > 0 ? 'Activo' : 'Inactivo'}</td>
           `;
           
           tableBody.appendChild(newRow);
