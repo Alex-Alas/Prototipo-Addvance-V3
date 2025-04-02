@@ -757,6 +757,9 @@
         incrementSuccessfulEvents(courseId);
         
         console.log(`Lesson ${lessonId} in module ${moduleId} of course ${courseId} marked as completed.`);
+        
+        // Check if the module is now fully completed and unlock next module if so
+        checkModuleCompletionAndUnlockNext(courseId, moduleId);
       }
       
       // Function to update course progress indicators
@@ -1161,6 +1164,9 @@
         incrementSuccessfulEvents(courseId);
         
         console.log(`Quiz in module ${moduleId} of course ${courseId} marked as completed with ${correctAnswers} correct answers.`);
+        
+        // Check if the module is now fully completed and unlock next module if so
+        checkModuleCompletionAndUnlockNext(courseId, moduleId);
       }
       
       // Function to calculate module points
@@ -1184,49 +1190,40 @@
         return points;
       }
       
-      // Function to update module status based on completion
+      // Function to update the module status
       function updateModuleStatus(moduleProgress, courseId, moduleId) {
-        // Get course and module details
-        const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
-        if (!courseDetails) return;
+        // Count total lessons and how many are completed
+        let totalLessons = 0;
+        let completedLessons = 0;
         
-        const moduleDetails = courseDetails.modules.find(m => m.id === moduleId);
-        if (!moduleDetails) return;
-        
-        // Count total items and completed items
-        let totalItems = 0;
-        let completedItems = 0;
-        
-        // Count lessons
-        if (moduleDetails.lessons) {
-          totalItems += moduleDetails.lessons.length;
-          
-          moduleDetails.lessons.forEach(lesson => {
-            if (moduleProgress.lessons[lesson.id] && moduleProgress.lessons[lesson.id].completed) {
-              completedItems++;
+        // Get course data to count actual lessons
+        const course = window.courseData.find(c => c.id === courseId);
+        if (course) {
+          const module = course.modules.find(m => m.id === moduleId);
+          if (module) {
+            totalLessons = module.lessons.length;
+            
+            // Count completed lessons
+            for (const lesson of module.lessons) {
+              if (moduleProgress.lessons[lesson.id] && moduleProgress.lessons[lesson.id].completed) {
+                completedLessons++;
+              }
             }
-          });
-        }
-        
-        // Count quiz
-        if (moduleDetails.quiz) {
-          totalItems++;
-          if (moduleProgress.quiz && moduleProgress.quiz.completed) {
-            completedItems++;
+            
+            // Check if module has a quiz
+            const hasQuiz = module.quiz && module.quiz.questions && module.quiz.questions.length > 0;
+            
+            // Determine module status
+            if (completedLessons === totalLessons && (!hasQuiz || moduleProgress.quiz.completed)) {
+              moduleProgress.status = 'completed';
+              console.log(`Module ${moduleId} of course ${courseId} is now fully completed.`);
+            } else if (completedLessons > 0 || moduleProgress.quiz.completed) {
+              moduleProgress.status = 'in-progress';
+            } else {
+              moduleProgress.status = 'not-started';
+            }
           }
         }
-        
-        // Determine status
-        if (completedItems === 0) {
-          moduleProgress.status = 'not-started';
-        } else if (completedItems === totalItems) {
-          moduleProgress.status = 'completed';
-        } else {
-          moduleProgress.status = 'in-progress';
-        }
-        
-        // Calculate progress percentage
-        moduleProgress.progress = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
       }
       
       // Function to increment successful events counter
@@ -1296,6 +1293,157 @@
             finalTestContainer.querySelector('span:last-child').textContent = '';
           }
         });
+      }
+
+      // Function to check if a module is fully completed and unlock the next one
+      function checkModuleCompletionAndUnlockNext(courseId, moduleId) {
+        console.log(`Checking completion for module ${moduleId} in course ${courseId}`);
+        
+        // Get current employee progress
+        const currentEmployeeId = getCurrentUserId();
+        const progress = JSON.parse(localStorage.getItem(`employee_progress_${currentEmployeeId}`) || '{}');
+        
+        if (!progress[courseId] || !progress[courseId].modules[moduleId]) {
+          console.log('No progress found for this module');
+          return false;
+        }
+        
+        const moduleProgress = progress[courseId].modules[moduleId];
+        
+        // Check if module is already marked as completed
+        if (moduleProgress.status === 'completed') {
+          console.log('Module is already completed');
+          unlockNextModule(courseId, moduleId);
+          return true;
+        }
+        
+        // Get course and module details
+        const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
+        if (!courseDetails) {
+          console.log('Course details not found');
+          return false;
+        }
+        
+        const moduleDetails = courseDetails.modules.find(m => m.id === moduleId);
+        if (!moduleDetails) {
+          console.log('Module details not found');
+          return false;
+        }
+        
+        // Count total items and completed items
+        let totalItems = 0;
+        let completedItems = 0;
+        
+        // Count lessons
+        if (moduleDetails.lessons && moduleDetails.lessons.length > 0) {
+          totalItems += moduleDetails.lessons.length;
+          
+          moduleDetails.lessons.forEach(lesson => {
+            if (moduleProgress.lessons[lesson.id] && moduleProgress.lessons[lesson.id].completed) {
+              completedItems++;
+            }
+          });
+        }
+        
+        // Count quiz
+        if (moduleDetails.quiz) {
+          totalItems++;
+          if (moduleProgress.quiz && moduleProgress.quiz.completed) {
+            completedItems++;
+          }
+        }
+        
+        // Check if all items are completed
+        const isCompleted = totalItems > 0 && completedItems === totalItems;
+        console.log(`Module completion: ${completedItems}/${totalItems} items completed`);
+        
+        if (isCompleted) {
+          // Mark module as completed
+          moduleProgress.status = 'completed';
+          moduleProgress.progress = 100;
+          moduleProgress.completedAt = new Date().toISOString();
+          
+          // Save progress
+          localStorage.setItem(`employee_progress_${currentEmployeeId}`, JSON.stringify(progress));
+          
+          // Unlock next module
+          unlockNextModule(courseId, moduleId);
+          
+          return true;
+        }
+        
+        return false;
+      }
+      
+      // Function to unlock the next module
+      function unlockNextModule(courseId, moduleId) {
+        console.log(`Unlocking next module after ${moduleId} in course ${courseId}`);
+        
+        // Get course details
+        const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
+        if (!courseDetails || !courseDetails.modules) {
+          console.log('Course details not found');
+          return;
+        }
+        
+        // Find current module index
+        const currentModuleIndex = courseDetails.modules.findIndex(m => m.id === moduleId);
+        if (currentModuleIndex === -1) {
+          console.log('Current module not found in course');
+          return;
+        }
+        
+        // Check if there is a next module
+        if (currentModuleIndex < courseDetails.modules.length - 1) {
+          const nextModule = courseDetails.modules[currentModuleIndex + 1];
+          console.log(`Next module found: ${nextModule.id}`);
+          
+          // Find the module container in the DOM
+          const courseCard = document.querySelector(`.curso-adquirido-empleado[data-course-id="${courseId}"]`);
+          if (!courseCard) {
+            console.log('Course card not found in DOM');
+            return;
+          }
+          
+          const moduleContainers = courseCard.querySelectorAll('.modulo-container');
+          if (currentModuleIndex + 1 < moduleContainers.length) {
+            // Unlock the next module by removing the 'locked' class
+            moduleContainers[currentModuleIndex + 1].classList.remove('locked');
+            
+            // Remove the 'Bloqueado' text if it exists
+            const lockText = moduleContainers[currentModuleIndex + 1].querySelector('.modulo-header span:last-child');
+            if (lockText && lockText.textContent === 'Bloqueado') {
+              lockText.remove();
+            }
+            
+            console.log(`Module ${nextModule.id} unlocked successfully`);
+            
+            // Add a notification to the user
+            alert(`¡Felicidades! Has completado el módulo "${courseDetails.modules[currentModuleIndex].title}". Se ha desbloqueado el siguiente módulo.`);
+          }
+        } else {
+          console.log('This was the last module in the course');
+          
+          // Check if we need to unlock the final test
+          const currentEmployeeId = getCurrentUserId();
+          const progress = JSON.parse(localStorage.getItem(`employee_progress_${currentEmployeeId}`) || '{}');
+          
+          if (progress[courseId] && progress[courseId].overallProgress >= 80) {
+            const courseCard = document.querySelector(`.curso-adquirido-empleado[data-course-id="${courseId}"]`);
+            if (courseCard) {
+              const finalTestContainer = courseCard.querySelector('.prueba-final-container');
+              if (finalTestContainer) {
+                finalTestContainer.classList.remove('locked');
+                const lockText = finalTestContainer.querySelector('span:last-child');
+                if (lockText) {
+                  lockText.textContent = '';
+                }
+                console.log('Final test unlocked');
+                alert(`¡Felicidades! Has completado todos los módulos del curso. La prueba final ha sido desbloqueada.`);
+              }
+            }
+          }
+        }
       }
     });
     
