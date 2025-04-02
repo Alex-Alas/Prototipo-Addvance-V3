@@ -304,24 +304,7 @@
         // Display courses from courseManager if available
         if (managerCourses.length > 0) {
           managerCourses.forEach(course => {
-            const courseCard = document.createElement('div');
-            courseCard.className = 'curso-empleado';
-            const progress = course.progress?.overallProgress || 0;
-            
-            courseCard.innerHTML = `
-              <div class="curso-empleado-card">
-                <h3>${course.title}</h3>
-                <p>Duración: ${course.duration}</p>
-                <p>${course.description}</p>
-                <div class="progress-bar">
-                  <div class="progress" style="width: ${progress}%"></div>
-                </div>
-                <p>${progress}% completado</p>
-                <button class="continue-btn">Continuar curso</button>
-              </div>
-            `;
-            
-            employeeCoursesList.appendChild(courseCard);
+            createCourseCard(course, employeeCoursesList);
           });
           return;
         }
@@ -334,31 +317,385 @@
           
           // Get progress information if available
           let progress = 0;
+          let completedEvents = 0;
           if (employeeAssignments[currentEmployeeId]) {
             const assignment = employeeAssignments[currentEmployeeId].find(a => a.courseId === courseId);
             if (assignment) {
               progress = assignment.progress || 0;
+              completedEvents = assignment.completedEvents || 0;
             }
           }
           
-          const courseCard = document.createElement('div');
-          courseCard.className = 'curso-empleado';
-          
-          courseCard.innerHTML = `
-            <div class="curso-empleado-card">
-              <h3>${courseDetails.title}</h3>
-              <p>Duración: ${courseDetails.duration}</p>
-              <p>${courseDetails.description}</p>
-              <div class="progress-bar">
-                <div class="progress" style="width: ${progress}%"></div>
+          createCourseCard(courseDetails, employeeCoursesList, progress, completedEvents);
+        });
+        
+        // Add click event listeners to toggle course content
+        addCourseToggleListeners();
+      }
+      
+      // Function to create a course card with the new structure
+      function createCourseCard(course, container, progress = 0, completedEvents = 0) {
+        const courseCard = document.createElement('div');
+        courseCard.className = 'curso-empleado curso-adquirido-empleado';
+        courseCard.dataset.courseId = course.id;
+        
+        // Header with progress bar
+        courseCard.innerHTML = `
+          <div class="curso-header">
+            <h3>${course.title}</h3>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </div>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress" style="width: ${progress}%"></div>
+            </div>
+          </div>
+          <div class="course-stats">
+            <div class="completed-events">
+              <i class="fas fa-check-circle"></i>
+              <span>${completedEvents} eventos completados con éxito</span>
+            </div>
+          </div>
+          <div class="curso-content">
+            ${generateModulesHTML(course)}
+            <div class="prueba-final-container ${progress < 80 ? 'locked' : ''}">
+              <div class="modulo-header">
+                <span>Prueba Final</span>
+                <span>${progress < 80 ? 'Bloqueado' : ''}</span>
               </div>
-              <p>${progress}% completado</p>
-              <button class="continue-btn">Continuar curso</button>
+              <div class="modulo-points">Puntos obtenidos: 0</div>
+              <button class="comenzar-modulo-btn">Comenzar</button>
+            </div>
+          </div>
+        `;
+        
+        container.appendChild(courseCard);
+      }
+      
+      // Function to generate HTML for modules
+      function generateModulesHTML(course) {
+        if (!course.modules || !Array.isArray(course.modules)) {
+          return '<div class="modulo-container">No hay módulos disponibles</div>';
+        }
+        
+        return course.modules.map((module, index) => {
+          const isLocked = index > 0;
+          let lessonsList = '';
+          
+          // Generate lesson list if module has lessons
+          if (module.lessons && Array.isArray(module.lessons)) {
+            lessonsList = `
+              <div class="lecciones-container">
+                <h4>Lecciones</h4>
+                ${module.lessons.map((lesson, lessonIndex) => {
+                  return `
+                    <div class="leccion-item" data-lesson-id="${lesson.id}" data-module-id="${module.id}">
+                      <div class="leccion-header">
+                        <span>Lección ${lessonIndex + 1}: ${lesson.title}</span>
+                      </div>
+                      <button class="comenzar-leccion-btn" data-lesson-id="${lesson.id}" data-module-id="${module.id}">Comenzar</button>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            `;
+          }
+          
+          return `
+            <div class="modulo-container ${isLocked ? 'locked' : ''}">
+              <div class="modulo-header">
+                <span>Módulo ${index + 1}: ${module.title}</span>
+                ${isLocked ? '<span>Bloqueado</span>' : ''}
+              </div>
+              <div class="modulo-points">Puntos obtenidos: 0</div>
+              ${lessonsList}
             </div>
           `;
+        }).join('');
+      }
+      
+      // Function to add click event listeners to toggle course content
+      function addCourseToggleListeners() {
+        const courseCards = document.querySelectorAll('.curso-adquirido-empleado');
+        
+        courseCards.forEach(card => {
+          const header = card.querySelector('.curso-header');
           
-          employeeCoursesList.appendChild(courseCard);
+          // Make the header clickable to toggle content
+          if (header) {
+            header.addEventListener('click', function(e) {
+              e.stopPropagation();
+              card.classList.toggle('expanded');
+            });
+          }
+          
+          // Add event listeners for lesson buttons
+          const lessonButtons = card.querySelectorAll('.comenzar-leccion-btn');
+          lessonButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+              e.stopPropagation();
+              const lessonId = button.dataset.lessonId;
+              const moduleId = button.dataset.moduleId;
+              const courseId = card.dataset.courseId;
+              
+              if (lessonId && moduleId && courseId) {
+                openLessonModal(courseId, moduleId, lessonId, button);
+              }
+            });
+          });
         });
+      }
+      
+      // Function to open the lesson modal and load lesson content
+      function openLessonModal(courseId, moduleId, lessonId, buttonElement) {
+        // Get course data
+        const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
+        if (!courseDetails) return;
+        
+        // Get module data
+        const module = courseDetails.modules?.find(m => m.id === moduleId);
+        if (!module) return;
+        
+        // Get lesson data
+        const lesson = module.lessons?.find(l => l.id === lessonId);
+        if (!lesson) return;
+        
+        // Create modal if it doesn't exist
+        let lessonModal = document.getElementById('lessonModal');
+        if (!lessonModal) {
+          lessonModal = document.createElement('div');
+          lessonModal.id = 'lessonModal';
+          lessonModal.className = 'lesson-modal';
+          
+          document.body.appendChild(lessonModal);
+        }
+        
+        // Define initial page
+        const totalPages = lesson.pages ? lesson.pages.length : 0;
+        const initialPage = 0;
+        
+        // Create modal content
+        lessonModal.innerHTML = `
+          <div class="lesson-modal-content">
+            <div class="lesson-modal-header">
+              <h3>${lesson.title}</h3>
+              <div class="lesson-progress-container">
+                <div class="lesson-progress-bar">
+                  <div class="lesson-progress-fill" style="width: ${totalPages > 0 ? (1 / totalPages) * 100 : 0}%"></div>
+                </div>
+                <span class="lesson-progress-text">Página 1/${totalPages}</span>
+              </div>
+            </div>
+            <div class="lesson-modal-body">
+              ${totalPages > 0 ? lesson.pages[initialPage].content : 'No hay contenido disponible para esta lección.'}
+            </div>
+            <div class="lesson-modal-footer">
+              <button id="closeLesson" class="lesson-btn">Cerrar</button>
+              <div class="lesson-navigation">
+                <button id="prevPage" class="lesson-btn" disabled>Anterior</button>
+                <button id="nextPage" class="lesson-btn" ${totalPages <= 1 ? 'disabled' : ''}>Siguiente</button>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Show modal
+        lessonModal.style.display = 'flex';
+        
+        // Store lesson data for navigation
+        const lessonData = {
+          courseId,
+          moduleId,
+          lessonId,
+          lesson,
+          currentPage: initialPage,
+          totalPages,
+          buttonElement
+        };
+        
+        // Add event listeners
+        const closeButton = document.getElementById('closeLesson');
+        const prevButton = document.getElementById('prevPage');
+        const nextButton = document.getElementById('nextPage');
+        
+        if (closeButton) {
+          closeButton.addEventListener('click', function() {
+            closeLessonModal(lessonData);
+          });
+        }
+        
+        if (prevButton) {
+          prevButton.addEventListener('click', function() {
+            navigateLesson(lessonData, 'prev');
+          });
+        }
+        
+        if (nextButton) {
+          nextButton.addEventListener('click', function() {
+            navigateLesson(lessonData, 'next');
+          });
+        }
+      }
+      
+      // Function to navigate between lesson pages
+      function navigateLesson(lessonData, direction) {
+        if (!lessonData) return;
+        
+        const { lesson, currentPage, totalPages } = lessonData;
+        let newPage = currentPage;
+        
+        if (direction === 'prev' && currentPage > 0) {
+          newPage = currentPage - 1;
+        } else if (direction === 'next' && currentPage < totalPages - 1) {
+          newPage = currentPage + 1;
+        } else {
+          return; // No change needed
+        }
+        
+        // Update current page in lessonData
+        lessonData.currentPage = newPage;
+        
+        // Update modal content
+        const lessonModalBody = document.querySelector('.lesson-modal-body');
+        if (lessonModalBody && lesson.pages && lesson.pages[newPage]) {
+          lessonModalBody.innerHTML = lesson.pages[newPage].content;
+        }
+        
+        // Update progress bar
+        const progressFill = document.querySelector('.lesson-progress-fill');
+        const progressText = document.querySelector('.lesson-progress-text');
+        
+        if (progressFill) {
+          progressFill.style.width = `${((newPage + 1) / totalPages) * 100}%`;
+        }
+        
+        if (progressText) {
+          progressText.textContent = `Página ${newPage + 1}/${totalPages}`;
+        }
+        
+        // Update navigation buttons
+        const prevButton = document.getElementById('prevPage');
+        const nextButton = document.getElementById('nextPage');
+        
+        if (prevButton) {
+          prevButton.disabled = newPage === 0;
+        }
+        
+        if (nextButton) {
+          nextButton.disabled = newPage === totalPages - 1;
+        }
+      }
+      
+      // Function to close the lesson modal and update progress
+      function closeLessonModal(lessonData) {
+        if (!lessonData) return;
+        
+        const { courseId, moduleId, lessonId, currentPage, totalPages, buttonElement } = lessonData;
+        const lessonModal = document.getElementById('lessonModal');
+        
+        // Check if lesson was completed (reached the last page)
+        const isCompleted = currentPage === totalPages - 1;
+        
+        if (isCompleted) {
+          // Award points
+          const pointsAwarded = 5 * totalPages;
+          
+          // Update button text to "Repasar"
+          if (buttonElement) {
+            buttonElement.textContent = 'Repasar';
+            buttonElement.classList.add('completed');
+            
+            // Find and update points display in module container
+            const moduleContainer = buttonElement.closest('.modulo-container');
+            if (moduleContainer) {
+              const pointsElement = moduleContainer.querySelector('.modulo-points');
+              if (pointsElement) {
+                // Extract current points
+                const currentPointsMatch = pointsElement.textContent.match(/Puntos obtenidos: (\d+)/);
+                let currentPoints = currentPointsMatch ? parseInt(currentPointsMatch[1]) : 0;
+                
+                // Check if points were already awarded for this lesson
+                if (!buttonElement.classList.contains('points-awarded')) {
+                  currentPoints += pointsAwarded;
+                  buttonElement.classList.add('points-awarded');
+                }
+                
+                pointsElement.textContent = `Puntos obtenidos: ${currentPoints}`;
+                
+                // Update completed events counter for the course
+                const courseCard = moduleContainer.closest('.curso-adquirido-empleado');
+                if (courseCard) {
+                  const completedEventsElement = courseCard.querySelector('.completed-events span');
+                  if (completedEventsElement) {
+                    const currentEventsCount = parseInt(completedEventsElement.textContent.split(' ')[0]);
+                    completedEventsElement.textContent = `${currentEventsCount + 1} eventos completados con éxito`;
+                  }
+                }
+                
+                // Update in localStorage
+                updateLessonProgressInStorage(courseId, moduleId, lessonId, true, pointsAwarded);
+              }
+            }
+          }
+        }
+        
+        // Close the modal
+        if (lessonModal) {
+          lessonModal.style.display = 'none';
+        }
+      }
+      
+      // Function to update lesson progress in localStorage
+      function updateLessonProgressInStorage(courseId, moduleId, lessonId, completed, points) {
+        // Get current user (employee) information
+        const currentUser = obtenerUsuarioActual();
+        const currentEmployeeId = currentUser ? currentUser.correo : 'empleado-ejemplo';
+        
+        // Get employee assignments
+        const employeeAssignments = JSON.parse(localStorage.getItem('employeeAssignments') || '{}');
+        if (!employeeAssignments[currentEmployeeId]) {
+          employeeAssignments[currentEmployeeId] = [];
+        }
+        
+        // Find or create course assignment
+        let courseAssignment = employeeAssignments[currentEmployeeId].find(a => a.courseId === courseId);
+        if (!courseAssignment) {
+          courseAssignment = {
+            courseId,
+            status: 'active',
+            progress: 0,
+            completedEvents: 0,
+            lessons: {},
+            started: true
+          };
+          employeeAssignments[currentEmployeeId].push(courseAssignment);
+        }
+        
+        // Initialize lessons if not present
+        if (!courseAssignment.lessons) {
+          courseAssignment.lessons = {};
+        }
+        
+        // Update lesson data
+        if (!courseAssignment.lessons[lessonId]) {
+          courseAssignment.lessons[lessonId] = {
+            completed: false,
+            points: 0
+          };
+        }
+        
+        // Only update if not already completed
+        if (!courseAssignment.lessons[lessonId].completed) {
+          courseAssignment.lessons[lessonId].completed = completed;
+          courseAssignment.lessons[lessonId].points = points;
+          
+          if (completed) {
+            courseAssignment.completedEvents = (courseAssignment.completedEvents || 0) + 1;
+          }
+        }
+        
+        // Save back to localStorage
+        localStorage.setItem('employeeAssignments', JSON.stringify(employeeAssignments));
       }
     });
     
@@ -418,6 +755,157 @@
       color: #666;
       font-style: italic;
       padding: 20px;
+    }
+    
+    /* Lecciones Styles */
+    .lecciones-container {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+    
+    .lecciones-container h4 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    
+    .leccion-item {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .leccion-header {
+      font-weight: 500;
+    }
+    
+    .comenzar-leccion-btn {
+      background: #17a2b8;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .comenzar-leccion-btn:hover {
+      background: #138496;
+    }
+    
+    .comenzar-leccion-btn.completed {
+      background: #28a745;
+    }
+    
+    /* Lesson Modal Styles */
+    .lesson-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .lesson-modal-content {
+      background-color: white;
+      width: 80%;
+      max-width: 800px;
+      max-height: 90vh;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .lesson-modal-header {
+      padding: 15px;
+      background-color: #007bff;
+      color: white;
+    }
+    
+    .lesson-modal-header h3 {
+      margin: 0 0 10px 0;
+    }
+    
+    .lesson-progress-container {
+      margin-top: 10px;
+    }
+    
+    .lesson-progress-bar {
+      width: 100%;
+      height: 8px;
+      background-color: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .lesson-progress-fill {
+      height: 100%;
+      background-color: white;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    
+    .lesson-progress-text {
+      font-size: 0.8rem;
+      margin-top: 5px;
+      display: block;
+    }
+    
+    .lesson-modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      max-height: 60vh;
+      line-height: 1.6;
+    }
+    
+    .lesson-modal-footer {
+      padding: 15px;
+      border-top: 1px solid #e9ecef;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .lesson-navigation {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .lesson-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .lesson-btn#closeLesson {
+      background-color: #6c757d;
+      color: white;
+    }
+    
+    .lesson-btn#prevPage,
+    .lesson-btn#nextPage {
+      background-color: #007bff;
+      color: white;
+    }
+    
+    .lesson-btn:disabled {
+      background-color: #e9ecef;
+      color: #6c757d;
+      cursor: not-allowed;
     }
   </style>
 </body>

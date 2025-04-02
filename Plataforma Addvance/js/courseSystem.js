@@ -199,7 +199,8 @@ class CourseSystem {
       courseId,
       companyEmail,
       assignmentDate: new Date().toISOString(),
-      status: 'assigned'
+      status: 'assigned',
+      started: false // Add started boolean property that's false by default
     });
 
     localStorage.setItem('employee_course_assignments', JSON.stringify(assignments));
