@@ -236,33 +236,35 @@
       <div id="searchView" style="display: block;">
         <div class="search-container">
           <div class="search-filter-container">
-  <h2>¿Qué Curso estás buscando?</h2>
-  <div class="search-header">
-    <input type="text" class="search-bar" placeholder="Buscar curso..." id="cursoSearchInput">
-    <div class="filter-options">
-      <select class="filter-select" id="categoryFilter">
-        <option value="todas">Todas las categorías</option>
-        <option value="liderazgo">Liderazgo</option>
-        <option value="tecnologia">Tecnología</option>
-      </select>
-      <select class="filter-select" id="levelFilter">
-        <option value="todos">Todos los niveles</option>
-        <option value="basico">Básico</option>
-        <option value="intermedio">Intermedio</option>
-        <option value="avanzado">Avanzado</option>
-      </select>
-    </div>
-  </div>
-        </div>
-        <div class="journey-grid">
-          <!-- Journey cards will be dynamically populated here -->
+            <h2>¿Qué Curso estás buscando?</h2>
+            <div class="search-header">
+              <input type="text" class="search-bar" placeholder="Buscar curso..." id="cursoSearchInput">
+              <div class="filter-options">
+                <select class="filter-select" id="categoryFilter">
+                  <option value="todas">Todas las categorías</option>
+                  <option value="liderazgo">Liderazgo</option>
+                  <option value="tecnologia">Tecnología</option>
+                </select>
+                <select class="filter-select" id="levelFilter">
+                  <option value="todos">Todos los niveles</option>
+                  <option value="basico">Básico</option>
+                  <option value="intermedio">Intermedio</option>
+                  <option value="avanzado">Avanzado</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="journey-grid">
+            <!-- Journey cards will be dynamically populated here -->
+          </div>
         </div>
       </div>
 
       <!-- Acquired journeys view -->
       <div id="acquiredView" style="display: none;">
-        <div id="companyAcquiredCoursesList" class="acquired-courses-list">
-          <!-- Los cursos adquiridos se cargarán aquí dinámicamente con la información del progreso de los empleados -->
+        <h2>Mi Progreso de Aprendizaje</h2>
+        <div id="companyAcquiredCoursesList">
+          <!-- Los cursos adquiridos se cargarán aquí dinámicamente -->
         </div>
       </div>
     </div>
@@ -369,14 +371,14 @@
             </div>
             <div class="notification-actions">
               <i class="fas fa-ellipsis-v"></i>
-            </div>
+          </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   <!-- External JavaScript dependencies -->
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cloudflare-static/email-decode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
   <!-- Custom JavaScript -->
   <script src="auth.js"></script>
@@ -390,29 +392,38 @@
   <script src="js/empresa-navigation.js"></script>
   <script src="js/curso-manager.js"></script>
   <script>
-    // Initialize curso tabs functionality
     document.addEventListener('DOMContentLoaded', function() {
       console.log('DOMContentLoaded event triggered');
       
-      const searchTab = document.getElementById('searchTab');
-      const acquiredTab = document.getElementById('acquiredTab');
-      const searchView = document.getElementById('searchView');
-      const acquiredView = document.getElementById('acquiredView');
-
       // Initialize acquired courses from companiesData
       function initializeAcquiredCourses() {
         console.log('Initializing acquired courses from companiesData');
-        // We'll use empresa-ejemplo as the current company
         const currentCompany = window.companiesData['empresa-ejemplo'];
         if (currentCompany && currentCompany.acquiredCourses) {
-          const acquiredCourseIds = currentCompany.acquiredCourses.map(course => course.courseId);
-          localStorage.setItem('acquiredCourses', JSON.stringify(acquiredCourseIds));
-          console.log('Initialized acquired courses:', acquiredCourseIds);
+          const courseIds = currentCompany.acquiredCourses.map(course => course.courseId);
+          localStorage.setItem('companyAcquiredCourses', JSON.stringify(courseIds));
+          console.log('Initialized acquired courses:', courseIds);
         }
       }
 
       // Call initialization on page load
       initializeAcquiredCourses();
+      
+      // Verify coursesDatabase is loaded
+      if (!window.coursesDatabase) {
+        console.error('coursesDatabase is not loaded!');
+        return;
+      }
+      console.log('coursesDatabase initialized:', window.coursesDatabase);
+
+      const searchTab = document.getElementById('searchTab');
+      const acquiredTab = document.getElementById('acquiredTab');
+      const searchView = document.getElementById('searchView');
+      const acquiredView = document.getElementById('acquiredView');
+
+      // Load courses when the page loads
+      loadCourses();
+      loadAcquiredCourses();
       
       if (searchTab && acquiredTab && searchView && acquiredView) {
         searchTab.addEventListener('click', function() {
@@ -420,7 +431,7 @@
           acquiredTab.classList.remove('active');
           searchView.style.display = 'block';
           acquiredView.style.display = 'none';
-          loadCourses(); // Load courses when search tab is clicked
+          loadCourses();
         });
         
         acquiredTab.addEventListener('click', function() {
@@ -428,118 +439,147 @@
           searchTab.classList.remove('active');
           acquiredView.style.display = 'block';
           searchView.style.display = 'none';
-          loadAcquiredCourses(); // Load acquired courses when acquired tab is clicked
+          loadAcquiredCourses();
         });
       }
 
-      // Function to create course card
-      function createCourseCard(course) {
-        console.log('Creating card for course:', course);
-        const courseCard = document.createElement('div');
-        courseCard.className = 'curso-visual-empresa';
-        
-        courseCard.innerHTML = `
-          <h3>${course.title}</h3>
-          <p class="time-to-complete">Duración: ${course.duration}</p>
-          <p class="summary">${course.description}</p>
-          <button class="acquire-btn" data-course-id="${course.id}">Adquirir curso</button>
-        `;
+      // Function to load and display courses in search view
+      function loadCourses() {
+        console.log('Loading courses...');
+        const journeyGrid = document.querySelector('.journey-grid');
+        if (!journeyGrid) return;
 
-        // Add click event listener to the button
-        const acquireBtn = courseCard.querySelector('.acquire-btn');
-        acquireBtn.addEventListener('click', function() {
-          const courseId = this.getAttribute('data-course-id');
-          acquireCourse(courseId, course);
-        });
+        journeyGrid.innerHTML = '';
+        const acquiredCourses = JSON.parse(localStorage.getItem('companyAcquiredCourses') || '[]');
 
-        return courseCard;
-      }
+        window.coursesDatabase.forEach(course => {
+          const courseCard = document.createElement('div');
+          courseCard.className = 'curso-visual-empresa';
+          
+          courseCard.innerHTML = `
+            <h3>${course.title}</h3>
+            <p class="time-to-complete">Duración: ${course.duration}</p>
+            <p class="summary">${course.description}</p>
+            <button class="acquire-btn" data-course-id="${course.id}">${
+              acquiredCourses.includes(course.id) ? 'Curso Adquirido' : 'Adquirir curso'
+            }</button>
+          `;
 
-      // Function to create acquired course card
-      function createAcquiredCourseCard(course) {
-        const deadline = new Date();
-        deadline.setMonth(deadline.getMonth() + 1); // 1 month from now
-        
-        const courseCard = document.createElement('div');
-        courseCard.className = 'curso-adquirido-empresa';
-        courseCard.setAttribute('data-course-id', course.id);
-        courseCard.innerHTML = `
-          <h3>${course.title}</h3>
-          <p class="time-to-complete">Duración: ${course.duration}</p>
-          <p class="summary">${course.description}</p>
-          
-          <div class="progress-container">
-            <div class="progress-bar">
-              <div class="progress" style="width: 0%"></div>
-            </div>
-            <span class="progress-text">0/0 puntos</span>
-          </div>
-          
-          <p class="deadline">Tienes hasta el ${deadline.toLocaleDateString('es-ES')} para programar el taller</p>
-          
-          <button class="more-time-btn">Necesito más tiempo</button>
-          
-          <div class="schedule-container">
-            <select class="schedule-select">
-              <option value="">Selecciona una fecha</option>
-              <option value="morning1">${deadline.toLocaleDateString('es-ES')} - 9:00 AM</option>
-              <option value="morning2">${deadline.toLocaleDateString('es-ES')} - 11:00 AM</option>
-              <option value="afternoon1">${deadline.toLocaleDateString('es-ES')} - 2:00 PM</option>
-              <option value="afternoon2">${deadline.toLocaleDateString('es-ES')} - 4:00 PM</option>
-            </select>
-          </div>
-          
-          <button class="assign-btn">Asignar empleados</button>
-          
-          <div class="employees-table-container" style="display: none;">
-            <table class="employees-table">
-              <thead>
-                <tr>
-                  <th>Empleado</th>
-                  <th>Progreso</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="employee-row">
-                  <td>
-                    <select class="employee-select">
-                      <option value="">Selecciona un empleado</option>
-                    </select>
-                  </td>
-                  <td>0%</td>
-                  <td>No iniciado</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        `;
-
-        // Add event listeners
-        const moreTimeBtn = courseCard.querySelector('.more-time-btn');
-        moreTimeBtn.addEventListener('click', function() {
-          extendDeadline(courseCard, course.id);
-        });
-
-        const scheduleSelect = courseCard.querySelector('.schedule-select');
-        scheduleSelect.addEventListener('change', function() {
-          if (this.value) {
-            scheduleWorkshop(courseCard, course.id, this.value);
+          const acquireBtn = courseCard.querySelector('.acquire-btn');
+          if (acquiredCourses.includes(course.id)) {
+            acquireBtn.disabled = true;
+          } else {
+            acquireBtn.addEventListener('click', () => acquireCourse(course.id, course));
           }
-        });
 
-        const assignBtn = courseCard.querySelector('.assign-btn');
-        assignBtn.addEventListener('click', function() {
-          toggleEmployeesTable(courseCard, course.id);
+          journeyGrid.appendChild(courseCard);
         });
+      }
 
-        // Check if course is already scheduled
-        const scheduledCourses = JSON.parse(localStorage.getItem('scheduledCourses') || '{}');
-        if (scheduledCourses[course.id]) {
-          updateScheduledStatus(courseCard, scheduledCourses[course.id]);
+      // Function to load acquired courses
+      function loadAcquiredCourses() {
+        console.log('Loading acquired courses...');
+        const acquiredCoursesList = document.getElementById('companyAcquiredCoursesList');
+        if (!acquiredCoursesList) return;
+
+        acquiredCoursesList.innerHTML = '';
+        const acquiredCourses = JSON.parse(localStorage.getItem('companyAcquiredCourses') || '[]');
+
+        if (acquiredCourses.length === 0) {
+          acquiredCoursesList.innerHTML = '<p class="no-courses">No hay cursos adquiridos</p>';
+          return;
         }
 
-        return courseCard;
+        acquiredCourses.forEach(courseId => {
+          const course = window.coursesDatabase.find(c => c.id === courseId);
+          if (course) {
+            const courseCard = document.createElement('div');
+            courseCard.className = 'curso-adquirido-empresa';
+            courseCard.setAttribute('data-course-id', course.id);
+            
+            // Calculate deadline (1 month from now)
+            const deadline = new Date();
+            deadline.setMonth(deadline.getMonth() + 1);
+            
+            courseCard.innerHTML = `
+              <h3>${course.title}</h3>
+              <p class="time-to-complete">Duración: ${course.duration}</p>
+              <p class="summary">${course.description}</p>
+              
+              <div class="progress-container">
+                <div class="progress-bar">
+                  <div class="progress" style="width: 0%"></div>
+                </div>
+                <span class="progress-text">0/0 puntos</span>
+              </div>
+              
+              <p class="deadline">Tienes hasta el ${deadline.toLocaleDateString('es-ES')} para programar el taller</p>
+              
+              <button class="more-time-btn">Necesito más tiempo</button>
+              
+              <div class="schedule-container">
+                <select class="schedule-select">
+                  <option value="">Selecciona una fecha</option>
+                  <option value="morning1">${deadline.toLocaleDateString('es-ES')} - 9:00 AM</option>
+                  <option value="morning2">${deadline.toLocaleDateString('es-ES')} - 11:00 AM</option>
+                  <option value="afternoon1">${deadline.toLocaleDateString('es-ES')} - 2:00 PM</option>
+                  <option value="afternoon2">${deadline.toLocaleDateString('es-ES')} - 4:00 PM</option>
+                </select>
+              </div>
+              
+              <button class="assign-btn">Asignar empleados</button>
+              
+              <div class="employees-table-container" style="display: none;">
+                <table class="employees-table">
+                  <thead>
+                    <tr>
+                      <th>Empleado</th>
+                      <th>Progreso</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="employee-row">
+                      <td>
+                        <select class="employee-select">
+                          <option value="">Selecciona un empleado</option>
+                        </select>
+                      </td>
+                      <td>0%</td>
+                      <td>No iniciado</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            `;
+            
+            // Add event listeners
+            const moreTimeBtn = courseCard.querySelector('.more-time-btn');
+            moreTimeBtn.addEventListener('click', function() {
+              extendDeadline(courseCard, course.id);
+            });
+
+            const scheduleSelect = courseCard.querySelector('.schedule-select');
+            scheduleSelect.addEventListener('change', function() {
+              if (this.value) {
+                scheduleWorkshop(courseCard, course.id, this.value);
+              }
+            });
+
+            const assignBtn = courseCard.querySelector('.assign-btn');
+            assignBtn.addEventListener('click', function() {
+              toggleEmployeesTable(courseCard, course.id);
+            });
+
+            // Check if course is already scheduled
+            const scheduledCourses = JSON.parse(localStorage.getItem('scheduledCourses') || '{}');
+            if (scheduledCourses[course.id]) {
+              updateScheduledStatus(courseCard, scheduledCourses[course.id]);
+            }
+            
+            acquiredCoursesList.appendChild(courseCard);
+          }
+        });
       }
 
       // Function to extend deadline
@@ -612,30 +652,6 @@
               break;
             }
           }
-        }
-      }
-
-      // Function to acquire a course
-      function acquireCourse(courseId, course) {
-        // Disable the acquire button
-        const acquireBtn = document.querySelector(`.acquire-btn[data-course-id="${courseId}"]`);
-        if (acquireBtn) {
-          acquireBtn.disabled = true;
-          acquireBtn.textContent = 'Curso Adquirido';
-        }
-
-        // Store the acquired course in localStorage
-        let acquiredCourses = JSON.parse(localStorage.getItem('acquiredCourses') || '[]');
-        if (!acquiredCourses.includes(courseId)) {
-          acquiredCourses.push(courseId);
-          localStorage.setItem('acquiredCourses', JSON.stringify(acquiredCourses));
-        }
-
-        // Add the course to the acquired view
-        const acquiredCoursesList = document.getElementById('companyAcquiredCoursesList');
-        if (acquiredCoursesList) {
-          const courseCard = createAcquiredCourseCard(course);
-          acquiredCoursesList.appendChild(courseCard);
         }
       }
 
@@ -720,102 +736,6 @@
         }
       }
 
-      // Function to load acquired courses
-      function loadAcquiredCourses() {
-        console.log('Loading acquired courses...');
-        const acquiredCoursesList = document.getElementById('companyAcquiredCoursesList');
-        if (!acquiredCoursesList) {
-          console.error('Acquired courses list container not found!');
-          return;
-        }
-
-        // Clear existing content
-        acquiredCoursesList.innerHTML = '';
-
-        // Get acquired courses from localStorage and companiesData
-        const acquiredCourses = JSON.parse(localStorage.getItem('acquiredCourses') || '[]');
-        console.log('Acquired courses from storage:', acquiredCourses);
-        
-        if (acquiredCourses.length === 0) {
-          console.log('No acquired courses found');
-          acquiredCoursesList.innerHTML = '<p class="no-courses">No hay cursos adquiridos</p>';
-          return;
-        }
-
-        // Load and display acquired courses
-        acquiredCourses.forEach(courseId => {
-          const course = window.coursesDatabase.find(c => c.id === courseId);
-          if (course) {
-            console.log('Creating card for acquired course:', course);
-            const courseCard = createAcquiredCourseCard(course);
-            acquiredCoursesList.appendChild(courseCard);
-            
-            // Load assigned employees if any
-            const assignedEmployees = JSON.parse(localStorage.getItem('assignedEmployees') || '{}');
-            if (assignedEmployees[courseId]) {
-              const tableBody = courseCard.querySelector('.employees-table tbody');
-              assignedEmployees[courseId].forEach(empId => {
-                const employee = window.employeesData[empId] || { 
-                  id: empId,
-                  name: `Empleado ${empId}`
-                };
-                const newRow = document.createElement('tr');
-                newRow.className = 'employee-row';
-                newRow.innerHTML = `
-                  <td>${employee.name}</td>
-                  <td>0%</td>
-                  <td>No iniciado</td>
-                `;
-                tableBody.appendChild(newRow);
-              });
-            }
-          }
-        });
-      }
-
-      // Function to load and display courses
-      function loadCourses() {
-        console.log('Loading courses...');
-        const searchView = document.getElementById('searchView');
-        console.log('searchView element:', searchView);
-        
-        const journeyGrid = searchView.querySelector('.journey-grid');
-        console.log('journeyGrid element:', journeyGrid);
-        
-        if (!journeyGrid) {
-          console.error('Journey grid not found!');
-          return;
-        }
-
-        // Clear existing content
-        journeyGrid.innerHTML = '';
-        console.log('Available courses:', window.coursesDatabase);
-
-        // Get acquired courses from localStorage
-        const acquiredCourses = JSON.parse(localStorage.getItem('acquiredCourses') || '[]');
-
-        // Load and display all courses
-        window.coursesDatabase.forEach(course => {
-          const courseCard = createCourseCard(course);
-          
-          // Check if course is already acquired
-          const acquireBtn = courseCard.querySelector('.acquire-btn');
-          if (acquiredCourses.includes(course.id)) {
-            acquireBtn.disabled = true;
-            acquireBtn.textContent = 'Curso Adquirido';
-          }
-          
-          journeyGrid.appendChild(courseCard);
-          console.log('Added course card:', course.title);
-        });
-      }
-
-      // Load courses when the page loads and curso section is active
-      if (document.getElementById('cursoSection').style.display !== 'none') {
-        loadCourses();
-        loadAcquiredCourses();
-      }
-      
       // La función initializeProfileCardFlip se define aquí para ser utilizada por empresa-navigation.js
       function initializeProfileCardFlip() {
         const moreInfoBtns = document.querySelectorAll('.more-info-btn');
@@ -847,6 +767,67 @@
           window.location.href = 'auth.html';
         });
       }
+
+      // Function to acquire a course
+      function acquireCourse(courseId, course) {
+        console.log('Attempting to acquire course with ID:', courseId);
+        console.log('Course object:', course);
+        
+        try {
+          // Verify course exists in database first
+          const courseExists = window.coursesDatabase.some(c => c.id === courseId);
+          if (!courseExists) {
+            console.error('Course not found in database:', courseId);
+            return;
+          }
+
+          // Update button state
+          const acquireBtn = document.querySelector(`.acquire-btn[data-course-id="${courseId}"]`);
+          if (acquireBtn) {
+            acquireBtn.disabled = true;
+            acquireBtn.textContent = 'Curso Adquirido';
+          }
+
+          // Get current acquired courses from localStorage
+          let acquiredCourses = JSON.parse(localStorage.getItem('companyAcquiredCourses') || '[]');
+          console.log('Current acquired courses:', acquiredCourses);
+
+          // Check if course is already acquired
+          if (!acquiredCourses.includes(courseId)) {
+            // Add new course ID
+            acquiredCourses.push(courseId);
+            console.log('Adding new course:', courseId);
+            
+            // Update localStorage
+            localStorage.setItem('companyAcquiredCourses', JSON.stringify(acquiredCourses));
+            console.log('Updated localStorage with:', acquiredCourses);
+            
+            // Update companiesData
+            const currentCompany = window.companiesData['empresa-ejemplo'];
+            if (currentCompany) {
+              const newAcquiredCourse = {
+                courseId: courseId,
+                purchaseDate: new Date().toLocaleDateString('es-ES'),
+                assignedEmployees: [],
+                status: 'En progreso',
+                deadlineToSchedule: new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString('es-ES'),
+                scheduleOptions: [
+                  { time: 'Mañana 9:00 AM', selected: false },
+                  { time: 'Tarde 2:00 PM', selected: false }
+                ]
+              };
+              currentCompany.acquiredCourses.push(newAcquiredCourse);
+            }
+            
+            // Refresh acquired courses view
+            loadAcquiredCourses();
+          } else {
+            console.log('Course already acquired:', courseId);
+          }
+        } catch (error) {
+          console.error('Error in acquireCourse:', error);
+        }
+      }
     });
   </script>
 
@@ -865,36 +846,35 @@
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 20px;
       padding: 20px;
-      min-height: 200px; /* Ensure grid is visible even when empty */
+      min-height: 200px;
     }
 
-    .curso-visual-empresa, .curso-adquirido-empresa {
+    .curso-visual-empresa {
       background: white;
       border-radius: 8px;
       padding: 20px;
       margin: 15px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       transition: transform 0.2s ease;
-      display: block; /* Ensure visibility */
     }
 
-    .curso-visual-empresa:hover, .curso-adquirido-empresa:hover {
+    .curso-visual-empresa:hover {
       transform: translateY(-5px);
     }
 
-    .curso-visual-empresa h3, .curso-adquirido-empresa h3 {
+    .curso-visual-empresa h3 {
       color: #333;
       margin-bottom: 10px;
       font-size: 1.2em;
     }
 
-    .curso-visual-empresa .time-to-complete, .curso-adquirido-empresa .time-to-complete {
+    .curso-visual-empresa .time-to-complete {
       color: #666;
       font-size: 0.9em;
       margin-bottom: 10px;
     }
 
-    .curso-visual-empresa .summary, .curso-adquirido-empresa .summary {
+    .curso-visual-empresa .summary {
       color: #444;
       margin-bottom: 15px;
       line-height: 1.4;
@@ -919,7 +899,38 @@
       cursor: not-allowed;
     }
 
-    /* New styles for acquired courses */
+    /* Styles for acquired courses */
+    .curso-adquirido-empresa {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .curso-adquirido-empresa:hover {
+      transform: translateY(-5px);
+    }
+
+    .curso-adquirido-empresa h3 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 1.2em;
+    }
+
+    .curso-adquirido-empresa .time-to-complete {
+      color: #666;
+      font-size: 0.9em;
+      margin-bottom: 10px;
+    }
+
+    .curso-adquirido-empresa .summary {
+      color: #444;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
     .progress-container {
       margin: 15px 0;
     }
@@ -982,30 +993,6 @@
       margin-top: 10px;
     }
 
-    .acquired-courses-list {
-      padding: 20px;
-    }
-
-    .no-courses {
-      text-align: center;
-      color: #666;
-      font-style: italic;
-      padding: 20px;
-    }
-
-    .curso-adquirido-empresa {
-      background: white;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 15px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease;
-    }
-
-    .curso-adquirido-empresa:hover {
-      transform: translateY(-5px);
-    }
-
     .employees-table {
       width: 100%;
       border-collapse: collapse;
@@ -1029,6 +1016,13 @@
       padding: 8px;
       border-radius: 4px;
       border: 1px solid #ced4da;
+    }
+
+    .no-courses {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 20px;
     }
   </style>
 </body>

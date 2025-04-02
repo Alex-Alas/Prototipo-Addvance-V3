@@ -7,20 +7,21 @@
  * Updated with Ábaco's aesthetic and UX patterns
  */
 
-
 // Menu visibility handling - Hide header on scroll down, show on scroll up
 let lastScrollTop = 0;
 const header = document.querySelector('.site-header');
 
-window.addEventListener('scroll', () => {
-  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-  if (scrollTop > lastScrollTop && scrollTop > 100) {
-    header.classList.add('hidden');
-  } else {
-    header.classList.remove('hidden');
-  }
-  lastScrollTop = scrollTop;
-});
+if (header) {
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    if (scrollTop > lastScrollTop && scrollTop > 100) {
+      header.classList.add('hidden');
+    } else {
+      header.classList.remove('hidden');
+    }
+    lastScrollTop = scrollTop;
+  });
+}
 
 // Handle navigation and section visibility
 document.addEventListener('DOMContentLoaded', () => {
@@ -29,86 +30,137 @@ document.addEventListener('DOMContentLoaded', () => {
   const perfilSection = document.getElementById('proveedorPerfilSection');
   const networkSection = document.getElementById('proveedorNetworkSection');
 
-  // Initialize profile cards when the page loads
-  // This will be handled by the global initializeProfileCardFlip function
+  // Only proceed if elements exist
+  if (perfilSection && networkSection) {
+    // Initialize profile cards when the page loads
+    // This will be handled by the global initializeProfileCardFlip function
 
-  // Show Network section by default
-  perfilSection.style.display = 'none';
-  networkSection.style.display = 'block';
-
-  perfilOption.addEventListener('click', (e) => {
-    e.preventDefault();
-    perfilSection.style.display = 'block';
-    networkSection.style.display = 'none';
-    // Initialize profile card when profile section becomes visible
-    initializeProfileCard();
-  });
-
-  networkOption.addEventListener('click', (e) => {
-    e.preventDefault();
+    // Show Network section by default
     perfilSection.style.display = 'none';
     networkSection.style.display = 'block';
-  });
+  }
+
+  if (perfilOption) {
+    perfilOption.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (perfilSection && networkSection) {
+        perfilSection.style.display = 'block';
+        networkSection.style.display = 'none';
+        // Initialize profile card when profile section becomes visible
+        if (typeof initializeProfileCardFlip === 'function') {
+          initializeProfileCardFlip();
+        }
+      }
+    });
+  }
+
+  if (networkOption) {
+    networkOption.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (perfilSection && networkSection) {
+        perfilSection.style.display = 'none';
+        networkSection.style.display = 'block';
+      }
+    });
+  }
 
   // Handle logout for menu sidebar buttons
   const logoutBtns = document.querySelectorAll('.logout-button');
   if (logoutBtns.length > 0) {
     logoutBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        // Cerrar sesión y redirigir a la página de autenticación
-        cerrarSesion();
-        window.location.href = 'auth.html';
-      });
+      if (btn) {
+        btn.addEventListener('click', () => {
+          if (typeof cerrarSesion === 'function') {
+            cerrarSesion();
+          }
+          window.location.href = 'auth.html';
+        });
+      }
     });
   }
 });
 
-// Section visibility handling - Shows one section at a time
-function showSection(sectionId) {
-  // Ocultar todas las secciones
-  document.querySelectorAll('.container > div').forEach(section => {
-    section.style.display = 'none';
+// Function to hide all empleado sections
+function hideAllEmpleadoSections() {
+  const sections = [
+    'empleadoPerfilSection',
+    'empleadoCursoSection',
+    'empleadoMessagingSection',
+    'empleadoNotificationsSection'
+  ];
+  
+  sections.forEach(sectionId => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.style.display = 'none';
+    }
   });
+}
 
-  // Mostrar la sección seleccionada
-  const selectedSection = document.getElementById(sectionId);
-  if (selectedSection) {
+// Function to show a specific section
+function showSection(sectionId) {
+  try {
+    const selectedSection = document.getElementById(sectionId);
+    if (!selectedSection) {
+      console.warn(`Section with ID ${sectionId} not found`);
+      return;
+    }
+
     selectedSection.style.display = 'block';
     
-    // Remover clase active de todas las opciones del menú
-    document.querySelectorAll('.menu-option').forEach(option => {
-      option.classList.remove('active');
-    });
+    // Remove active class from all menu options
+    const menuOptions = document.querySelectorAll('.menu-option');
+    if (menuOptions) {
+      menuOptions.forEach(option => {
+        if (option) {
+          option.classList.remove('active');
+        }
+      });
+    }
 
-    // Agregar clase active a la opción seleccionada
+    // Add active class to selected option
     const selectedOption = document.getElementById(sectionId.replace('Section', 'Option'));
     if (selectedOption) {
       selectedOption.classList.add('active');
     }
 
-    // Inicializar componentes específicos según la sección
+    // Initialize section-specific components
     switch(sectionId) {
       case 'profileSection':
-        initializeProfileCardFlip();
+        if (typeof initializeProfileCardFlip === 'function') {
+          initializeProfileCardFlip();
+        }
         break;
       case 'networkSection':
-        createNetworkProfiles('empresas', 'empresasGrid');
-        createNetworkProfiles('proveedores', 'proveedoresGrid');
+        if (typeof createNetworkProfiles === 'function') {
+          createNetworkProfiles('empresas', 'empresasGrid');
+          createNetworkProfiles('proveedores', 'proveedoresGrid');
+        }
         break;
       case 'rankingsSection':
-        updateRankingsList('todas');
+        if (typeof updateRankingsList === 'function') {
+          updateRankingsList('todas');
+        }
         break;
       case 'achievementsSection':
-        const currentUser = obtenerUsuarioActual();
-        if (currentUser && currentUser.tipoPerfil === 'empresa') {
-          const achievementsManager = new AchievementsManager(currentUser.correo);
-          achievementsManager.updateAchievementsFeed();
+        if (typeof obtenerUsuarioActual === 'function') {
+          const currentUser = obtenerUsuarioActual();
+          if (currentUser && currentUser.tipoPerfil === 'empresa') {
+            if (typeof AchievementsManager === 'function') {
+              const achievementsManager = new AchievementsManager(currentUser.correo);
+              achievementsManager.updateAchievementsFeed();
+            }
+          }
         }
         break;
       case 'cursoSection':
-        initializeJourneySystem();
+        if (typeof initializeJourneySystem === 'function') {
+          initializeJourneySystem();
+        }
         break;
     }
+  } catch (error) {
+    console.warn(`Error showing section ${sectionId}:`, error);
   }
 }
 
@@ -119,52 +171,58 @@ function showSection(sectionId) {
  * @param {number} count - Number of carousel items to generate
  */
 function createCarouselItems(prefix, swiperClass, count = 8) {
-  const swiperWrapper = document.querySelector(`.${swiperClass} .swiper-wrapper`);
-  if (!swiperWrapper) return; // Skip if wrapper doesn't exist
-  
-  // Clear existing slides if any
-  swiperWrapper.innerHTML = '';
-  
-  for (let i = 1; i <= count; i++) {
-    const industry = getRandomIndustry();
-    const status = getRandomStatus();
-    const location = getRandomLocation();
-    const companyName = getCompanyName(prefix, i);
+  try {
+    const swiperWrapper = document.querySelector(`.${swiperClass} .swiper-wrapper`);
+    if (!swiperWrapper) {
+      console.warn(`Swiper wrapper not found for class: ${swiperClass}`);
+      return;
+    }
     
-    const slide = document.createElement('div');
-    slide.className = 'swiper-slide';
-    slide.innerHTML = `
-      <div class="card-content">
-        <div class="card-image">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <path d="M12 8v8" />
-            <path d="M8 12h8" />
-          </svg>
+    // Clear existing slides if any
+    swiperWrapper.innerHTML = '';
+    
+    for (let i = 1; i <= count; i++) {
+      const industry = typeof getRandomIndustry === 'function' ? getRandomIndustry() : 'Technology';
+      const status = typeof getRandomStatus === 'function' ? getRandomStatus() : 'Active';
+      const location = typeof getRandomLocation === 'function' ? getRandomLocation() : 'Local';
+      const companyName = typeof getCompanyName === 'function' ? getCompanyName(prefix, i) : `${prefix} ${i}`;
+      
+      const slide = document.createElement('div');
+      slide.className = 'swiper-slide';
+      slide.innerHTML = `
+        <div class="card-content">
+          <div class="card-image">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="M12 8v8" />
+              <path d="M8 12h8" />
+            </svg>
+          </div>
+          <div class="card-text">${companyName}</div>
         </div>
-        <div class="card-text">${companyName}</div>
-      </div>
-      <div class="enterprise-data">
-        <h4>${companyName}</h4>
-        <p>Industry: ${industry}</p>
-        <p>Status: ${status}</p>
-        <p>Score: ${Math.floor(Math.random() * 100)}</p>
-        <p>Location: ${location}</p>
-        <p>Founded: ${2000 + Math.floor(Math.random() * 23)}</p>
-        <p>Employees: ${50 + Math.floor(Math.random() * 950)}</p>
-        <button class="connect-btn">Connect</button>
-      </div>
-    `;
-    swiperWrapper.appendChild(slide);
-    
-    // Add click event listener to the slide
-    slide.addEventListener('click', function() {
-      // Show enterprise data on click
-      const enterpriseData = this.querySelector('.enterprise-data');
-      if (enterpriseData) {
-        enterpriseData.style.opacity = '1';
-      }
-    });
+        <div class="enterprise-data">
+          <h4>${companyName}</h4>
+          <p>Industry: ${industry}</p>
+          <p>Status: ${status}</p>
+          <p>Score: ${Math.floor(Math.random() * 100)}</p>
+          <p>Location: ${location}</p>
+          <p>Founded: ${2000 + Math.floor(Math.random() * 23)}</p>
+          <p>Employees: ${50 + Math.floor(Math.random() * 950)}</p>
+          <button class="connect-btn">Connect</button>
+        </div>
+      `;
+      swiperWrapper.appendChild(slide);
+      
+      // Add click event listener to the slide
+      slide.addEventListener('click', function() {
+        const enterpriseData = this.querySelector('.enterprise-data');
+        if (enterpriseData) {
+          enterpriseData.style.opacity = '1';
+        }
+      });
+    }
+  } catch (error) {
+    console.warn(`Error creating carousel items:`, error);
   }
 }
 
@@ -464,61 +522,112 @@ document.querySelectorAll('.journey-card, .curso-card').forEach(card => {
 });
 
 // Enable the employee button
-document.getElementById('empleadoBtn').disabled = false;
+const empleadoBtn = document.getElementById('empleadoBtn');
+if (empleadoBtn) {
+  empleadoBtn.disabled = false;
 
-// Employee page layout
-document.getElementById('empleadoBtn').addEventListener('click', () => {
-  document.querySelector('.selection-box').style.display = 'none';
-  document.getElementById('empleadoMenu').style.display = 'flex';
-  document.getElementById('empleadoJourneyOption').click(); // Default to journey view
-});
+  empleadoBtn.addEventListener('click', () => {
+    const selectionBox = document.querySelector('.selection-box');
+    const empleadoMenu = document.getElementById('empleadoMenu');
+    const empleadoJourneyOption = document.getElementById('empleadoJourneyOption');
+
+    if (selectionBox) selectionBox.style.display = 'none';
+    if (empleadoMenu) empleadoMenu.style.display = 'flex';
+    if (empleadoJourneyOption) empleadoJourneyOption.click(); // Default to journey view
+  });
+}
 
 // Employee menu option selection
 const empleadoMenuOptions = ['empleadoPerfil', 'empleadoJourney', 'empleadoRanking'];
 empleadoMenuOptions.forEach(option => {
-  document.getElementById(`${option}Option`).addEventListener('click', () => {
-    empleadoMenuOptions.forEach(opt => {
-      document.getElementById(`${opt}Option`).classList.remove('selected');
+  const optionElement = document.getElementById(`${option}Option`);
+  if (optionElement) {
+    optionElement.addEventListener('click', () => {
+      // Remove 'selected' class from all options
+      empleadoMenuOptions.forEach(opt => {
+        const element = document.getElementById(`${opt}Option`);
+        if (element) {
+          element.classList.remove('selected');
+        }
+      });
+
+      // Add 'selected' class to clicked option
+      optionElement.classList.add('selected');
+      
+      // Handle section display
+      hideAllEmpleadoSections();
+      const sectionElement = document.getElementById(`${option}Section`);
+      if (sectionElement) {
+        sectionElement.style.display = 'block';
+        if (option === 'empleadoRanking') {
+          if (typeof updateEmpleadoRankingsList === 'function') {
+            updateEmpleadoRankingsList('empleados');
+          }
+        }
+      }
     });
-    document.getElementById(`${option}Option`).classList.add('selected');
-    
-    if (option === 'empleadoPerfil') {
-      hideAllEmpleadoSections();
-      document.getElementById('empleadoPerfilSection').style.display = 'block';
-    } else if (option === 'empleadoJourney') {
-      hideAllEmpleadoSections();
-      document.getElementById('empleadoJourneySection').style.display = 'block';
-    } else if (option === 'empleadoRanking') {
-      hideAllEmpleadoSections();
-      document.getElementById('empleadoRankingSection').style.display = 'block';
-      updateEmpleadoRankingsList('empleados');
-    }
-  });
+  }
 });
 
 // Header navigation for empleado sections
-document.getElementById('headerPerfilOption').addEventListener('click', (e) => {
-  e.preventDefault();
-  document.getElementById('empleadoPerfilOption').click();
-});
-
-document.getElementById('headerJourneyOption').addEventListener('click', (e) => {
-  e.preventDefault();
-  document.getElementById('empleadoJourneyOption').click();
-});
-
-document.getElementById('headerRankingOption').addEventListener('click', (e) => {
-  e.preventDefault();
-  document.getElementById('empleadoRankingOption').click();
+['Perfil', 'Journey', 'Ranking'].forEach(section => {
+  const headerOption = document.getElementById(`header${section}Option`);
+  const menuOption = document.getElementById(`empleado${section}Option`);
+  
+  if (headerOption && menuOption) {
+    headerOption.addEventListener('click', (e) => {
+      e.preventDefault();
+      menuOption.click();
+    });
+  }
 });
 
 /**
  * Hides all employee sections for clean transitions
  */
 function hideAllEmpleadoSections() {
-  document.getElementById('empleadoPerfilSection').style.display = 'none';
-  document.getElementById('empleadoJourneySection').style.display = 'none';
-  document.getElementById('empleadoRankingSection').style.display = 'none';
+  const sections = ['empleadoPerfilSection', 'empleadoJourneySection', 'empleadoRankingSection'];
+  sections.forEach(sectionId => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.style.display = 'none';
+    }
+  });
+}
+
+// Employee Journey tabs
+const empleadoSearchTab = document.getElementById('empleadoSearchTab');
+const empleadoAcquiredTab = document.getElementById('empleadoAcquiredTab');
+const empleadoSearchView = document.getElementById('empleadoSearchView');
+const empleadoAcquiredView = document.getElementById('empleadoAcquiredView');
+
+if (empleadoSearchTab && empleadoAcquiredTab && empleadoSearchView && empleadoAcquiredView) {
+  empleadoSearchTab.addEventListener('click', () => {
+    empleadoAcquiredTab.classList.remove('active');
+    empleadoSearchTab.classList.add('active');
+    empleadoSearchView.style.display = 'block';
+    empleadoAcquiredView.style.display = 'none';
+  });
+
+  empleadoAcquiredTab.addEventListener('click', () => {
+    empleadoSearchTab.classList.remove('active');
+    empleadoAcquiredTab.classList.add('active');
+    empleadoSearchView.style.display = 'none';
+    empleadoAcquiredView.style.display = 'block';
+  });
+}
+
+/**
+ * Hides all employee sections for clean transitions
+ */
+function hideAllEmpleadoSections() {
+  const sections = ['empleadoPerfilSection', 'empleadoJourneySection', 'empleadoRankingSection'];
+  sections.forEach(sectionId => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.style.display = 'none';
+    }
+  });
 }
 
 // Employee Journey tabs

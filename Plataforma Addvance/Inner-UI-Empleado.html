@@ -31,10 +31,6 @@
         <i class="fas fa-road"></i>
         <span>Curso</span>
       </button>
-      <button id="empleadoRankingOption" class="menu-option">
-        <i class="fas fa-chart-line"></i>
-        <span>Ranking</span>
-      </button>
       <button id="empleadoMessagingOption" class="menu-option">
         <i class="fas fa-envelope"></i>
         <span>Mensajería</span>
@@ -111,7 +107,7 @@
       <button id="empleadoLogoutBtn" class="logout-button">Cambiar cuenta</button>
     </div>
     
-    <!-- Empleado Journey Section - With Duolingo-style learning path -->
+    <!-- Empleado Journey Section -->
     <div id="empleadoCursoSection" class="journey-section" style="display: block;">
       <!-- Journey view tabs -->
       <div class="journey-submenu">
@@ -130,72 +126,19 @@
         </div>
       </div>
 
-      <!-- Acquired journeys view -->
+      <!-- Employee's assigned courses view -->
       <div id="empleadoAcquiredView" style="display: none;">
-        <h2 style="margin-bottom: 20px;">Mi Progreso de Aprendizaje</h2>
-        
+        <h2>Mi Progreso de Aprendizaje</h2>
         <div id="employeeCoursesList">
-          <!-- Los cursos adquiridos y disponibles para el empleado se cargarán aquí dinámicamente -->
-        </div>
-        
-        <!-- Modal para el cuestionario -->
-        <div id="quizModal" class="quiz-modal" style="display: none;">
-          <div class="quiz-content">
-            <h3 id="quizTitle">Cuestionario: Módulo X</h3>
-            <div id="quizQuestions">
-              <!-- Las preguntas se generarán con JavaScript -->
-            </div>
-            <button id="submitQuizBtn" class="submit-btn">Enviar respuestas</button>
-            <button id="closeQuizBtn" class="close-btn">Cerrar</button>
-          </div>
-        </div>
-        
-        <!-- Modal para la lección -->
-        <div id="lessonModal" class="lesson-modal" style="display: none;">
-          <div class="lesson-modal-content">
-            <h3 id="lessonTitle">Lección: Módulo X</h3>
-            
-            <!-- Indicador de progreso de la lección -->
-            <div class="lesson-progress-container">
-              <div class="lesson-progress-bar">
-                <div class="lesson-progress-fill" style="width: 0%"></div>
-              </div>
-              <div class="lesson-progress-text">Nivel <span id="currentLevel">1</span> de <span id="totalLevels">4</span></div>
-            </div>
-            
-            <!-- Contenedor para los niveles de la lección -->
-            <div id="lessonContent" class="lesson-container">
-              <!-- Los niveles se generarán con JavaScript -->
-            </div>
-            
-            <!-- Navegación entre niveles -->
-            <div class="lesson-navigation">
-              <button id="prevLevelBtn" class="nav-btn" disabled>Anterior</button>
-              <button id="nextLevelBtn" class="nav-btn">Siguiente</button>
-              <button id="completeLessonBtn" class="complete-btn" style="display: none;">Completar lección</button>
-            </div>
-            
-            <button id="closeLessonBtn" class="close-btn">Cerrar</button>
-          </div>
+          <!-- Los cursos asignados al empleado se cargarán aquí dinámicamente -->
+          <p class="no-courses-message">No tienes cursos asignados actualmente.</p>
         </div>
       </div>
     </div>
-    
-    <!-- Empleado Rankings Section -->
-    <div id="empleadoRankingSection" class="rankings-section">
-      <!-- Rankings filter submenu -->
-      <div class="rankings-submenu">
-        <button data-category="empleados" class="active">Todos</button>
-        <button data-category="empresa">Empresa X</button>
-        <button data-category="departamento">Departamento Y</button>
-        <button data-category="municipio">Municipio Z</button>
-      </div>
-      <!-- Rankings list container -->
-      <ul class="rankings-list" id="empleadoRankingsList">
-      </ul>
-    </div>
+  </div>
+  
   <!-- External JavaScript dependencies -->
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cloudflare-static/email-decode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
   <!-- Custom JavaScript -->
   <script src="auth.js"></script>
@@ -213,7 +156,6 @@
         const sections = [
           'empleadoPerfilSection',
           'empleadoCursoSection',
-          'empleadoRankingSection',
           'empleadoMessagingSection',
           'empleadoNotificationsSection'
         ];
@@ -248,12 +190,8 @@
       const menuOptions = document.querySelectorAll('#empleadoMenu .menu-option');
       menuOptions.forEach(option => {
         option.addEventListener('click', function() {
-          // Remove active class from all options
           menuOptions.forEach(opt => opt.classList.remove('active'));
-          // Add active class to clicked option
           this.classList.add('active');
-          
-          // Show corresponding section
           const sectionId = this.id.replace('Option', 'Section');
           showSection(sectionId);
         });
@@ -269,7 +207,7 @@
         cursoOption.classList.add('active');
       }
 
-      // Initialize search view and acquired view states for Curso section
+      // Initialize search view and acquired view states
       const searchView = document.getElementById('empleadoSearchView');
       const acquiredView = document.getElementById('empleadoAcquiredView');
       if (searchView) searchView.style.display = 'block';
@@ -280,18 +218,120 @@
       const acquiredTab = document.getElementById('empleadoAcquiredTab');
       if (searchTab) searchTab.classList.add('active');
       if (acquiredTab) acquiredTab.classList.remove('active');
+
+      // Handle tab switching
+      if (searchTab && acquiredTab && searchView && acquiredView) {
+        searchTab.addEventListener('click', function() {
+          searchTab.classList.add('active');
+          acquiredTab.classList.remove('active');
+          searchView.style.display = 'block';
+          acquiredView.style.display = 'none';
+        });
+        
+        acquiredTab.addEventListener('click', function() {
+          acquiredTab.classList.add('active');
+          searchTab.classList.remove('active');
+          acquiredView.style.display = 'block';
+          searchView.style.display = 'none';
+          loadEmployeeCourses();
+        });
+      }
+
+      // Function to load employee-specific courses
+      function loadEmployeeCourses() {
+        const employeeCoursesList = document.getElementById('employeeCoursesList');
+        if (!employeeCoursesList) return;
+
+        employeeCoursesList.innerHTML = '';
+        const currentEmployeeId = 'empleado-ejemplo';
+        const employeeCourses = window.courseManager.getEmployeeAvailableCourses(currentEmployeeId);
+
+        if (!employeeCourses || employeeCourses.length === 0) {
+          employeeCoursesList.innerHTML = '<p class="no-courses-message">No tienes cursos asignados actualmente.</p>';
+          return;
+        }
+
+        employeeCourses.forEach(course => {
+          const courseCard = document.createElement('div');
+          courseCard.className = 'curso-empleado';
+          const progress = course.progress.overallProgress || 0;
+          
+          courseCard.innerHTML = `
+            <h2>Mi Progreso de Aprendizaje</h2>
+            <div class="curso-empleado-card">
+              <h3>${course.title}</h3>
+              <p>Duración: ${course.duration}</p>
+              <p>${course.description}</p>
+              <div class="progress-bar">
+                <div class="progress" style="width: ${progress}%"></div>
+              </div>
+              <p>${progress}% completado</p>
+              <button class="continue-btn">Continuar curso</button>
+            </div>
+          `;
+          
+          employeeCoursesList.appendChild(courseCard);
+        });
+      }
     });
     
     // Implementar funcionalidad de cerrar sesión
     const logoutButton = document.querySelector('.logout-button');
     if (logoutButton) {
       logoutButton.addEventListener('click', function() {
-        // Llamar a la función cerrarSesion de auth.js
         cerrarSesion();
-        // Redirigir a la página de autenticación
         window.location.href = 'auth.html';
       });
     }
   </script>
+
+  <style>
+    .curso-empleado {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .curso-empleado h3 {
+      margin-bottom: 10px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background-color: #e9ecef;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+
+    .progress {
+      height: 100%;
+      background-color: #28a745;
+      border-radius: 5px;
+    }
+
+    .continue-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .continue-btn:hover {
+      background: #0056b3;
+    }
+
+    .no-courses-message {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 20px;
+    }
+  </style>
 </body>
 </html>
