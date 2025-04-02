@@ -138,6 +138,22 @@
       <div id="achievementsFeed" class="achievements-feed">
         <!-- Los logros se cargarán dinámicamente aquí -->
       </div>
+      
+      <!-- Sección para visualizar logros globales/de sistema -->
+      <div class="global-achievements-section">
+        <h3>Logros Globales</h3>
+        <div id="globalAchievementsList" class="global-achievements-list">
+          <!-- Los logros globales se cargarán dinámicamente aquí -->
+        </div>
+      </div>
+      
+      <!-- Sección para visualizar logros de otras empresas -->
+      <div class="other-companies-achievements-section">
+        <h3>Logros de otras empresas</h3>
+        <div id="otherCompaniesAchievements" class="other-companies-achievements">
+          <!-- Los logros de otras empresas se cargarán dinámicamente aquí -->
+        </div>
+      </div>
     </div>
     
     <!-- Profile Section - Company/User profile information -->
@@ -294,116 +310,8 @@
 
       <!-- Acquired cursos view -->
       <div id="acquiredView" style="display: none;">
-        <div class="curso-grid">
-          <div class="curso-card">
-            <h3>Curso Adquirido 1</h3>
-            <p>Estado: En progreso</p>
-            <p class="deadline">Fecha límite para agendar: 30-06-2023</p>
-            <select class="schedule-dropdown">
-              <option>Seleccionar horario para workshop</option>
-              <option>Mañana 9:00 AM</option>
-              <option>Tarde 2:00 PM</option>
-            </select>
-            <div class="curso-details">
-              <table class="participants-table">
-                <thead>
-                  <tr>
-                    <th>Participante</th>
-                    <th>Progreso</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Participante 1</td>
-                    <td>75%</td>
-                    <td>Activo</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="curso-card">
-            <h3>Curso Adquirido 2</h3>
-            <p>Estado: En progreso</p>
-            <select class="schedule-dropdown">
-              <option>Seleccionar horario</option>
-              <option>Mañana 9:00 AM</option>
-              <option>Tarde 2:00 PM</option>
-            </select>
-            <div class="curso-details">
-              <table class="participants-table">
-                <thead>
-                  <tr>
-                    <th>Participante</th>
-                    <th>Progreso</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Participante 1</td>
-                    <td>75%</td>
-                    <td>Activo</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="curso-card">
-            <h3>Curso Adquirido 3</h3>
-            <p>Estado: En progreso</p>
-            <select class="schedule-dropdown">
-              <option>Seleccionar horario</option>
-              <option>Mañana 9:00 AM</option>
-              <option>Tarde 2:00 PM</option>
-            </select>
-            <div class="curso-details">
-              <table class="participants-table">
-                <thead>
-                  <tr>
-                    <th>Participante</th>
-                    <th>Progreso</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Participante 1</td>
-                    <td>75%</td>
-                    <td>Activo</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="curso-card">
-            <h3>Curso Adquirido 4</h3>
-            <p>Estado: En progreso</p>
-            <select class="schedule-dropdown">
-              <option>Seleccionar horario</option>
-              <option>Mañana 9:00 AM</option>
-              <option>Tarde 2:00 PM</option>
-            </select>
-            <div class="curso-details">
-              <table class="participants-table">
-                <thead>
-                  <tr>
-                    <th>Participante</th>
-                    <th>Progreso</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Participante 1</td>
-                    <td>75%</td>
-                    <td>Activo</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+        <div id="companyAcquiredCoursesList">
+          <!-- Los cursos adquiridos se cargarán aquí dinámicamente con la información del progreso de los empleados -->
         </div>
       </div>
     </div>
@@ -525,8 +433,9 @@
   <script src="main.js"></script>
   <script src="profile-manager.js"></script>
   <script src="menu-toggle.js"></script>
-  <script src="js/empresa-navigation.js"></script>
-  <script src="js/curso-manager.js"></script>
+  <script src="courseData.js"></script>
+  <script src="courses-manager.js"></script>
+  <script src="achievements-manager.js"></script>
   <script>
       // Initialize curso tabs functionality
       document.addEventListener('DOMContentLoaded', function() {
