@@ -27,10 +27,6 @@
         <i class="fas fa-user"></i>
         <span>Perfil</span>
       </button>
-      <button id="socioCursoOption" class="menu-option">
-        <i class="fas fa-road"></i>
-        <span>Curso</span>
-      </button>
       <button id="socioNetworkOption" class="menu-option">
         <i class="fas fa-network-wired"></i>
         <span>Network</span>
@@ -100,61 +96,8 @@
         </details>
       </div>
     </div>
-    
-    <!-- Socio Curso Section -->
-    <div id="socioCursoSection" class="curso-section" style="display: none;">
-      <!-- Curso view tabs -->
-      <div class="curso-submenu">
-        <button id="socioSearchTab" class="menu-option active">Búsqueda</button>
-        <button id="socioAcquiredTab" class="menu-option">Mis Cursos</button>
-      </div>
-
-      <!-- Curso search view -->
-      <div id="socioSearchView" style="display: block;">
-        <div class="search-container">
-          <h2>¿Qué Curso estás buscando?</h2>
-          <input type="text" class="search-bar" placeholder="Buscar curso...">
-        </div>
-        <div class="curso-grid">
-          <div class="curso-card">
-            <h3>Curso para Socios 1</h3>
-            <p>Desarrollo de habilidades de negocio</p>
-            <div class="curso-details">
-              <div class='curso-details-container'>
-                <p>Duración: 4 semanas</p>
-              </div>
-              <p>Nivel: Intermedio</p>
-              <p><b>Precio:</b> $$$</p>
-              <p>Descripción detallada del curso y sus beneficios para socios estratégicos.</p>
-              <button class="purchase-btn">Inscribirse</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Acquired cursos view -->
-      <div id="socioAcquiredView" style="display: none;">
-        <div class="curso-grid">
-          <div class="curso-card">
-            <h3>Curso Adquirido 1</h3>
-            <p>Estado: En progreso</p>
-            <p class="deadline">Fecha límite para agendar: 30-06-2023</p>
-            <select class="schedule-dropdown">
-              <option>Seleccionar horario</option>
-              <option>Mañana 9:00 AM</option>
-              <option>Tarde 2:00 PM</option>
-            </select>
-            <div class="curso-details">
-              <p>Progreso: 45%</p>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 45%"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
+  
+  
     <!-- Socio Network Section -->
     <div id="socioNetworkSection" class="network-section">
       <!-- Network grid - new design based on screenshot -->
@@ -200,33 +143,62 @@
   <script src="profile-manager.js"></script>
   <script src="menu-toggle.js"></script>
   <script>
-    // Initialize profile card flip functionality when the page loads
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize profile card when profile section is visible
+      // Function to hide all sections
+      function hideAllSections() {
+        const sections = [
+          'socioPerfilSection',
+          'socioCursoSection',
+          'socioNetworkSection',
+          'socioMessagingSection',
+          'socioNotificationsSection'
+        ];
+        
+        sections.forEach(sectionId => {
+          const section = document.getElementById(sectionId);
+          if (section) {
+            section.style.display = 'none';
+          }
+        });
+      }
+
+      // Function to show a specific section
+      function showSection(sectionId) {
+        hideAllSections();
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.style.display = 'block';
+        }
+      }
+
+      // Initialize profile card flip functionality
       const perfilOption = document.getElementById('socioPerfilOption');
       if (perfilOption) {
         perfilOption.addEventListener('click', function() {
-          // Initialize profile card when profile section becomes visible
           initializeProfileCardFlip();
+          showSection('socioPerfilSection');
         });
       }
-      
-      // Initialize profile card if profile section is visible by default
-      if (document.getElementById('socioPerfilSection').style.display !== 'none') {
-        initializeProfileCardFlip();
-      }
 
-      // Highlight the selected menu option based on visible section
-      const menuOptions = document.querySelectorAll('.menu-option');
+      // Add click event listeners to all menu options
+      const menuOptions = document.querySelectorAll('#socioMenu .menu-option');
       menuOptions.forEach(option => {
         option.addEventListener('click', function() {
           // Remove active class from all options
           menuOptions.forEach(opt => opt.classList.remove('active'));
           // Add active class to clicked option
           this.classList.add('active');
+          
+          // Show corresponding section
+          const sectionId = this.id.replace('Option', 'Section');
+          showSection(sectionId);
         });
       });
 
+      // Set initial state - show Network section by default
+      hideAllSections();
+      showSection('socioNetworkSection');
+      
       // Set Network option as active by default
       const networkOption = document.getElementById('socioNetworkOption');
       if (networkOption) {
@@ -252,18 +224,6 @@
           socioAcquiredView.style.display = 'block';
           socioSearchTab.classList.remove('active');
           socioAcquiredTab.classList.add('active');
-        });
-      }
-
-      // Manejo de navegación para sección de Cursos
-      const socioCursoOption = document.getElementById('socioCursoOption');
-      if (socioCursoOption) {
-        socioCursoOption.addEventListener('click', function() {
-          // Ocultar todas las secciones
-          document.getElementById('socioPerfilSection').style.display = 'none';
-          document.getElementById('socioNetworkSection').style.display = 'none';
-          // Mostrar sección de cursos
-          document.getElementById('socioCursoSection').style.display = 'block';
         });
       }
       
