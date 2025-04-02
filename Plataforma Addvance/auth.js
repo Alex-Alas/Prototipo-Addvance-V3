@@ -309,6 +309,20 @@ function obtenerUsuarios() {
   return usuarios.map(({ contrasena, ...resto }) => resto);
 }
 
+// Get employees by company code
+function obtenerEmpleadosPorCodigoEmpresa(codigoEmpresa) {
+  const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+  // Filter employees that belong to the specified company
+  const empleados = usuarios.filter(usuario => 
+    usuario.tipoPerfil === 'empleado' && 
+    usuario.datosAdicionales && 
+    usuario.datosAdicionales.codigoEmpresa === codigoEmpresa
+  );
+  
+  // Return employees without passwords for security
+  return empleados.map(({ contrasena, ...resto }) => resto);
+}
+
 // Get user notifications
 function obtenerNotificaciones(correoUsuario) {
   const notificaciones = JSON.parse(localStorage.getItem('notificaciones')) || [];

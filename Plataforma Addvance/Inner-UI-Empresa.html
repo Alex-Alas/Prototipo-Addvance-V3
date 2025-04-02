@@ -584,14 +584,17 @@
 
       // Function to extend deadline
       function extendDeadline(courseCard, courseId) {
+        console.log('Extending deadline for course:', courseId);
+        
         const deadlineText = courseCard.querySelector('.deadline');
         const currentDate = new Date(deadlineText.textContent.split('el ')[1]);
         currentDate.setMonth(currentDate.getMonth() + 1);
         
         // Update deadline text
         deadlineText.textContent = `Tienes hasta el ${currentDate.toLocaleDateString('es-ES')} para programar el taller`;
+        deadlineText.style.color = '#dc3545'; // Keep it red since it's still pending
         
-        // Update schedule options
+        // Update schedule options with new dates
         const scheduleSelect = courseCard.querySelector('.schedule-select');
         scheduleSelect.innerHTML = `
           <option value="">Selecciona una fecha</option>
@@ -601,49 +604,68 @@
           <option value="afternoon2">${currentDate.toLocaleDateString('es-ES')} - 4:00 PM</option>
         `;
         
+        // Enable the select in case it was disabled
+        scheduleSelect.disabled = false;
+        
         // Store new deadline in localStorage
         const scheduledCourses = JSON.parse(localStorage.getItem('scheduledCourses') || '{}');
-        if (scheduledCourses[courseId]) {
-          scheduledCourses[courseId].deadline = currentDate.toISOString();
-          localStorage.setItem('scheduledCourses', JSON.stringify(scheduledCourses));
+        if (!scheduledCourses[courseId]) {
+          scheduledCourses[courseId] = {};
         }
+        scheduledCourses[courseId].deadline = currentDate.toISOString();
+        scheduledCourses[courseId].scheduled = false; // Reset scheduled status
+        localStorage.setItem('scheduledCourses', JSON.stringify(scheduledCourses));
+        
+        console.log('Deadline extended to:', currentDate.toLocaleDateString('es-ES'));
       }
 
       // Function to schedule workshop
       function scheduleWorkshop(courseCard, courseId, selectedTime) {
+        console.log('Scheduling workshop for course:', courseId, 'at time:', selectedTime);
+        
         const deadlineText = courseCard.querySelector('.deadline');
         const moreTimeBtn = courseCard.querySelector('.more-time-btn');
         const scheduleSelect = courseCard.querySelector('.schedule-select');
         
         // Update UI
         deadlineText.textContent = 'Se ha programado taller';
-        deadlineText.style.color = '#000000';
-        moreTimeBtn.disabled = true;
-        scheduleSelect.disabled = true;
+        deadlineText.style.color = '#000000'; // Change to black as specified
+        moreTimeBtn.disabled = true; // Disable the "need more time" button
+        scheduleSelect.disabled = true; // Disable the dropdown
+        
+        // Get the selected date and time
+        const selectedOption = scheduleSelect.options[scheduleSelect.selectedIndex];
+        const selectedDateTime = selectedOption.text;
         
         // Store scheduling status in localStorage
         const scheduledCourses = JSON.parse(localStorage.getItem('scheduledCourses') || '{}');
         scheduledCourses[courseId] = {
           scheduled: true,
           selectedTime: selectedTime,
+          selectedDateTime: selectedDateTime,
           deadline: new Date(scheduleSelect.options[1].text.split(' - ')[0]).toISOString()
         };
         localStorage.setItem('scheduledCourses', JSON.stringify(scheduledCourses));
+        
+        console.log('Workshop scheduled:', scheduledCourses[courseId]);
       }
 
-      // Function to update scheduled status
+      // Function to update scheduled status (called when loading a course card)
       function updateScheduledStatus(courseCard, scheduledData) {
+        console.log('Updating scheduled status:', scheduledData);
+        
         if (scheduledData.scheduled) {
           const deadlineText = courseCard.querySelector('.deadline');
           const moreTimeBtn = courseCard.querySelector('.more-time-btn');
           const scheduleSelect = courseCard.querySelector('.schedule-select');
           
+          // Update UI to reflect scheduled status
           deadlineText.textContent = 'Se ha programado taller';
           deadlineText.style.color = '#000000';
           moreTimeBtn.disabled = true;
           scheduleSelect.disabled = true;
           
-          // Set the selected option
+          // Set the selected option in the dropdown
           const selectedTime = scheduledData.selectedTime;
           const options = scheduleSelect.options;
           for (let i = 0; i < options.length; i++) {
@@ -652,6 +674,16 @@
               break;
             }
           }
+          
+          console.log('Updated UI for scheduled workshop');
+        } else if (scheduledData.deadline) {
+          // If there's a deadline but not scheduled, show the extended deadline
+          const deadline = new Date(scheduledData.deadline);
+          const deadlineText = courseCard.querySelector('.deadline');
+          deadlineText.textContent = `Tienes hasta el ${deadline.toLocaleDateString('es-ES')} para programar el taller`;
+          deadlineText.style.color = '#dc3545';
+          
+          console.log('Updated UI for extended deadline');
         }
       }
 
@@ -672,30 +704,57 @@
 
       // Function to populate employee dropdown
       function populateEmployeeDropdown(courseCard, courseId) {
+        console.log('Populating employee dropdown for course:', courseId);
+        
         const employeeSelect = courseCard.querySelector('.employee-select');
+        if (!employeeSelect) {
+          console.error('Employee select element not found');
+          return;
+        }
+        
+        // Clear current options
         employeeSelect.innerHTML = '<option value="">Selecciona un empleado</option>';
         
         // Get assigned employees from localStorage
         const assignedEmployees = JSON.parse(localStorage.getItem('assignedEmployees') || '{}');
         const courseAssignedEmployees = assignedEmployees[courseId] || [];
         
-        // Get all employees from the company
-        const companyEmployees = [
-          { id: 'emp1', name: 'Juan Pérez' },
-          { id: 'emp2', name: 'María García' },
-          { id: 'emp3', name: 'Carlos López' }
-        ];
+        // Get current user information
+        const currentUser = obtenerUsuarioActual();
+        if (!currentUser || currentUser.tipoPerfil !== 'empresa') {
+          console.error('Current user is not a company or not logged in');
+          return;
+        }
         
-        // Filter out already assigned employees
-        const availableEmployees = companyEmployees.filter(emp => 
-          !courseAssignedEmployees.includes(emp.id)
-        );
+        // Get company code from current user
+        const companyCode = currentUser.datosAdicionales.codigoUnico;
+        if (!companyCode) {
+          console.error('Company code not found for current user');
+          return;
+        }
+        
+        console.log('Company code:', companyCode);
+        
+        // Get employees associated with this company code
+        const companyEmployees = obtenerEmpleadosPorCodigoEmpresa(companyCode);
+        console.log('Company employees:', companyEmployees);
+        
+        // Filter out employees already assigned to this course
+        const availableEmployees = companyEmployees
+          .filter(employee => !courseAssignedEmployees.includes(employee.correo))
+          .map(employee => ({
+            id: employee.correo,
+            name: employee.nombre,
+            position: employee.datosAdicionales.cargo || 'Sin cargo'
+          }));
+        
+        console.log('Available employees:', availableEmployees);
         
         // Add available employees to dropdown
-        availableEmployees.forEach(emp => {
+        availableEmployees.forEach(employee => {
           const option = document.createElement('option');
-          option.value = emp.id;
-          option.textContent = emp.name;
+          option.value = employee.id;
+          option.textContent = `${employee.name} - ${employee.position}`;
           employeeSelect.appendChild(option);
         });
 
@@ -709,32 +768,121 @@
 
       // Function to assign employee to course
       function assignEmployeeToCourse(courseCard, courseId, employeeId) {
-        // Get current assignments
-        const assignedEmployees = JSON.parse(localStorage.getItem('assignedEmployees') || '{}');
-        if (!assignedEmployees[courseId]) {
-          assignedEmployees[courseId] = [];
-        }
+        console.log('Assigning employee', employeeId, 'to course', courseId);
         
-        // Add new employee to assignments
-        if (!assignedEmployees[courseId].includes(employeeId)) {
+        try {
+          // Get current assignments
+          const assignedEmployees = JSON.parse(localStorage.getItem('assignedEmployees') || '{}');
+          if (!assignedEmployees[courseId]) {
+            assignedEmployees[courseId] = [];
+          }
+          
+          // Check if employee is already assigned
+          if (assignedEmployees[courseId].includes(employeeId)) {
+            console.log('Employee already assigned to this course');
+            return;
+          }
+          
+          // Add new employee to assignments
           assignedEmployees[courseId].push(employeeId);
           localStorage.setItem('assignedEmployees', JSON.stringify(assignedEmployees));
+          
+          // Get employee data from the users in localStorage
+          const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+          const employeeData = usuarios.find(u => u.correo === employeeId && u.tipoPerfil === 'empleado');
+          
+          if (!employeeData) {
+            console.error('Employee data not found for ID:', employeeId);
+            return;
+          }
           
           // Add new row to table
           const tableBody = courseCard.querySelector('.employees-table tbody');
           const newRow = document.createElement('tr');
           newRow.className = 'employee-row';
           newRow.innerHTML = `
-            <td>${document.querySelector(`.employee-select option[value="${employeeId}"]`).textContent}</td>
-            <td>0%</td>
-            <td>No iniciado</td>
+            <td>${employeeData.nombre}</td>
+            <td>
+              <div class="progress-bar">
+                <div class="progress" style="width: 0%"></div>
+              </div>
+              <span class="progress-text">0%</span>
+            </td>
+            <td>Inactivo</td>
           `;
           tableBody.appendChild(newRow);
           
+          // Get current user (company) information
+          const currentUser = obtenerUsuarioActual();
+          const companyId = currentUser ? currentUser.correo : 'empresa-ejemplo';
+          
+          // Update companiesData if it exists
+          if (window.companiesData) {
+            const currentCompany = window.companiesData[companyId] || window.companiesData['empresa-ejemplo'];
+            if (currentCompany) {
+              const acquiredCourse = currentCompany.acquiredCourses.find(c => c.courseId === courseId);
+              if (acquiredCourse && !acquiredCourse.assignedEmployees.includes(employeeId)) {
+                acquiredCourse.assignedEmployees.push(employeeId);
+              }
+            }
+          }
+          
+          // Store assignment in a new structure for employee interface
+          const employeeAssignments = JSON.parse(localStorage.getItem('employeeAssignments') || '{}');
+          if (!employeeAssignments[employeeId]) {
+            employeeAssignments[employeeId] = [];
+          }
+          employeeAssignments[employeeId].push({
+            courseId: courseId,
+            assignedBy: companyId,
+            assignedDate: new Date().toISOString(),
+            status: 'Inactivo',
+            progress: 0
+          });
+          localStorage.setItem('employeeAssignments', JSON.stringify(employeeAssignments));
+          
+          // Add notification for the employee
+          agregarNotificacion(
+            employeeId, 
+            `Se te ha asignado un nuevo curso: ${window.coursesDatabase.find(c => c.id === courseId)?.title || courseId}`
+          );
+          
           // Clear and repopulate dropdown
           populateEmployeeDropdown(courseCard, courseId);
+          
+          console.log('Successfully assigned employee to course');
+          
+        } catch (error) {
+          console.error('Error assigning employee to course:', error);
         }
       }
+
+      // Add styles for the employee assignment table
+      const styleSheet = document.createElement('style');
+      styleSheet.textContent = `
+        .employee-row .progress-bar {
+          width: 100%;
+          height: 8px;
+          background-color: #e9ecef;
+          border-radius: 4px;
+          overflow: hidden;
+          margin: 5px 0;
+        }
+        
+        .employee-row .progress {
+          height: 100%;
+          background-color: #28a745;
+          transition: width 0.3s ease;
+        }
+        
+        .employee-row .progress-text {
+          font-size: 0.8em;
+          color: #666;
+          display: block;
+          text-align: center;
+        }
+      `;
+      document.head.appendChild(styleSheet);
 
       // La función initializeProfileCardFlip se define aquí para ser utilizada por empresa-navigation.js
       function initializeProfileCardFlip() {
