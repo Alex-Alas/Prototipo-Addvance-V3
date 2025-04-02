@@ -390,49 +390,184 @@
   <script src="js/empresa-navigation.js"></script>
   <script src="js/curso-manager.js"></script>
   <script>
-      // Initialize curso tabs functionality
-      document.addEventListener('DOMContentLoaded', function() {
-          const searchTab = document.getElementById('searchTab');
-          const acquiredTab = document.getElementById('acquiredTab');
-          const searchView = document.getElementById('searchView');
-          const acquiredView = document.getElementById('acquiredView');
+    // Initialize curso tabs functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOMContentLoaded event triggered');
+      
+      const searchTab = document.getElementById('searchTab');
+      const acquiredTab = document.getElementById('acquiredTab');
+      const searchView = document.getElementById('searchView');
+      const acquiredView = document.getElementById('acquiredView');
+      
+      if (searchTab && acquiredTab && searchView && acquiredView) {
+        searchTab.addEventListener('click', function() {
+          searchTab.classList.add('active');
+          acquiredTab.classList.remove('active');
+          searchView.style.display = 'block';
+          acquiredView.style.display = 'none';
+          loadCourses(); // Load courses when search tab is clicked
+        });
+        
+        acquiredTab.addEventListener('click', function() {
+          acquiredTab.classList.add('active');
+          searchTab.classList.remove('active');
+          acquiredView.style.display = 'block';
+          searchView.style.display = 'none';
+          loadAcquiredCourses(); // Load acquired courses when acquired tab is clicked
+        });
+      }
+
+      // Function to create course card
+      function createCourseCard(course) {
+        console.log('Creating card for course:', course);
+        const courseCard = document.createElement('div');
+        courseCard.className = 'curso-visual-empresa';
+        
+        courseCard.innerHTML = `
+          <h3>${course.title}</h3>
+          <p class="time-to-complete">Duración: ${course.duration}</p>
+          <p class="summary">${course.description}</p>
+          <button class="acquire-btn" data-course-id="${course.id}">Adquirir curso</button>
+        `;
+
+        // Add click event listener to the button
+        const acquireBtn = courseCard.querySelector('.acquire-btn');
+        acquireBtn.addEventListener('click', function() {
+          const courseId = this.getAttribute('data-course-id');
+          acquireCourse(courseId, course);
+        });
+
+        return courseCard;
+      }
+
+      // Function to create acquired course card
+      function createAcquiredCourseCard(course) {
+        const deadline = new Date();
+        deadline.setMonth(deadline.getMonth() + 1); // 1 month from now
+        
+        const courseCard = document.createElement('div');
+        courseCard.className = 'curso-adquirido-empresa';
+        courseCard.innerHTML = `
+          <h3>${course.title}</h3>
+          <p class="time-to-complete">Duración: ${course.duration}</p>
+          <p class="summary">${course.description}</p>
           
-          if (searchTab && acquiredTab && searchView && acquiredView) {
-              searchTab.addEventListener('click', function() {
-                  searchTab.classList.add('active');
-                  acquiredTab.classList.remove('active');
-                  searchView.style.display = 'block';
-                  acquiredView.style.display = 'none';
-              });
-              
-              acquiredTab.addEventListener('click', function() {
-                  acquiredTab.classList.add('active');
-                  searchTab.classList.remove('active');
-                  acquiredView.style.display = 'block';
-                  searchView.style.display = 'none';
-              });
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress" style="width: 0%"></div>
+            </div>
+            <span class="progress-text">0/0 puntos</span>
+          </div>
+          
+          <p class="deadline">Tienes hasta el ${deadline.toLocaleDateString('es-ES')} para programar el taller</p>
+          
+          <div class="schedule-container">
+            <select class="schedule-select">
+              <option value="">Selecciona una fecha y hora</option>
+              <option value="morning1">Mañana 1: ${deadline.toLocaleDateString('es-ES')} 9:00 AM</option>
+              <option value="morning2">Mañana 2: ${deadline.toLocaleDateString('es-ES')} 11:00 AM</option>
+              <option value="afternoon1">Tarde 1: ${deadline.toLocaleDateString('es-ES')} 2:00 PM</option>
+              <option value="afternoon2">Tarde 2: ${deadline.toLocaleDateString('es-ES')} 4:00 PM</option>
+            </select>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="more-time-btn">Necesito más tiempo</button>
+            <button class="assign-employees-btn">Asignar empleados</button>
+          </div>
+        `;
+
+        return courseCard;
+      }
+
+      // Function to handle course acquisition
+      function acquireCourse(courseId, course) {
+        // Disable the button and change its text
+        const acquireBtn = document.querySelector(`.acquire-btn[data-course-id="${courseId}"]`);
+        if (acquireBtn) {
+          acquireBtn.disabled = true;
+          acquireBtn.textContent = 'Curso Adquirido';
+        }
+
+        // Store the acquired course in localStorage
+        let acquiredCourses = JSON.parse(localStorage.getItem('acquiredCourses') || '[]');
+        if (!acquiredCourses.includes(courseId)) {
+          acquiredCourses.push(courseId);
+          localStorage.setItem('acquiredCourses', JSON.stringify(acquiredCourses));
+        }
+
+        // Create and add the acquired course card
+        const acquiredView = document.getElementById('acquiredView');
+        const acquiredCourseCard = createAcquiredCourseCard(course);
+        acquiredView.appendChild(acquiredCourseCard);
+      }
+
+      // Function to load and display courses
+      function loadCourses() {
+        console.log('Loading courses...');
+        const searchView = document.getElementById('searchView');
+        console.log('searchView element:', searchView);
+        
+        const journeyGrid = searchView.querySelector('.journey-grid');
+        console.log('journeyGrid element:', journeyGrid);
+        
+        if (!journeyGrid) {
+          console.error('Journey grid not found!');
+          return;
+        }
+
+        // Clear existing content
+        journeyGrid.innerHTML = '';
+        console.log('Available courses:', window.coursesDatabase);
+
+        // Load and display all courses
+        window.coursesDatabase.forEach(course => {
+          const courseCard = createCourseCard(course);
+          journeyGrid.appendChild(courseCard);
+          console.log('Added course card:', course.title);
+        });
+      }
+
+      // Function to load acquired courses
+      function loadAcquiredCourses() {
+        const acquiredView = document.getElementById('acquiredView');
+        const acquiredCourses = JSON.parse(localStorage.getItem('acquiredCourses') || '[]');
+        
+        // Clear existing content
+        acquiredView.innerHTML = '';
+        
+        // Load and display acquired courses
+        acquiredCourses.forEach(courseId => {
+          const course = window.coursesDatabase.find(c => c.id === courseId);
+          if (course) {
+            const acquiredCourseCard = createAcquiredCourseCard(course);
+            acquiredView.appendChild(acquiredCourseCard);
           }
-      });
+        });
+      }
+
+      // Load courses when the page loads and curso section is active
+      if (document.getElementById('cursoSection').style.display !== 'none') {
+        loadCourses();
+        loadAcquiredCourses();
+      }
       
       // La función initializeProfileCardFlip se define aquí para ser utilizada por empresa-navigation.js
       function initializeProfileCardFlip() {
-          const moreInfoBtns = document.querySelectorAll('.more-info-btn');
-          const profileCard = document.querySelector('.profile-card');
-          
-          moreInfoBtns.forEach(btn => {
-              btn.addEventListener('click', function() {
-                  profileCard.classList.toggle('flipped');
-              });
+        const moreInfoBtns = document.querySelectorAll('.more-info-btn');
+        const profileCard = document.querySelector('.profile-card');
+        
+        moreInfoBtns.forEach(btn => {
+          btn.addEventListener('click', function() {
+            profileCard.classList.toggle('flipped');
           });
+        });
       }
       
-      // No necesitamos establecer la clase active aquí, ya se maneja en empresa-navigation.js
-      // La inicialización del menú se hace completamente en el archivo js/empresa-navigation.js
-
       // Initialize company code display
       const companyCodeSpan = document.getElementById('companyCode');
       if (companyCodeSpan && !companyCodeSpan.textContent) {
-        companyCodeSpan.textContent = 'ABC123'; // Example static code
+        companyCodeSpan.textContent = 'ABC123';
       }
       
       // Initialize profile card if profile section is visible by default
@@ -440,168 +575,15 @@
         initializeProfileCardFlip();
       }
     
-    // Implementar funcionalidad de cerrar sesión
-    const logoutButton = document.querySelector('.logout-button');
-    if (logoutButton) {
-      logoutButton.addEventListener('click', function() {
-        // Llamar a la función cerrarSesion de auth.js
-        cerrarSesion();
-        // Redirigir a la página de autenticación
-        window.location.href = 'auth.html';
-      });
-    } 
-    try{
-      // Import courseData with absolute path
-      const { courseData } = await import('./courseData.js');
-      console.log('courseData imported successfully:', courseData);
-
-      document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOMContentLoaded event triggered');
-
-        // Function to hide all sections
-        function hideAllSections() {
-          const sections = [
-            'profileSection',
-            'cursoSection',
-            'networkSection',
-            'rankingsSection',
-            'achievementsSection',
-            'empresaMessagingSection',
-            'empresaNotificationsSection'
-          ];
-          
-          sections.forEach(sectionId => {
-            const section = document.getElementById(sectionId);
-            if (section) {
-              section.style.display = 'none';
-            }
-          });
-        }
-
-        // Function to show a specific section
-        function showSection(sectionId) {
-          console.log('Showing section:', sectionId);
-          hideAllSections();
-          const section = document.getElementById(sectionId);
-          if (section) {
-            section.style.display = 'block';
-          }
-        }
-
-        // Function to create course card
-        function createCourseCard(course) {
-          console.log('Creating card for course:', course);
-          const courseCard = document.createElement('div');
-          courseCard.className = 'curso-visual-empresa';
-          
-          courseCard.innerHTML = `
-            <h3>${course.title}</h3>
-            <p class="time-to-complete">Duración: ${course.estimatedTime}</p>
-            <p class="summary">${course.description}</p>
-            <button class="acquire-btn" data-course-id="${course.id}">Adquirir curso</button>
-          `;
-
-          return courseCard;
-        }
-
-        // Function to load and display courses
-        function loadCourses() {
-          console.log('Loading courses...');
-          const searchView = document.getElementById('searchView');
-          console.log('searchView element:', searchView);
-          
-          const journeyGrid = searchView.querySelector('.journey-grid');
-          console.log('journeyGrid element:', journeyGrid);
-          
-          if (!journeyGrid) {
-            console.error('Journey grid not found!');
-            return;
-          }
-
-          // Clear existing content
-          journeyGrid.innerHTML = '';
-          console.log('Available courses:', courseData.courses);
-
-          // Load and display all courses
-          courseData.courses.forEach(course => {
-            const courseCard = createCourseCard(course);
-            journeyGrid.appendChild(courseCard);
-            console.log('Added course card:', course.title);
-          });
-        }
-
-        // Initialize profile card flip functionality
-        const perfilOption = document.getElementById('perfilOption');
-        if (perfilOption) {
-          perfilOption.addEventListener('click', function() {
-            initializeProfileCardFlip();
-            showSection('profileSection');
-          });
-        }
-
-        // Add click event listeners to all menu options
-        const menuOptions = document.querySelectorAll('#empresaMenu .menu-option');
-        menuOptions.forEach(option => {
-          option.addEventListener('click', function() {
-            console.log('Menu option clicked:', this.id);
-            // Remove active class from all options
-            menuOptions.forEach(opt => opt.classList.remove('active'));
-            // Add active class to clicked option
-            this.classList.add('active');
-            
-            // Show corresponding section based on the option ID
-            let sectionId;
-            switch(this.id) {
-              case 'perfilOption':
-                sectionId = 'profileSection';
-                break;
-              case 'cursoOption':
-                sectionId = 'cursoSection';
-                loadCourses(); // Load courses when curso section is shown
-                break;
-              case 'networkOption':
-                sectionId = 'networkSection';
-                break;
-              case 'rankingsOption':
-                sectionId = 'rankingsSection';
-                break;
-              case 'achievementsOption':
-                sectionId = 'achievementsSection';
-                break;
-              case 'empresaMessagingOption':
-                sectionId = 'empresaMessagingSection';
-                break;
-              case 'empresaNotificationsOption':
-                sectionId = 'empresaNotificationsSection';
-                break;
-            }
-            showSection(sectionId);
-          });
+      // Implementar funcionalidad de cerrar sesión
+      const logoutButton = document.querySelector('.logout-button');
+      if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+          cerrarSesion();
+          window.location.href = 'auth.html';
         });
-
-        // Set initial state - show Curso section by default and load courses
-        console.log('Setting initial state');
-        hideAllSections();
-        showSection('cursoSection');
-        loadCourses();
-        
-        // Set Curso option as active by default
-        const cursoOption = document.getElementById('cursoOption');
-        if (cursoOption) {
-          cursoOption.classList.add('active');
-        }
-
-        // Initialize company code display
-        const companyCodeSpan = document.getElementById('companyCode');
-        if (companyCodeSpan && !companyCodeSpan.textContent) {
-          companyCodeSpan.textContent = 'ABC123';
-        }
-
-    })
-}
-    catch (error) {
-      console.error('Error in script execution:', error);
-    }
+      }
+    });
   </script>
 
   <style>
@@ -622,7 +604,7 @@
       min-height: 200px; /* Ensure grid is visible even when empty */
     }
 
-    .curso-visual-empresa {
+    .curso-visual-empresa, .curso-adquirido-empresa {
       background: white;
       border-radius: 8px;
       padding: 20px;
@@ -632,23 +614,23 @@
       display: block; /* Ensure visibility */
     }
 
-    .curso-visual-empresa:hover {
+    .curso-visual-empresa:hover, .curso-adquirido-empresa:hover {
       transform: translateY(-5px);
     }
 
-    .curso-visual-empresa h3 {
+    .curso-visual-empresa h3, .curso-adquirido-empresa h3 {
       color: #333;
       margin-bottom: 10px;
       font-size: 1.2em;
     }
 
-    .curso-visual-empresa .time-to-complete {
+    .curso-visual-empresa .time-to-complete, .curso-adquirido-empresa .time-to-complete {
       color: #666;
       font-size: 0.9em;
       margin-bottom: 10px;
     }
 
-    .curso-visual-empresa .summary {
+    .curso-visual-empresa .summary, .curso-adquirido-empresa .summary {
       color: #444;
       margin-bottom: 15px;
       line-height: 1.4;
@@ -667,69 +649,87 @@
     .curso-visual-empresa .acquire-btn:hover {
       background: #0056b3;
     }
-  </style>
-  <style>
-    /* Ensure visibility of course elements */
-    #cursoSection {
+
+    .curso-visual-empresa .acquire-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+
+    /* Styles for acquired course cards */
+    .progress-container {
+      margin: 15px 0;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background-color: #e9ecef;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      background-color: #28a745;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
       display: block;
-    }
-
-    #searchView {
-      display: block;
-    }
-
-    .journey-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
-      padding: 20px;
-      min-height: 200px; /* Ensure grid is visible even when empty */
-    }
-
-    .curso-visual-empresa {
-      background: white;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 15px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease;
-      display: block; /* Ensure visibility */
-    }
-
-    .curso-visual-empresa:hover {
-      transform: translateY(-5px);
-    }
-
-    .curso-visual-empresa h3 {
-      color: #333;
-      margin-bottom: 10px;
-      font-size: 1.2em;
-    }
-
-    .curso-visual-empresa .time-to-complete {
+      margin-top: 5px;
       color: #666;
       font-size: 0.9em;
-      margin-bottom: 10px;
     }
 
-    .curso-visual-empresa .summary {
-      color: #444;
-      margin-bottom: 15px;
-      line-height: 1.4;
+    .deadline {
+      color: #dc3545;
+      font-weight: 500;
+      margin: 10px 0;
     }
 
-    .curso-visual-empresa .acquire-btn {
-      background: #007bff;
-      color: white;
-      border: none;
+    .schedule-container {
+      margin: 15px 0;
+    }
+
+    .schedule-select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      background-color: white;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .more-time-btn, .assign-employees-btn {
+      flex: 1;
       padding: 8px 16px;
+      border: none;
       border-radius: 4px;
       cursor: pointer;
       transition: background 0.2s ease;
     }
 
-    .curso-visual-empresa .acquire-btn:hover {
-      background: #0056b3;
+    .more-time-btn {
+      background-color: #ffc107;
+      color: #212529;
+    }
+
+    .more-time-btn:hover {
+      background-color: #e0a800;
+    }
+
+    .assign-employees-btn {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .assign-employees-btn:hover {
+      background-color: #218838;
     }
   </style>
 </body>
