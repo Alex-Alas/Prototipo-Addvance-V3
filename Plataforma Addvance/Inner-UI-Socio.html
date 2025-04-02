@@ -100,40 +100,117 @@
   
     <!-- Socio Network Section -->
     <div id="socioNetworkSection" class="network-section">
-      <!-- Network grid - new design based on screenshot -->
-      <div class="network-grid-container">
-        <div class="search-filter-container">
-          <div class="search-header">
-            <input type="text" class="search-bar" placeholder="Buscar empresa..." id="empresaSearchInput">
-          </div>
-        </div>
-        <h2>Clientes actuales</h2>
-        <div class="network-profiles-grid" id="clientesGrid">
-          <!-- Profile cards will be dynamically generated here -->
+      <!-- Barra de búsqueda avanzada -->
+      <div class="provider-search-container">
+        <div class="search-header">
+          <h2>Búsqueda avanzada de empresas</h2>
+          <button id="toggleAdvancedSearch" class="toggle-search-btn">
+            <i class="fas fa-sliders-h"></i> Filtros avanzados
+          </button>
         </div>
         
-        <h2>Clientes potenciales</h2>
-        <div class="network-profiles-grid" id="potencialesGrid">
-          <!-- Profile cards will be dynamically generated here -->
+        <div class="search-bar-container">
+          <input type="text" id="companySearchInput" class="company-search-input" placeholder="Buscar por nombre de empresa, industria o ubicación...">
+          <button id="searchButton" class="search-btn">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+        
+        <!-- Filtros avanzados (inicialmente ocultos) -->
+        <div id="advancedSearchFilters" class="advanced-search-filters" style="display: none;">
+          <div class="filter-group">
+            <label>Industria</label>
+            <select id="industryFilter" class="filter-select">
+              <option value="">Todas las industrias</option>
+              <option value="tecnologia">Tecnología</option>
+              <option value="servicios">Servicios</option>
+              <option value="manufactura">Manufactura</option>
+              <option value="comercio">Comercio</option>
+              <option value="finanzas">Finanzas</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label>Tamaño de empresa</label>
+            <select id="sizeFilter" class="filter-select">
+              <option value="">Todos los tamaños</option>
+              <option value="pequena">Pequeña (1-50 empleados)</option>
+              <option value="mediana">Mediana (51-200 empleados)</option>
+              <option value="grande">Grande (201+ empleados)</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label>Ubicación</label>
+            <select id="locationFilter" class="filter-select">
+              <option value="">Todas las ubicaciones</option>
+              <option value="sanSalvador">San Salvador</option>
+              <option value="santaAna">Santa Ana</option>
+              <option value="sanMiguel">San Miguel</option>
+              <option value="otros">Otros departamentos</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label>Estado</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" id="showCurrentClients" checked> Clientes actuales</label>
+              <label><input type="checkbox" id="showPotentialClients" checked> Clientes potenciales</label>
+            </div>
+          </div>
+          
+          <div class="filter-actions">
+            <button id="applyFilters" class="apply-filters-btn">Aplicar filtros</button>
+            <button id="resetFilters" class="reset-filters-btn">Restablecer</button>
+          </div>
+        </div>
+        
+        <!-- Indicadores de filtros activos -->
+        <div id="activeFiltersBar" class="active-filters-bar" style="display: none;">
+          <div class="active-filters-label">Filtros activos:</div>
+          <div id="activeFiltersList" class="active-filters-list"></div>
+          <button id="clearAllFilters" class="clear-all-filters-btn">Limpiar todos</button>
+        </div>
+      </div>
+
+      <!-- Resultados de búsqueda -->
+      <div id="searchResultsContainer" class="search-results-container" style="display: none;">
+        <div class="search-results-header">
+          <h2>Resultados de búsqueda</h2>
+          <span id="resultCount" class="result-count">0 empresas encontradas</span>
+          <div class="sort-options">
+            <label>Ordenar por:</label>
+            <select id="sortOptions" class="sort-select">
+              <option value="name">Nombre (A-Z)</option>
+              <option value="nameDesc">Nombre (Z-A)</option>
+              <option value="relevance">Relevancia</option>
+              <option value="recent">Más recientes</option>
+            </select>
+          </div>
+        </div>
+        
+        <div id="searchResultsGrid" class="network-profiles-grid">
+          <!-- Los resultados se generarán dinámicamente -->
         </div>
       </div>
       
-      <!-- Original carousels - hidden but maintained for functionality -->
-      <div style="display: none;">
-        <section class="carousel-section">
-          <div class="swiper socioClientesSwiper">
-            <div class="swiper-wrapper"></div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
-          </div>
-        </section>
-        <section class="carousel-section">
-          <div class="swiper socioPotencialesSwiper">
-            <div class="swiper-wrapper"></div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
-          </div>
-        </section>
+      <!-- Vista de navegación estándar -->
+      <div id="standardNetworkView" class="network-grid-container">
+        <div class="network-section-header">
+          <h2>Clientes actuales</h2>
+          <span id="currentClientsCount" class="clients-count"></span>
+        </div>
+        <div class="network-profiles-grid" id="clientesGrid">
+          <!-- Se generarán dinámicamente -->
+        </div>
+        
+        <div class="network-section-header">
+          <h2>Clientes potenciales</h2>
+          <span id="potentialClientsCount" class="clients-count"></span>
+        </div>
+        <div class="network-profiles-grid" id="potencialesGrid">
+          <!-- Se generarán dinámicamente -->
+        </div>
       </div>
     </div>
   </div>
@@ -147,6 +224,8 @@
   <script src="main.js"></script>
   <script src="profile-manager.js"></script>
   <script src="menu-toggle.js"></script>
+  <script src="courseData.js"></script>
+  <script src="provider-network.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Function to hide all sections

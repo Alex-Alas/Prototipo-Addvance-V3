@@ -671,6 +671,110 @@ const CoursesManager = {
       default:
         return 'status-not-started';
     }
+  },
+
+  // Modificar la función que crea HTML para cursos en búsqueda
+  createSearchCourseCard(course) {
+    const card = document.createElement('div');
+    card.className = 'curso-card';
+    card.dataset.courseId = course.id;
+    
+    // Añadir información del proveedor
+    const providerInfo = course.providerId ? `
+      <div class="provider-info">
+        <h4>Proveedor:</h4>
+        <p class="provider-name">${course.providerName || 'No especificado'}</p>
+        <p class="provider-description">${course.providerDescription || ''}</p>
+        <button class="view-provider-btn" data-provider-id="${course.providerId}">Ver perfil del proveedor</button>
+      </div>
+    ` : '';
+    
+    card.innerHTML = `
+      <h3>${course.title}</h3>
+      <p>${course.description}</p>
+      <div class="curso-details">
+        <div class='curso-details-container'>
+          <p>Duración: ${course.duration}</p>
+        </div>
+        <p>Nivel: ${course.level}</p>
+        <p>Participantes: Mínimo ${course.minParticipants}</p>
+        <p><b>Precio:</b> ${course.price}</p>
+        <p>${course.detailedDescription}</p>
+        ${providerInfo}
+        <button class="purchase-btn">Comprar Curso</button>
+      </div>
+    `;
+    
+    // Añadir evento para ver perfil del proveedor
+    const viewProviderBtn = card.querySelector('.view-provider-btn');
+    if (viewProviderBtn) {
+      viewProviderBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Evitar que se expanda la tarjeta
+        this.viewProviderProfile(course.providerId);
+      });
+    }
+    
+    return card;
+  },
+
+  // Añadir método para ver perfil del proveedor
+  viewProviderProfile(providerId) {
+    console.log(`Ver perfil del proveedor: ${providerId}`);
+    // Implementación real: Abrir modal con detalles del proveedor
+    
+    const provider = window.providersData[providerId];
+    if (!provider) {
+      alert('Información del proveedor no disponible');
+      return;
+    }
+    
+    // Crear y mostrar modal con información del proveedor
+    const modal = document.createElement('div');
+    modal.className = 'provider-profile-modal';
+    
+    modal.innerHTML = `
+      <div class="provider-profile-content">
+        <button class="close-modal-btn">&times;</button>
+        <h2>${provider.name}</h2>
+        <div class="provider-details">
+          <p><strong>Tipo de negocio:</strong> ${provider.businessType}</p>
+          <p><strong>Descripción:</strong> ${provider.description}</p>
+          <div class="provider-contact">
+            <h3>Información de contacto:</h3>
+            <p><i class="fas fa-envelope"></i> ${provider.contactInfo.email}</p>
+            <p><i class="fas fa-phone"></i> ${provider.contactInfo.phone}</p>
+            <p><i class="fas fa-globe"></i> ${provider.contactInfo.website}</p>
+          </div>
+          <div class="provider-courses">
+            <h3>Cursos ofrecidos:</h3>
+            <ul>
+              ${provider.offeredCourses.map(courseId => {
+                const course = coursesDatabase.find(c => c.id === courseId);
+                return course 
+                  ? `<li>${course.title} - ${course.level}</li>` 
+                  : '';
+              }).join('')}
+            </ul>
+          </div>
+        </div>
+        <div class="provider-actions">
+          <button class="contact-provider-btn">Contactar proveedor</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Añadir evento para cerrar el modal
+    modal.querySelector('.close-modal-btn').addEventListener('click', () => {
+      modal.remove();
+    });
+    
+    // Añadir evento para contactar al proveedor
+    modal.querySelector('.contact-provider-btn').addEventListener('click', () => {
+      alert(`Funcionalidad: Contactar a ${provider.name} mediante el sistema de mensajería`);
+      // Implementación real: Abrir interfaz de mensajería
+    });
   }
 };
 
@@ -691,4 +795,163 @@ document.addEventListener('DOMContentLoaded', function() {
     // En una implementación real, obtendríamos el ID de la empresa desde la sesión del usuario
     CoursesManager.init('empresa-ejemplo', 'empresa');
   }
-}); 
+});
+
+/**
+ * Gestiona la interacción con proveedores y sus cursos
+ */
+window.courseManager = window.courseManager || {};
+
+/**
+ * Obtiene los proveedores de los cursos adquiridos por una empresa
+ * @param {string} companyId - ID de la empresa
+ * @returns {Array} - Array de proveedores con sus cursos
+ */
+window.courseManager.getCompanyProviders = function(companyId) {
+  const company = window.companiesData[companyId];
+  if (!company || !company.acquiredCourses || company.acquiredCourses.length === 0) {
+    return [];
+  }
+  
+  // Crear un mapa de proveedores para evitar duplicados
+  const providersMap = new Map();
+  
+  // Extraer los IDs de proveedores de los cursos adquiridos
+  company.acquiredCourses.forEach(course => {
+    const courseData = window.coursesDatabase.find(c => c.id === course.courseId);
+    if (courseData && courseData.providerId) {
+      if (!providersMap.has(courseData.providerId)) {
+        providersMap.set(courseData.providerId, {
+          id: courseData.providerId,
+          name: courseData.providerName || 'Proveedor sin nombre',
+          description: courseData.providerDescription || 'Sin descripción',
+          courses: []
+        });
+      }
+      
+      const provider = providersMap.get(courseData.providerId);
+      provider.courses.push({
+        id: courseData.id,
+        title: courseData.title,
+        description: courseData.description,
+        purchaseDate: course.purchaseDate
+      });
+    }
+  });
+  
+  // Convertir mapa a array
+  return Array.from(providersMap.values());
+};
+
+/**
+ * Obtiene los proveedores disponibles que no han sido adquiridos por una empresa
+ * @param {string} companyId - ID de la empresa
+ * @returns {Array} - Array de proveedores disponibles
+ */
+window.courseManager.getAvailableProvidersForCompany = function(companyId) {
+  const company = window.companiesData[companyId];
+  if (!company) return [];
+  
+  // Obtener ids de proveedores con cursos ya adquiridos
+  const acquiredProviderIds = new Set();
+  
+  if (company.acquiredCourses && company.acquiredCourses.length > 0) {
+    company.acquiredCourses.forEach(course => {
+      const courseData = window.coursesDatabase.find(c => c.id === course.courseId);
+      if (courseData && courseData.providerId) {
+        acquiredProviderIds.add(courseData.providerId);
+      }
+    });
+  }
+  
+  // Obtener todos los proveedores disponibles que no han sido adquiridos
+  const providersMap = new Map();
+  
+  window.coursesDatabase.forEach(course => {
+    if (course.providerId && !acquiredProviderIds.has(course.providerId) && !providersMap.has(course.providerId)) {
+      providersMap.set(course.providerId, {
+        id: course.providerId,
+        name: course.providerName || 'Proveedor sin nombre',
+        description: course.providerDescription || 'Sin descripción',
+        courses: []
+      });
+    }
+    
+    if (course.providerId && !acquiredProviderIds.has(course.providerId)) {
+      const provider = providersMap.get(course.providerId);
+      
+      if (provider && !provider.courses.some(c => c.id === course.id)) {
+        provider.courses.push({
+          id: course.id,
+          title: course.title,
+          description: course.description
+        });
+      }
+    }
+  });
+  
+  return Array.from(providersMap.values());
+};
+
+/**
+ * Obtiene clientes actuales de un proveedor (empresas que han adquirido cursos)
+ * @param {string} providerId - ID del proveedor
+ * @returns {Array} - Array de clientes actuales
+ */
+window.courseManager.getProviderCurrentClients = function(providerId) {
+  const clients = [];
+  
+  // Iterar sobre todas las empresas
+  Object.values(window.companiesData).forEach(company => {
+    if (company.acquiredCourses && company.acquiredCourses.length > 0) {
+      // Filtrar cursos adquiridos para encontrar los de este proveedor
+      const providerCourses = company.acquiredCourses.filter(course => {
+        const courseData = window.coursesDatabase.find(c => c.id === course.courseId);
+        return courseData && courseData.providerId === providerId;
+      });
+      
+      // Si hay cursos de este proveedor, agregar a la empresa como cliente
+      if (providerCourses.length > 0) {
+        clients.push({
+          id: company.id,
+          name: company.name,
+          acquiredCourses: providerCourses.map(course => {
+            const courseData = window.coursesDatabase.find(c => c.id === course.courseId);
+            return {
+              id: course.courseId,
+              title: courseData ? courseData.title : 'Curso desconocido',
+              purchaseDate: course.purchaseDate
+            };
+          })
+        });
+      }
+    }
+  });
+  
+  return clients;
+};
+
+/**
+ * Obtiene clientes potenciales para un proveedor (empresas que no han adquirido cursos)
+ * @param {string} providerId - ID del proveedor
+ * @returns {Array} - Array de clientes potenciales
+ */
+window.courseManager.getPotentialClientsForProvider = function(providerId) {
+  const currentClients = window.courseManager.getProviderCurrentClients(providerId);
+  const currentClientIds = currentClients.map(client => client.id);
+  
+  const potentialClients = [];
+  
+  // Iterar sobre todas las empresas
+  Object.values(window.companiesData).forEach(company => {
+    // Si no es un cliente actual, agregar como cliente potencial
+    if (!currentClientIds.includes(company.id)) {
+      potentialClients.push({
+        id: company.id,
+        name: company.name
+      });
+    }
+  });
+  
+  return potentialClients;
+}; 

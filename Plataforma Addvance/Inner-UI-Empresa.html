@@ -71,16 +71,26 @@
     
     <!-- Network Section - Displays relationship carousels -->
     <div id="networkSection" class="network-section" style="display: none;">
-      <!-- Network grid - new design based on screenshot -->
+      <!-- Network grid - nueva implementación para mostrar proveedores -->
       <div class="network-grid-container">
-        <h2>Empresas trabajando contigo</h2>
+        <h2>Proveedores Actuales</h2>
+        <p class="section-description">Empresas con las que has adquirido cursos:</p>
         <div class="network-profiles-grid" id="empresasGrid">
-          <!-- Profile cards will be dynamically generated here -->
+          <!-- Las tarjetas de proveedores actuales se generarán dinámicamente aquí -->
+          <div class="loading-indicator">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Cargando proveedores...</p>
+          </div>
         </div>
         
-        <h2>Proveedores recomendados</h2>
+        <h2>Proveedores Recomendados</h2>
+        <p class="section-description">Descubre otros proveedores disponibles en la plataforma:</p>
         <div class="network-profiles-grid" id="proveedoresGrid">
-          <!-- Profile cards will be dynamically generated here -->
+          <!-- Las tarjetas de proveedores recomendados se generarán dinámicamente aquí -->
+          <div class="loading-indicator">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Cargando recomendaciones...</p>
+          </div>
         </div>
       </div>
       
@@ -100,7 +110,6 @@
             <div class="swiper-button-prev"></div>
           </div>
         </section>
-
       </div>
     </div>
     
@@ -238,24 +247,24 @@
       <div id="searchView" style="display: block;">
         <div class="search-container">
           <div class="search-filter-container">
-            <h2>¿Qué Curso estás buscando?</h2>
-            <div class="search-header">
-              <input type="text" class="search-bar" placeholder="Buscar curso..." id="cursoSearchInput">
-              <div class="filter-options">
-                <select class="filter-select" id="categoryFilter">
-                  <option value="todas">Todas las categorías</option>
-                  <option value="liderazgo">Liderazgo</option>
-                  <option value="tecnologia">Tecnología</option>
-                </select>
-                <select class="filter-select" id="levelFilter">
-                  <option value="todos">Todos los niveles</option>
-                  <option value="basico">Básico</option>
-                  <option value="intermedio">Intermedio</option>
-                  <option value="avanzado">Avanzado</option>
-                </select>
-              </div>
-            </div>
-          </div>
+  <h2>¿Qué Curso estás buscando?</h2>
+  <div class="search-header">
+    <input type="text" class="search-bar" placeholder="Buscar curso..." id="cursoSearchInput">
+    <div class="filter-options">
+      <select class="filter-select" id="categoryFilter">
+        <option value="todas">Todas las categorías</option>
+        <option value="liderazgo">Liderazgo</option>
+        <option value="tecnologia">Tecnología</option>
+      </select>
+      <select class="filter-select" id="levelFilter">
+        <option value="todos">Todos los niveles</option>
+        <option value="basico">Básico</option>
+        <option value="intermedio">Intermedio</option>
+        <option value="avanzado">Avanzado</option>
+      </select>
+    </div>
+  </div>
+        </div>
           <div class="journey-grid">
             <!-- Journey cards will be dynamically populated here -->
           </div>
@@ -294,7 +303,7 @@
               <div class="contact-info">
                 <div class="contact-name">Proveedor 2</div>
                 <div class="contact-preview">Último mensaje...</div>
-          </div>
+              </div>
               <div class="contact-time">Ayer</div>
             </div>
           </div>
@@ -326,11 +335,11 @@
             <i class="fas fa-paperclip"></i>
             <input type="text" placeholder="Escribe un mensaje...">
             <i class="fas fa-paper-plane"></i>
-            </div>
           </div>
         </div>
       </div>
-
+    </div>
+    
     <!-- Notifications Section - For company notifications -->
     <div id="empresaNotificationsSection" class="notifications-section" style="display: none;">
       <h2>Notificaciones</h2>
@@ -373,12 +382,12 @@
             </div>
             <div class="notification-actions">
               <i class="fas fa-ellipsis-v"></i>
-          </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
   <!-- External JavaScript dependencies -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cloudflare-static/email-decode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
@@ -391,11 +400,12 @@
   <script src="courseData.js"></script>
   <script src="courses-manager.js"></script>
   <script src="achievements-manager.js"></script>
+  <script src="company-network.js"></script>
   <script src="js/empresa-navigation.js"></script>
   <script src="js/curso-manager.js"></script>
   <script src="js/curso-progress-tracker.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function() {
       console.log('DOMContentLoaded event triggered');
       
       // Initialize acquired courses from companiesData
@@ -419,29 +429,29 @@
       }
       console.log('coursesDatabase initialized:', window.coursesDatabase);
 
-      const searchTab = document.getElementById('searchTab');
-      const acquiredTab = document.getElementById('acquiredTab');
-      const searchView = document.getElementById('searchView');
-      const acquiredView = document.getElementById('acquiredView');
+          const searchTab = document.getElementById('searchTab');
+          const acquiredTab = document.getElementById('acquiredTab');
+          const searchView = document.getElementById('searchView');
+          const acquiredView = document.getElementById('acquiredView');
 
       // Load courses when the page loads
       loadCourses();
       loadAcquiredCourses();
-      
-      if (searchTab && acquiredTab && searchView && acquiredView) {
-        searchTab.addEventListener('click', function() {
-          searchTab.classList.add('active');
-          acquiredTab.classList.remove('active');
-          searchView.style.display = 'block';
-          acquiredView.style.display = 'none';
+          
+          if (searchTab && acquiredTab && searchView && acquiredView) {
+              searchTab.addEventListener('click', function() {
+                  searchTab.classList.add('active');
+                  acquiredTab.classList.remove('active');
+                  searchView.style.display = 'block';
+                  acquiredView.style.display = 'none';
           loadCourses();
-        });
-        
-        acquiredTab.addEventListener('click', function() {
-          acquiredTab.classList.add('active');
-          searchTab.classList.remove('active');
-          acquiredView.style.display = 'block';
-          searchView.style.display = 'none';
+              });
+              
+              acquiredTab.addEventListener('click', function() {
+                  acquiredTab.classList.add('active');
+                  searchTab.classList.remove('active');
+                  acquiredView.style.display = 'block';
+                  searchView.style.display = 'none';
           loadAcquiredCourses();
         });
       }
@@ -974,19 +984,19 @@
         }
       `;
       document.head.appendChild(styleSheet);
-
+      
       // La función initializeProfileCardFlip se define aquí para ser utilizada por empresa-navigation.js
       function initializeProfileCardFlip() {
-        const moreInfoBtns = document.querySelectorAll('.more-info-btn');
-        const profileCard = document.querySelector('.profile-card');
-        
-        moreInfoBtns.forEach(btn => {
-          btn.addEventListener('click', function() {
-            profileCard.classList.toggle('flipped');
+          const moreInfoBtns = document.querySelectorAll('.more-info-btn');
+          const profileCard = document.querySelector('.profile-card');
+          
+          moreInfoBtns.forEach(btn => {
+              btn.addEventListener('click', function() {
+                  profileCard.classList.toggle('flipped');
+              });
           });
-        });
       }
-      
+
       // Initialize company code display
       const companyCodeSpan = document.getElementById('companyCode');
       if (companyCodeSpan && !companyCodeSpan.textContent) {
@@ -997,15 +1007,15 @@
       if (document.getElementById('profileSection').style.display !== 'none') {
         initializeProfileCardFlip();
       }
-      
-      // Implementar funcionalidad de cerrar sesión
-      const logoutButton = document.querySelector('.logout-button');
-      if (logoutButton) {
-        logoutButton.addEventListener('click', function() {
-          cerrarSesion();
-          window.location.href = 'auth.html';
-        });
-      }
+    
+    // Implementar funcionalidad de cerrar sesión
+    const logoutButton = document.querySelector('.logout-button');
+    if (logoutButton) {
+      logoutButton.addEventListener('click', function() {
+        cerrarSesion();
+        window.location.href = 'auth.html';
+      });
+    }
 
       // Function to acquire a course
       function acquireCourse(courseId, course) {

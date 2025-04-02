@@ -80,7 +80,7 @@ const AchievementsManager = {
     if (otherAchievements.length === 0) {
       otherAchievementsContainer.innerHTML = '<p class="no-achievements">No hay logros de otras empresas para mostrar.</p>';
       return;
-    }
+  }
 
     // Generar HTML para cada logro
     otherAchievements.forEach(achievement => {
@@ -128,10 +128,10 @@ const AchievementsManager = {
     const icon = achievement.icon || 'fa-trophy';
     
     card.innerHTML = `
-      <div class="achievement-icon">
+          <div class="achievement-icon">
         <i class="fas ${icon}"></i>
-      </div>
-      <div class="achievement-content">
+          </div>
+          <div class="achievement-content">
         <h3>${achievement.title}</h3>
         <p>${achievement.description}</p>
         <div class="achievement-meta">
@@ -157,10 +157,10 @@ const AchievementsManager = {
     const companyNames = globalAchievement.companies.map(company => company.name).join(', ');
     
     card.innerHTML = `
-      <div class="achievement-icon">
+        <div class="achievement-icon">
         <i class="fas ${globalAchievement.icon}"></i>
-      </div>
-      <div class="achievement-content">
+        </div>
+        <div class="achievement-content">
         <h3>${globalAchievement.title}</h3>
         <p>${globalAchievement.description}</p>
         <div class="achievement-companies">
@@ -168,15 +168,15 @@ const AchievementsManager = {
         </div>
       </div>
     `;
-    
+
     return card;
-  }
+    }
 };
 
 // Inicializar cuando se carga el documento
 document.addEventListener('DOMContentLoaded', function() {
   // Verificar si estamos en la página de empresa
-  const achievementsSection = document.getElementById('achievementsSection');
+    const achievementsSection = document.getElementById('achievementsSection');
   if (achievementsSection) {
     // Inicializar con la empresa ejemplo o la empresa actual del usuario
     // En una implementación real, obtendríamos el ID de la empresa desde la sesión del usuario
