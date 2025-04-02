@@ -120,7 +120,8 @@ function cargarUsuariosEjemplo() {
       telefono: "6666-5555",
       habilidades: "JavaScript, React, Node.js",
       biografia: "Desarrollador con 5 años de experiencia en aplicaciones web",
-      codigoUnico: null
+      codigoUnico: null,
+      cursosAsignados: [] // Array para almacenar IDs de cursos asignados
     },
     primerInicio: false,
     fechaRegistro: new Date().toISOString()
@@ -218,7 +219,9 @@ function registrarUsuario(nombre, correo, contrasena, tipoPerfil, descripcion = 
     tipoPerfil,
     datosAdicionales: {
       ...datosAdicionales,
-      codigoUnico: tipoPerfil === 'empresa' ? generarCodigoUnico() : null
+      codigoUnico: tipoPerfil === 'empresa' ? generarCodigoUnico() : null,
+      // Add cursosAsignados array for employees
+      ...(tipoPerfil === 'empleado' ? { cursosAsignados: [] } : {})
     },
     primerInicio: true,
     fechaRegistro: new Date().toISOString()
@@ -321,6 +324,52 @@ function obtenerEmpleadosPorCodigoEmpresa(codigoEmpresa) {
   
   // Return employees without passwords for security
   return empleados.map(({ contrasena, ...resto }) => resto);
+}
+
+// Assign a course to an employee
+function asignarCursoAEmpleado(empleadoId, cursoId) {
+  const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+  let actualizado = false;
+  
+  const usuariosActualizados = usuarios.map(usuario => {
+    if (usuario.correo === empleadoId && usuario.tipoPerfil === 'empleado') {
+      // Initialize cursosAsignados array if it doesn't exist
+      if (!usuario.datosAdicionales.cursosAsignados) {
+        usuario.datosAdicionales.cursosAsignados = [];
+      }
+      
+      // Check if course is already assigned
+      if (!usuario.datosAdicionales.cursosAsignados.includes(cursoId)) {
+        usuario.datosAdicionales.cursosAsignados.push(cursoId);
+        actualizado = true;
+      }
+    }
+    return usuario;
+  });
+  
+  if (actualizado) {
+    localStorage.setItem('usuarios', JSON.stringify(usuariosActualizados));
+  }
+  
+  return actualizado;
+}
+
+// Get courses assigned to an employee
+function obtenerCursosAsignadosAEmpleado(empleadoId) {
+  const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+  const empleado = usuarios.find(u => u.correo === empleadoId && u.tipoPerfil === 'empleado');
+  
+  if (empleado && empleado.datosAdicionales && empleado.datosAdicionales.cursosAsignados) {
+    return empleado.datosAdicionales.cursosAsignados;
+  }
+  
+  return [];
+}
+
+// Check if an employee is assigned to a course
+function empleadoTieneCursoAsignado(empleadoId, cursoId) {
+  const cursosAsignados = obtenerCursosAsignadosAEmpleado(empleadoId);
+  return cursosAsignados.includes(cursoId);
 }
 
 // Get user notifications

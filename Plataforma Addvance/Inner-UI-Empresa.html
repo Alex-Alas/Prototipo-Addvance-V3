@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="styles.css">
   <!-- Messaging and Notifications styles -->
   <link rel="stylesheet" href="css/messaging-notifications.css">
+  <!-- Course Progress styles -->
+  <link rel="stylesheet" href="css/curso-progress.css">
 </head>
 <body>
   <!-- Vertical Navigation Menu -->
@@ -391,6 +393,7 @@
   <script src="achievements-manager.js"></script>
   <script src="js/empresa-navigation.js"></script>
   <script src="js/curso-manager.js"></script>
+  <script src="js/curso-progress-tracker.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       console.log('DOMContentLoaded event triggered');
@@ -696,10 +699,79 @@
           // Show table and populate employee dropdown
           tableContainer.style.display = 'block';
           populateEmployeeDropdown(courseCard, courseId);
+          
+          // Load existing assigned employees
+          loadAssignedEmployees(courseCard, courseId);
         } else {
           // Hide table
           tableContainer.style.display = 'none';
         }
+      }
+      
+      // Function to load existing assigned employees
+      function loadAssignedEmployees(courseCard, courseId) {
+        console.log('Loading assigned employees for course:', courseId);
+        
+        // Get assigned employees from localStorage
+        const assignedEmployees = JSON.parse(localStorage.getItem('assignedEmployees') || '{}');
+        const courseAssignedEmployees = assignedEmployees[courseId] || [];
+        
+        if (courseAssignedEmployees.length === 0) {
+          console.log('No assigned employees found for this course');
+          return;
+        }
+        
+        // Get the table body
+        const tableBody = courseCard.querySelector('.employees-table tbody');
+        if (!tableBody) {
+          console.error('Table body element not found');
+          return;
+        }
+        
+        // Clear existing rows except the first one (dropdown row)
+        const rows = tableBody.querySelectorAll('tr');
+        if (rows.length > 1) {
+          for (let i = 1; i < rows.length; i++) {
+            tableBody.removeChild(rows[i]);
+          }
+        }
+        
+        // Get employee data from localStorage
+        const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+        
+        // Add a row for each assigned employee
+        courseAssignedEmployees.forEach(employeeId => {
+          const employeeData = usuarios.find(u => u.correo === employeeId && u.tipoPerfil === 'empleado');
+          if (!employeeData) return;
+          
+          // Get progress information if available
+          let progress = 0;
+          const employeeAssignments = JSON.parse(localStorage.getItem('employeeAssignments') || '{}');
+          if (employeeAssignments[employeeId]) {
+            const assignment = employeeAssignments[employeeId].find(a => a.courseId === courseId);
+            if (assignment) {
+              progress = assignment.progress || 0;
+            }
+          }
+          
+          // Create new row
+          const newRow = document.createElement('tr');
+          newRow.className = 'employee-row';
+          newRow.innerHTML = `
+            <td>${employeeData.nombre}</td>
+            <td>
+              <div class="progress-bar">
+                <div class="progress" style="width: ${progress}%"></div>
+              </div>
+              <span class="progress-text">${progress}%</span>
+            </td>
+            <td>${progress > 0 ? 'Activo' : 'Inactivo'}</td>
+          `;
+          
+          tableBody.appendChild(newRow);
+        });
+        
+        console.log('Successfully loaded assigned employees');
       }
 
       // Function to populate employee dropdown
@@ -795,6 +867,25 @@
             console.error('Employee data not found for ID:', employeeId);
             return;
           }
+          
+          // Update employee's cursosAsignados array in usuarios
+          const usuariosActualizados = usuarios.map(usuario => {
+            if (usuario.correo === employeeId && usuario.tipoPerfil === 'empleado') {
+              // Initialize cursosAsignados array if it doesn't exist
+              if (!usuario.datosAdicionales.cursosAsignados) {
+                usuario.datosAdicionales.cursosAsignados = [];
+              }
+              
+              // Add course if not already assigned
+              if (!usuario.datosAdicionales.cursosAsignados.includes(courseId)) {
+                usuario.datosAdicionales.cursosAsignados.push(courseId);
+              }
+            }
+            return usuario;
+          });
+          
+          // Save updated users to localStorage
+          localStorage.setItem('usuarios', JSON.stringify(usuariosActualizados));
           
           // Add new row to table
           const tableBody = courseCard.querySelector('.employees-table tbody');

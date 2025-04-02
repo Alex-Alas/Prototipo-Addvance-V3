@@ -243,25 +243,108 @@
         if (!employeeCoursesList) return;
 
         employeeCoursesList.innerHTML = '';
-        const currentEmployeeId = 'empleado-ejemplo';
-        const employeeCourses = window.courseManager.getEmployeeAvailableCourses(currentEmployeeId);
-
-        if (!employeeCourses || employeeCourses.length === 0) {
+        
+        // Get current user (employee) information
+        const currentUser = obtenerUsuarioActual();
+        const currentEmployeeId = currentUser ? currentUser.correo : 'empleado-ejemplo';
+        
+        // Get assigned courses from multiple sources to ensure data consistency
+        let assignedCourseIds = [];
+        
+        // 1. Check employee_course_assignments
+        const assignments = JSON.parse(localStorage.getItem('employee_course_assignments') || '{}');
+        if (assignments[currentEmployeeId]) {
+          assignedCourseIds = assignments[currentEmployeeId].map(a => a.courseId);
+        }
+        
+        // 2. Check employee's data structure
+        const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+        const employeeData = usuarios.find(u => u.correo === currentEmployeeId && u.tipoPerfil === 'empleado');
+        if (employeeData && employeeData.datosAdicionales.cursosAsignados) {
+          // Merge with existing IDs (avoiding duplicates)
+          employeeData.datosAdicionales.cursosAsignados.forEach(id => {
+            if (!assignedCourseIds.includes(id)) {
+              assignedCourseIds.push(id);
+            }
+          });
+        } else if (employeeData && !employeeData.datosAdicionales.cursosAsignados) {
+          // Initialize cursosAsignados if it doesn't exist
+          employeeData.datosAdicionales.cursosAsignados = [];
+          // Update the user in localStorage
+          const updatedUsuarios = usuarios.map(u => u.correo === currentEmployeeId ? employeeData : u);
+          localStorage.setItem('usuarios', JSON.stringify(updatedUsuarios));
+        }
+        
+        // 3. Check employeeAssignments
+        const employeeAssignments = JSON.parse(localStorage.getItem('employeeAssignments') || '{}');
+        if (employeeAssignments[currentEmployeeId]) {
+          employeeAssignments[currentEmployeeId].forEach(assignment => {
+            if (!assignedCourseIds.includes(assignment.courseId)) {
+              assignedCourseIds.push(assignment.courseId);
+            }
+          });
+        }
+        
+        // 4. Also try to get courses from courseManager if available
+        let managerCourses = [];
+        if (window.courseManager && typeof window.courseManager.getEmployeeAvailableCourses === 'function') {
+          managerCourses = window.courseManager.getEmployeeAvailableCourses(currentEmployeeId) || [];
+        }
+        
+        // If no assigned courses found
+        if (assignedCourseIds.length === 0 && managerCourses.length === 0) {
           employeeCoursesList.innerHTML = '<p class="no-courses-message">No tienes cursos asignados actualmente.</p>';
           return;
         }
-
-        employeeCourses.forEach(course => {
+        
+        // Display courses from courseManager if available
+        if (managerCourses.length > 0) {
+          managerCourses.forEach(course => {
+            const courseCard = document.createElement('div');
+            courseCard.className = 'curso-empleado';
+            const progress = course.progress?.overallProgress || 0;
+            
+            courseCard.innerHTML = `
+              <div class="curso-empleado-card">
+                <h3>${course.title}</h3>
+                <p>Duración: ${course.duration}</p>
+                <p>${course.description}</p>
+                <div class="progress-bar">
+                  <div class="progress" style="width: ${progress}%"></div>
+                </div>
+                <p>${progress}% completado</p>
+                <button class="continue-btn">Continuar curso</button>
+              </div>
+            `;
+            
+            employeeCoursesList.appendChild(courseCard);
+          });
+          return;
+        }
+        
+        // Display courses from IDs if courseManager courses not available
+        assignedCourseIds.forEach(courseId => {
+          // Find course details from coursesDatabase
+          const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
+          if (!courseDetails) return;
+          
+          // Get progress information if available
+          let progress = 0;
+          if (employeeAssignments[currentEmployeeId]) {
+            const assignment = employeeAssignments[currentEmployeeId].find(a => a.courseId === courseId);
+            if (assignment) {
+              progress = assignment.progress || 0;
+            }
+          }
+          
           const courseCard = document.createElement('div');
           courseCard.className = 'curso-empleado';
-          const progress = course.progress.overallProgress || 0;
           
           courseCard.innerHTML = `
-            <h2>Mi Progreso de Aprendizaje</h2>
             <div class="curso-empleado-card">
-              <h3>${course.title}</h3>
-              <p>Duración: ${course.duration}</p>
-              <p>${course.description}</p>
+              <h3>${courseDetails.title}</h3>
+              <p>Duración: ${courseDetails.duration}</p>
+              <p>${courseDetails.description}</p>
               <div class="progress-bar">
                 <div class="progress" style="width: ${progress}%"></div>
               </div>
