@@ -392,7 +392,6 @@
   <script src="courseData.js"></script>
   <script src="courses-manager.js"></script>
   <script src="achievements-manager.js"></script>
-<<<<<<< Updated upstream
   <script src="js/empresa-navigation.js"></script>
   <script src="js/curso-manager.js"></script>
   <script>
@@ -454,11 +453,9 @@
         cerrarSesion();
         // Redirigir a la página de autenticación
         window.location.href = 'auth.html';
-=======
-  <script type="module">
-    console.log('Starting script execution');
-    
-    try {
+      });
+    } 
+    try{
       // Import courseData with absolute path
       const { courseData } = await import('./courseData.js');
       console.log('courseData imported successfully:', courseData);
@@ -604,9 +601,10 @@
         if (companyCodeSpan && !companyCodeSpan.textContent) {
           companyCodeSpan.textContent = 'ABC123';
         }
->>>>>>> Stashed changes
-      });
-    } catch (error) {
+
+    })
+}
+    catch (error) {
       console.error('Error in script execution:', error);
     }
   </script>
