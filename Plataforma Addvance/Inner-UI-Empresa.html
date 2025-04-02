@@ -447,6 +447,7 @@
         
         const courseCard = document.createElement('div');
         courseCard.className = 'curso-adquirido-empresa';
+        courseCard.setAttribute('data-course-id', course.id);
         courseCard.innerHTML = `
           <h3>${course.title}</h3>
           <p class="time-to-complete">Duración: ${course.duration}</p>
@@ -461,28 +462,125 @@
           
           <p class="deadline">Tienes hasta el ${deadline.toLocaleDateString('es-ES')} para programar el taller</p>
           
+          <button class="more-time-btn">Necesito más tiempo</button>
+          
           <div class="schedule-container">
             <select class="schedule-select">
-              <option value="">Selecciona una fecha y hora</option>
-              <option value="morning1">Mañana 1: ${deadline.toLocaleDateString('es-ES')} 9:00 AM</option>
-              <option value="morning2">Mañana 2: ${deadline.toLocaleDateString('es-ES')} 11:00 AM</option>
-              <option value="afternoon1">Tarde 1: ${deadline.toLocaleDateString('es-ES')} 2:00 PM</option>
-              <option value="afternoon2">Tarde 2: ${deadline.toLocaleDateString('es-ES')} 4:00 PM</option>
+              <option value="">Selecciona una fecha</option>
+              <option value="morning1">${deadline.toLocaleDateString('es-ES')} - 9:00 AM</option>
+              <option value="morning2">${deadline.toLocaleDateString('es-ES')} - 11:00 AM</option>
+              <option value="afternoon1">${deadline.toLocaleDateString('es-ES')} - 2:00 PM</option>
+              <option value="afternoon2">${deadline.toLocaleDateString('es-ES')} - 4:00 PM</option>
             </select>
           </div>
           
-          <div class="action-buttons">
-            <button class="more-time-btn">Necesito más tiempo</button>
-            <button class="assign-employees-btn">Asignar empleados</button>
-          </div>
+          <button class="assign-btn">Asignar empleados</button>
         `;
+
+        // Add event listeners for the new buttons
+        const moreTimeBtn = courseCard.querySelector('.more-time-btn');
+        moreTimeBtn.addEventListener('click', function() {
+          extendDeadline(courseCard, course.id);
+        });
+
+        const scheduleSelect = courseCard.querySelector('.schedule-select');
+        scheduleSelect.addEventListener('change', function() {
+          if (this.value) {
+            scheduleWorkshop(courseCard, course.id, this.value);
+          }
+        });
+
+        const assignBtn = courseCard.querySelector('.assign-btn');
+        assignBtn.addEventListener('click', function() {
+          // Handle employee assignment
+          console.log('Assigning employees for course:', course.id);
+        });
+
+        // Check if course is already scheduled
+        const scheduledCourses = JSON.parse(localStorage.getItem('scheduledCourses') || '{}');
+        if (scheduledCourses[course.id]) {
+          updateScheduledStatus(courseCard, scheduledCourses[course.id]);
+        }
 
         return courseCard;
       }
 
-      // Function to handle course acquisition
+      // Function to extend deadline
+      function extendDeadline(courseCard, courseId) {
+        const deadlineText = courseCard.querySelector('.deadline');
+        const currentDate = new Date(deadlineText.textContent.split('el ')[1]);
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        
+        // Update deadline text
+        deadlineText.textContent = `Tienes hasta el ${currentDate.toLocaleDateString('es-ES')} para programar el taller`;
+        
+        // Update schedule options
+        const scheduleSelect = courseCard.querySelector('.schedule-select');
+        scheduleSelect.innerHTML = `
+          <option value="">Selecciona una fecha</option>
+          <option value="morning1">${currentDate.toLocaleDateString('es-ES')} - 9:00 AM</option>
+          <option value="morning2">${currentDate.toLocaleDateString('es-ES')} - 11:00 AM</option>
+          <option value="afternoon1">${currentDate.toLocaleDateString('es-ES')} - 2:00 PM</option>
+          <option value="afternoon2">${currentDate.toLocaleDateString('es-ES')} - 4:00 PM</option>
+        `;
+        
+        // Store new deadline in localStorage
+        const scheduledCourses = JSON.parse(localStorage.getItem('scheduledCourses') || '{}');
+        if (scheduledCourses[courseId]) {
+          scheduledCourses[courseId].deadline = currentDate.toISOString();
+          localStorage.setItem('scheduledCourses', JSON.stringify(scheduledCourses));
+        }
+      }
+
+      // Function to schedule workshop
+      function scheduleWorkshop(courseCard, courseId, selectedTime) {
+        const deadlineText = courseCard.querySelector('.deadline');
+        const moreTimeBtn = courseCard.querySelector('.more-time-btn');
+        const scheduleSelect = courseCard.querySelector('.schedule-select');
+        
+        // Update UI
+        deadlineText.textContent = 'Se ha programado taller';
+        deadlineText.style.color = '#000000';
+        moreTimeBtn.disabled = true;
+        scheduleSelect.disabled = true;
+        
+        // Store scheduling status in localStorage
+        const scheduledCourses = JSON.parse(localStorage.getItem('scheduledCourses') || '{}');
+        scheduledCourses[courseId] = {
+          scheduled: true,
+          selectedTime: selectedTime,
+          deadline: new Date(scheduleSelect.options[1].text.split(' - ')[0]).toISOString()
+        };
+        localStorage.setItem('scheduledCourses', JSON.stringify(scheduledCourses));
+      }
+
+      // Function to update scheduled status
+      function updateScheduledStatus(courseCard, scheduledData) {
+        if (scheduledData.scheduled) {
+          const deadlineText = courseCard.querySelector('.deadline');
+          const moreTimeBtn = courseCard.querySelector('.more-time-btn');
+          const scheduleSelect = courseCard.querySelector('.schedule-select');
+          
+          deadlineText.textContent = 'Se ha programado taller';
+          deadlineText.style.color = '#000000';
+          moreTimeBtn.disabled = true;
+          scheduleSelect.disabled = true;
+          
+          // Set the selected option
+          const selectedTime = scheduledData.selectedTime;
+          const options = scheduleSelect.options;
+          for (let i = 0; i < options.length; i++) {
+            if (options[i].value === selectedTime) {
+              options[i].selected = true;
+              break;
+            }
+          }
+        }
+      }
+
+      // Function to acquire a course
       function acquireCourse(courseId, course) {
-        // Disable the button and change its text
+        // Disable the acquire button
         const acquireBtn = document.querySelector(`.acquire-btn[data-course-id="${courseId}"]`);
         if (acquireBtn) {
           acquireBtn.disabled = true;
@@ -496,10 +594,36 @@
           localStorage.setItem('acquiredCourses', JSON.stringify(acquiredCourses));
         }
 
-        // Create and add the acquired course card
+        // Add the course to the acquired view
         const acquiredView = document.getElementById('acquiredView');
-        const acquiredCourseCard = createAcquiredCourseCard(course);
-        acquiredView.appendChild(acquiredCourseCard);
+        if (acquiredView) {
+          const acquiredCoursesList = document.getElementById('companyAcquiredCoursesList');
+          if (acquiredCoursesList) {
+            const courseCard = createAcquiredCourseCard(course);
+            acquiredCoursesList.appendChild(courseCard);
+          }
+        }
+      }
+
+      // Function to load acquired courses
+      function loadAcquiredCourses() {
+        const acquiredCoursesList = document.getElementById('companyAcquiredCoursesList');
+        if (!acquiredCoursesList) return;
+
+        // Clear existing content
+        acquiredCoursesList.innerHTML = '';
+
+        // Get acquired courses from localStorage
+        const acquiredCourses = JSON.parse(localStorage.getItem('acquiredCourses') || '[]');
+        
+        // Load and display acquired courses
+        acquiredCourses.forEach(courseId => {
+          const course = window.coursesDatabase.find(c => c.id === courseId);
+          if (course) {
+            const courseCard = createAcquiredCourseCard(course);
+            acquiredCoursesList.appendChild(courseCard);
+          }
+        });
       }
 
       // Function to load and display courses
@@ -520,29 +644,22 @@
         journeyGrid.innerHTML = '';
         console.log('Available courses:', window.coursesDatabase);
 
+        // Get acquired courses from localStorage
+        const acquiredCourses = JSON.parse(localStorage.getItem('acquiredCourses') || '[]');
+
         // Load and display all courses
         window.coursesDatabase.forEach(course => {
           const courseCard = createCourseCard(course);
+          
+          // Check if course is already acquired
+          const acquireBtn = courseCard.querySelector('.acquire-btn');
+          if (acquiredCourses.includes(course.id)) {
+            acquireBtn.disabled = true;
+            acquireBtn.textContent = 'Curso Adquirido';
+          }
+          
           journeyGrid.appendChild(courseCard);
           console.log('Added course card:', course.title);
-        });
-      }
-
-      // Function to load acquired courses
-      function loadAcquiredCourses() {
-        const acquiredView = document.getElementById('acquiredView');
-        const acquiredCourses = JSON.parse(localStorage.getItem('acquiredCourses') || '[]');
-        
-        // Clear existing content
-        acquiredView.innerHTML = '';
-        
-        // Load and display acquired courses
-        acquiredCourses.forEach(courseId => {
-          const course = window.coursesDatabase.find(c => c.id === courseId);
-          if (course) {
-            const acquiredCourseCard = createAcquiredCourseCard(course);
-            acquiredView.appendChild(acquiredCourseCard);
-          }
         });
       }
 
@@ -655,7 +772,7 @@
       cursor: not-allowed;
     }
 
-    /* Styles for acquired course cards */
+    /* New styles for acquired courses */
     .progress-container {
       margin: 15px 0;
     }
@@ -687,6 +804,16 @@
       margin: 10px 0;
     }
 
+    .more-time-btn {
+      background: #ffc107;
+      color: #212529;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+
     .schedule-container {
       margin: 15px 0;
     }
@@ -694,42 +821,18 @@
     .schedule-select {
       width: 100%;
       padding: 8px;
-      border: 1px solid #ced4da;
       border-radius: 4px;
-      background-color: white;
+      border: 1px solid #ced4da;
     }
 
-    .action-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .more-time-btn, .assign-employees-btn {
-      flex: 1;
-      padding: 8px 16px;
+    .assign-btn {
+      background: #28a745;
+      color: white;
       border: none;
+      padding: 8px 16px;
       border-radius: 4px;
       cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .more-time-btn {
-      background-color: #ffc107;
-      color: #212529;
-    }
-
-    .more-time-btn:hover {
-      background-color: #e0a800;
-    }
-
-    .assign-employees-btn {
-      background-color: #28a745;
-      color: white;
-    }
-
-    .assign-employees-btn:hover {
-      background-color: #218838;
+      margin-top: 10px;
     }
   </style>
 </body>
