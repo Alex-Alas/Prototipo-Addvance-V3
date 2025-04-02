@@ -142,9 +142,9 @@
         <div id="employeeCoursesList">
           <!-- Los cursos asignados al empleado se cargarán aquí dinámicamente -->
           <p class="no-courses-message">No tienes cursos asignados actualmente.</p>
-        </div>
-      </div>
-    </div>
+              </div>
+            </div>
+          </div>
   </div>
   
   <!-- External JavaScript dependencies -->
@@ -165,6 +165,519 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="css/assigned-courses.css">
   <link rel="stylesheet" href="css/paginas-style.css">
+  <style>
+    .curso-empleado {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .curso-empleado h3 {
+      margin-bottom: 10px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background-color: #e9ecef;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+
+    .progress {
+      height: 100%;
+      background-color: #28a745;
+      border-radius: 5px;
+    }
+
+    .continue-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .continue-btn:hover {
+      background: #0056b3;
+    }
+
+    .no-courses-message {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 20px;
+    }
+    
+    /* Lecciones Styles */
+    .lecciones-container {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+    
+    .lecciones-container h4 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    
+    .leccion-item {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .leccion-header {
+      font-weight: 500;
+    }
+    
+    .comenzar-leccion-btn {
+      background: #17a2b8;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .comenzar-leccion-btn:hover {
+      background: #138496;
+    }
+    
+    .comenzar-leccion-btn.completed {
+      background: #28a745;
+    }
+    
+    /* Quiz Styles */
+    .quiz-container {
+      margin: 15px 0;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+    
+    .quiz-container h4 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    
+    .quiz-item {
+      padding: 10px;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .quiz-header {
+      font-weight: 500;
+    }
+    
+    .comenzar-quiz-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .comenzar-quiz-btn:hover {
+      background: #c82333;
+    }
+    
+    .comenzar-quiz-btn.completed {
+      background: #28a745;
+    }
+    
+    /* Quiz Modal Styles */
+    .quiz-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .quiz-modal-content {
+      background-color: white;
+      width: 80%;
+      max-width: 800px;
+      max-height: 90vh;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .quiz-modal-header {
+      padding: 15px;
+      background-color: #dc3545;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .quiz-modal-header h3 {
+      margin: 0;
+    }
+    
+    .quiz-modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      max-height: 60vh;
+    }
+    
+    .quiz-modal-footer {
+      padding: 15px;
+      border-top: 1px solid #e9ecef;
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .quiz-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .close-btn {
+      background-color: transparent;
+      color: white;
+      border: 1px solid white;
+    }
+    
+    .close-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    #finalizarQuiz {
+      background-color: #28a745;
+      color: white;
+    }
+    
+    #finalizarQuiz:hover {
+      background-color: #218838;
+    }
+    
+    .quiz-question {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .question-text {
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+    
+    .quiz-options {
+      margin-left: 20px;
+    }
+    
+    .quiz-option {
+      margin-bottom: 8px;
+    }
+    
+    .quiz-option input[type="radio"] {
+      margin-right: 10px;
+    }
+    
+    .quiz-question.unanswered {
+      background-color: #fff8f8;
+      padding: 10px;
+      border-left: 3px solid #dc3545;
+    }
+    
+    /* Lesson Modal Styles */
+    .lesson-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .lesson-modal-content {
+      background-color: white;
+      width: 80%;
+      max-width: 800px;
+      max-height: 90vh;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .lesson-modal-header {
+      padding: 15px;
+      background-color: #007bff;
+      color: white;
+    }
+    
+    .lesson-modal-header h3 {
+      margin: 0 0 10px 0;
+    }
+    
+    .lesson-progress-container {
+      margin-top: 10px;
+    }
+    
+    .lesson-progress-bar {
+      width: 100%;
+      height: 8px;
+      background-color: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .lesson-progress-fill {
+      height: 100%;
+      background-color: white;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    
+    .lesson-progress-text {
+      font-size: 0.8rem;
+      margin-top: 5px;
+      display: block;
+    }
+    
+    .lesson-modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      max-height: 60vh;
+      line-height: 1.6;
+    }
+    
+    .lesson-modal-footer {
+      padding: 15px;
+      border-top: 1px solid #e9ecef;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .lesson-navigation {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .lesson-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .lesson-btn#closeLesson {
+      background-color: #6c757d;
+      color: white;
+    }
+    
+    .lesson-btn#prevPage,
+    .lesson-btn#nextPage {
+      background-color: #007bff;
+      color: white;
+    }
+    
+    .lesson-btn:disabled {
+      background-color: #e9ecef;
+      color: #6c757d;
+      cursor: not-allowed;
+    }
+
+    /* Add styles for module completion */
+    .completion-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #28a745;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+      margin-left: 10px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    .modulo-container.completed {
+      border-left: 4px solid #28a745;
+    }
+    
+    .modulo-status.completed {
+      color: #28a745;
+      font-weight: bold;
+    }
+    
+    button.completed {
+      background-color: #28a745 !important;
+      color: white !important;
+      border-color: #28a745 !important;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    .locked-module-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+    }
+    
+    .lock-icon {
+      font-size: 24px;
+      color: #ffd601;
+      margin-right: 10px;
+    }
+
+    /* Module Styles */
+    .modulo-container {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      padding: 15px;
+      transition: all 0.3s ease;
+    }
+    
+    .modulo-container.locked {
+      opacity: 0.7;
+      background-color: #f5f5f5;
+      position: relative;
+    }
+    
+    .modulo-container.locked::before {
+      content: '🔒';
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 20px;
+    }
+    
+    .modulo-container.locked button {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .modulo-container.completed {
+      border-color: #28a745;
+      background-color: rgba(40, 167, 69, 0.05);
+    }
+    
+    .modulo-status {
+      display: inline-block;
+      margin-top: 5px;
+      font-weight: 500;
+      color: #6c757d;
+    }
+    
+    .modulo-status.completed {
+      color: #28a745;
+    }
+    
+    .completion-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 10px;
+      width: 24px;
+      height: 24px;
+      background-color: #28a745;
+      color: white;
+      border-radius: 50%;
+      font-size: 14px;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+      }
+    }
+    
+    /* Button styles */
+    .comenzar-leccion-btn, .comenzar-quiz-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .comenzar-leccion-btn:hover, .comenzar-quiz-btn:hover {
+      background-color: #0069d9;
+    }
+    
+    .comenzar-leccion-btn.completed, .comenzar-quiz-btn.completed {
+      background-color: #28a745;
+    }
+    
+    .comenzar-leccion-btn:disabled, .comenzar-quiz-btn:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+    
+    /* Quiz and lesson items */
+    .leccion-item, .quiz-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .leccion-item:last-child, .quiz-item:last-child {
+      border-bottom: none;
+    }
+  </style>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Function to hide all sections
@@ -359,7 +872,7 @@
           <div class="curso-header">
             <h3>${course.title}</h3>
             <i class="fas fa-chevron-down toggle-icon"></i>
-          </div>
+            </div>
           <div class="progress-container">
             <div class="progress-bar">
               <div class="progress" style="width: ${progress}%"></div>
@@ -369,19 +882,19 @@
             <div class="completed-events">
               <i class="fas fa-check-circle"></i>
               <span>${completedEvents} eventos completados con éxito</span>
-            </div>
-          </div>
+        </div>
+              </div>
           <div class="curso-content">
             ${generateModulesHTML(course)}
             <div class="prueba-final-container ${progress < 80 ? 'locked' : ''}">
               <div class="modulo-header">
                 <span>Prueba Final</span>
                 <span>${progress < 80 ? 'Bloqueado' : ''}</span>
-              </div>
+            </div>
               <div class="modulo-points">Puntos obtenidos: 0</div>
               <button class="comenzar-modulo-btn">Comenzar</button>
-            </div>
           </div>
+            </div>
         `;
         
         container.appendChild(courseCard);
@@ -389,7 +902,8 @@
       
       // Function to generate HTML for modules
       function generateModulesHTML(course) {
-        if (!course.modules || !Array.isArray(course.modules)) {
+        if (!course || !course.modules || !Array.isArray(course.modules)) {
+          console.error('Invalid course data:', course);
           return '<div class="modulo-container">No hay módulos disponibles</div>';
         }
         
@@ -399,7 +913,28 @@
         const courseProgress = progress[course.id] || { modules: {} };
         
         return course.modules.map((module, index) => {
-          const isLocked = index > 0;
+          // Determine if the module should be locked
+          let isLocked = false;
+          
+          // First module is always unlocked
+          if (index > 0) {
+            // For other modules, check if they're explicitly unlocked in progress
+            const moduleProgress = courseProgress.modules[module.id] || {};
+            isLocked = !(moduleProgress.unlocked === true);
+            
+            // Also check if previous module is completed (for backward compatibility)
+            if (isLocked && index > 0) {
+              const prevModule = course.modules[index - 1];
+              if (prevModule) {
+                const prevModuleProgress = courseProgress.modules[prevModule.id] || {};
+                isLocked = !(prevModuleProgress.status === 'completed');
+              }
+            }
+          }
+          
+          // Create module ID for DOM
+          const moduleId = `modulo-${module.id}`;
+          
           let lessonsList = '';
           
           // Get module progress
@@ -420,12 +955,13 @@
                     <div class="leccion-item" data-lesson-id="${lesson.id}" data-module-id="${module.id}">
                       <div class="leccion-header">
                         <span>Lección ${lessonIndex + 1}: ${lesson.title}</span>
-                      </div>
-                      <button class="${buttonClass}" data-lesson-id="${lesson.id}" data-module-id="${module.id}" ${lessonCompleted ? 'disabled' : ''}>${buttonText}</button>
-                    </div>
+            </div>
+                      <button class="${buttonClass}" data-lesson-id="${lesson.id}" data-module-id="${module.id}" 
+                        ${isLocked ? 'disabled' : ''} ${lessonCompleted ? 'disabled' : ''}>${buttonText}</button>
+          </div>
                   `;
                 }).join('')}
-              </div>
+        </div>
             `;
           }
           
@@ -445,10 +981,11 @@
                   <div class="quiz-header">
                     <span>${module.quiz.title || 'Evaluación del módulo'}</span>
                     ${quizCompleted ? `<span class="quiz-score">(${quizScore} puntos)</span>` : ''}
-                  </div>
-                  <button class="${buttonClass}" data-quiz-id="${module.quiz.id}" data-module-id="${module.id}" ${quizCompleted ? 'disabled' : ''}>${buttonText}</button>
-                </div>
               </div>
+                  <button class="${buttonClass}" data-quiz-id="${module.quiz.id}" data-module-id="${module.id}" 
+                    ${isLocked ? 'disabled' : ''} ${quizCompleted ? 'disabled' : ''}>${buttonText}</button>
+            </div>
+          </div>
             `;
           }
           
@@ -469,16 +1006,26 @@
             modulePoints += moduleProgress.quiz.score;
           }
           
+          let moduleStatus = '';
+          if (isLocked) {
+            moduleStatus = '<span class="modulo-status">Bloqueado</span>';
+          } else if (moduleProgress.status === 'completed') {
+            moduleStatus = '<span class="modulo-status completed">Estado: Completado</span>';
+          } else {
+            moduleStatus = '<span class="modulo-status">Estado: Disponible</span>';
+          }
+          
           return `
-            <div class="modulo-container ${isLocked ? 'locked' : ''}">
+            <div id="${moduleId}" class="modulo-container ${isLocked ? 'locked' : ''} ${moduleProgress.status === 'completed' ? 'completed' : ''}">
               <div class="modulo-header">
                 <span>Módulo ${index + 1}: ${module.title}</span>
-                ${isLocked ? '<span>Bloqueado</span>' : ''}
-              </div>
+                ${moduleProgress.status === 'completed' ? '<span class="completion-badge" title="Módulo completado">✓</span>' : ''}
+            </div>
+              ${moduleStatus}
               <div class="modulo-points">Puntos obtenidos: ${modulePoints}</div>
               ${lessonsList}
               ${quizSection}
-            </div>
+          </div>
           `;
         }).join('');
       }
@@ -575,12 +1122,12 @@
           <div class="lesson-modal-content">
             <div class="lesson-modal-header">
               <h3>${lessonTitle}</h3>
-              <div class="lesson-progress-container">
-                <div class="lesson-progress-bar">
+            <div class="lesson-progress-container">
+              <div class="lesson-progress-bar">
                   <div class="lesson-progress-fill" style="width: ${totalPages > 0 ? (1 / totalPages) * 100 : 0}%"></div>
-                </div>
-                <span class="lesson-progress-text">Página 1/${totalPages}</span>
               </div>
+                <span class="lesson-progress-text">Página 1/${totalPages}</span>
+            </div>
             </div>
             <div class="lesson-modal-body">
               <h3>${initialPageContent.header}</h3>
@@ -588,10 +1135,10 @@
             </div>
             <div class="lesson-modal-footer">
               <button id="closeLesson" class="lesson-btn">Cerrar</button>
-              <div class="lesson-navigation">
+            <div class="lesson-navigation">
                 <button id="prevPage" class="lesson-btn" disabled>Anterior</button>
                 <button id="nextPage" class="lesson-btn" ${totalPages <= 1 ? 'disabled' : ''}>Siguiente</button>
-              </div>
+            </div>
             </div>
           </div>
         `;
@@ -965,16 +1512,16 @@
             <div class="quiz-modal-header">
               <h3>${module.quiz.title || `Quiz - ${module.title}`}</h3>
               <button id="closeQuiz" class="quiz-btn close-btn">Cerrar</button>
-            </div>
+          </div>
             <div class="quiz-modal-body">
               <form id="quizForm">
                 ${generateQuizQuestionsHTML(selectedQuestions)}
               </form>
-            </div>
+        </div>
             <div class="quiz-modal-footer">
               <button id="finalizarQuiz" class="quiz-btn">Finalizar</button>
-            </div>
-          </div>
+      </div>
+    </div>
         `;
         
         // Show modal
@@ -1018,10 +1565,10 @@
                     <div class="quiz-option">
                       <input type="radio" id="q${qIndex}_o${oIndex}" name="question_${qIndex}" value="${oIndex}" data-correct="${question.correctAnswer === oIndex ? 'true' : 'false'}">
                       <label for="q${qIndex}_o${oIndex}">${option}</label>
-                    </div>
+      </div>
                   `;
                 }).join('')}
-              </div>
+    </div>
             </div>
           `;
         }).join('');
@@ -1295,73 +1842,56 @@
         });
       }
 
-      // Function to check if a module is fully completed and unlock the next one
+      // Function to check if a module is fully completed and unlock the next module
       function checkModuleCompletionAndUnlockNext(courseId, moduleId) {
-        console.log(`Checking completion for module ${moduleId} in course ${courseId}`);
-        
         // Get current employee progress
         const currentEmployeeId = getCurrentUserId();
         const progress = JSON.parse(localStorage.getItem(`employee_progress_${currentEmployeeId}`) || '{}');
         
-        if (!progress[courseId] || !progress[courseId].modules[moduleId]) {
-          console.log('No progress found for this module');
-          return false;
+        // Check if we have progress for this course and module
+        if (!progress[courseId] || !progress[courseId].modules || !progress[courseId].modules[moduleId]) {
+          console.log(`No progress data found for course ${courseId}, module ${moduleId}`);
+          return;
         }
         
         const moduleProgress = progress[courseId].modules[moduleId];
         
-        // Check if module is already marked as completed
-        if (moduleProgress.status === 'completed') {
-          console.log('Module is already completed');
-          unlockNextModule(courseId, moduleId);
-          return true;
+        // Get course data
+        const course = window.courseData.find(c => c.id === courseId);
+        if (!course) {
+          console.log(`Course ${courseId} not found in courseData`);
+          return;
         }
         
-        // Get course and module details
-        const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
-        if (!courseDetails) {
-          console.log('Course details not found');
-          return false;
+        // Find module
+        const module = course.modules.find(m => m.id === moduleId);
+        if (!module) {
+          console.log(`Module ${moduleId} not found in course ${courseId}`);
+          return;
         }
         
-        const moduleDetails = courseDetails.modules.find(m => m.id === moduleId);
-        if (!moduleDetails) {
-          console.log('Module details not found');
-          return false;
-        }
+        // Count lessons and check completions
+        let totalLessons = module.lessons.length;
+        let completedLessons = 0;
         
-        // Count total items and completed items
-        let totalItems = 0;
-        let completedItems = 0;
-        
-        // Count lessons
-        if (moduleDetails.lessons && moduleDetails.lessons.length > 0) {
-          totalItems += moduleDetails.lessons.length;
-          
-          moduleDetails.lessons.forEach(lesson => {
-            if (moduleProgress.lessons[lesson.id] && moduleProgress.lessons[lesson.id].completed) {
-              completedItems++;
-            }
-          });
-        }
-        
-        // Count quiz
-        if (moduleDetails.quiz) {
-          totalItems++;
-          if (moduleProgress.quiz && moduleProgress.quiz.completed) {
-            completedItems++;
+        for (const lesson of module.lessons) {
+          if (moduleProgress.lessons[lesson.id] && moduleProgress.lessons[lesson.id].completed) {
+            completedLessons++;
           }
         }
         
-        // Check if all items are completed
-        const isCompleted = totalItems > 0 && completedItems === totalItems;
-        console.log(`Module completion: ${completedItems}/${totalItems} items completed`);
+        // Check if module has a quiz and if it's completed
+        const hasQuiz = module.quiz && module.quiz.questions && module.quiz.questions.length > 0;
+        const quizCompleted = hasQuiz ? (moduleProgress.quiz && moduleProgress.quiz.completed) : true;
         
-        if (isCompleted) {
-          // Mark module as completed
+        console.log(`Module ${moduleId} completion check: ${completedLessons}/${totalLessons} lessons completed, quiz completed: ${quizCompleted}`);
+        
+        // If all lessons are completed and quiz is completed (if required), then module is fully completed
+        if (completedLessons === totalLessons && quizCompleted) {
+          console.log(`Module ${moduleId} is fully completed. Unlocking next module.`);
+          
+          // Set module status to completed
           moduleProgress.status = 'completed';
-          moduleProgress.progress = 100;
-          moduleProgress.completedAt = new Date().toISOString();
           
           // Save progress
           localStorage.setItem(`employee_progress_${currentEmployeeId}`, JSON.stringify(progress));
@@ -1369,81 +1899,322 @@
           // Unlock next module
           unlockNextModule(courseId, moduleId);
           
-          return true;
-        }
-        
-        return false;
-      }
-      
-      // Function to unlock the next module
-      function unlockNextModule(courseId, moduleId) {
-        console.log(`Unlocking next module after ${moduleId} in course ${courseId}`);
-        
-        // Get course details
-        const courseDetails = window.coursesDatabase?.find(c => c.id === courseId);
-        if (!courseDetails || !courseDetails.modules) {
-          console.log('Course details not found');
-          return;
-        }
-        
-        // Find current module index
-        const currentModuleIndex = courseDetails.modules.findIndex(m => m.id === moduleId);
-        if (currentModuleIndex === -1) {
-          console.log('Current module not found in course');
-          return;
-        }
-        
-        // Check if there is a next module
-        if (currentModuleIndex < courseDetails.modules.length - 1) {
-          const nextModule = courseDetails.modules[currentModuleIndex + 1];
-          console.log(`Next module found: ${nextModule.id}`);
-          
-          // Find the module container in the DOM
-          const courseCard = document.querySelector(`.curso-adquirido-empleado[data-course-id="${courseId}"]`);
-          if (!courseCard) {
-            console.log('Course card not found in DOM');
-            return;
-          }
-          
-          const moduleContainers = courseCard.querySelectorAll('.modulo-container');
-          if (currentModuleIndex + 1 < moduleContainers.length) {
-            // Unlock the next module by removing the 'locked' class
-            moduleContainers[currentModuleIndex + 1].classList.remove('locked');
+          // Update UI to reflect completion
+          const moduleElement = document.getElementById(`modulo-${moduleId}`);
+          if (moduleElement) {
+            // Add completed class to module container
+            moduleElement.classList.add('completed');
             
-            // Remove the 'Bloqueado' text if it exists
-            const lockText = moduleContainers[currentModuleIndex + 1].querySelector('.modulo-header span:last-child');
-            if (lockText && lockText.textContent === 'Bloqueado') {
-              lockText.remove();
+            // Update module status if exists
+            const moduloStatus = moduleElement.querySelector('.modulo-status');
+            if (moduloStatus) {
+              moduloStatus.textContent = 'Estado: Completado';
+              moduloStatus.classList.add('completed');
             }
             
-            console.log(`Module ${nextModule.id} unlocked successfully`);
-            
-            // Add a notification to the user
-            alert(`¡Felicidades! Has completado el módulo "${courseDetails.modules[currentModuleIndex].title}". Se ha desbloqueado el siguiente módulo.`);
-          }
-        } else {
-          console.log('This was the last module in the course');
-          
-          // Check if we need to unlock the final test
-          const currentEmployeeId = getCurrentUserId();
-          const progress = JSON.parse(localStorage.getItem(`employee_progress_${currentEmployeeId}`) || '{}');
-          
-          if (progress[courseId] && progress[courseId].overallProgress >= 80) {
-            const courseCard = document.querySelector(`.curso-adquirido-empleado[data-course-id="${courseId}"]`);
-            if (courseCard) {
-              const finalTestContainer = courseCard.querySelector('.prueba-final-container');
-              if (finalTestContainer) {
-                finalTestContainer.classList.remove('locked');
-                const lockText = finalTestContainer.querySelector('span:last-child');
-                if (lockText) {
-                  lockText.textContent = '';
-                }
-                console.log('Final test unlocked');
-                alert(`¡Felicidades! Has completado todos los módulos del curso. La prueba final ha sido desbloqueada.`);
+            // Update header to show completion
+            const moduloHeader = moduleElement.querySelector('.modulo-header');
+            if (moduloHeader) {
+              // Add a completion badge if not already present
+              if (!moduloHeader.querySelector('.completion-badge')) {
+                const badge = document.createElement('span');
+                badge.className = 'completion-badge';
+                badge.innerHTML = '✓';
+                badge.title = 'Módulo completado';
+                moduloHeader.appendChild(badge);
               }
             }
           }
         }
+      }
+      
+      // Function to unlock the next module
+      function unlockNextModule(courseId, moduleId) {
+        console.log(`Attempting to unlock next module after completion of ${moduleId} in course ${courseId}`);
+        
+        // Get course data
+        const course = window.courseData.find(c => c.id === courseId);
+        if (!course) {
+          console.error(`Course ${courseId} not found in courseData`);
+          return;
+        }
+        
+        // Find current module index
+        const currentModuleIndex = course.modules.findIndex(m => m.id === moduleId);
+        if (currentModuleIndex === -1 || currentModuleIndex >= course.modules.length - 1) {
+          console.log(`Current module is the last one or not found. currentModuleIndex=${currentModuleIndex}, total modules=${course.modules.length}`);
+          return;
+        }
+        
+        // Get next module ID
+        const nextModuleId = course.modules[currentModuleIndex + 1].id;
+        console.log(`Next module to unlock: ${nextModuleId}`);
+        
+        // Get current employee progress
+        const currentEmployeeId = getCurrentUserId();
+        const progress = JSON.parse(localStorage.getItem(`employee_progress_${currentEmployeeId}`) || '{}');
+        
+        // Initialize course progress if needed
+        if (!progress[courseId]) {
+          progress[courseId] = { modules: {}, overallProgress: 0 };
+        }
+        
+        // Initialize next module progress if needed
+        if (!progress[courseId].modules[nextModuleId]) {
+          progress[courseId].modules[nextModuleId] = { 
+            lessons: {},
+            quiz: { completed: false, score: 0 },
+            status: 'not-started',
+            unlocked: true
+          };
+        } else {
+          // Ensure next module is unlocked
+          progress[courseId].modules[nextModuleId].unlocked = true;
+        }
+        
+        // Save progress
+        localStorage.setItem(`employee_progress_${currentEmployeeId}`, JSON.stringify(progress));
+        console.log(`Updated localStorage with unlocked status for module ${nextModuleId}`);
+        
+        // Update UI for next module
+        const nextModuleElement = document.getElementById(`modulo-${nextModuleId}`);
+        if (nextModuleElement) {
+          console.log(`Found next module element in DOM: #modulo-${nextModuleId}`);
+          
+          // Remove locked class
+          nextModuleElement.classList.remove('locked');
+          
+          // Update status text
+          const moduloStatus = nextModuleElement.querySelector('.modulo-status');
+          if (moduloStatus) {
+            moduloStatus.textContent = 'Estado: Disponible';
+            moduloStatus.classList.remove('locked');
+          }
+          
+          // Enable all buttons in the module
+          const buttons = nextModuleElement.querySelectorAll('button');
+          buttons.forEach(button => {
+            button.disabled = false;
+            button.classList.remove('locked');
+          });
+          
+          console.log(`Enabled ${buttons.length} buttons in the next module`);
+        } else {
+          console.warn(`Could not find next module element with ID: modulo-${nextModuleId}`);
+          
+          // If element not found, we might need to refresh the view to see changes
+          // This could happen if the course view is dynamically generated
+          refreshCourseView(courseId);
+        }
+        
+        // Notify user of unlocked module
+        alert(`¡Felicidades! Has completado el Módulo ${currentModuleIndex + 1}. El Módulo ${currentModuleIndex + 2} ha sido desbloqueado.`);
+        
+        console.log(`Module ${nextModuleId} of course ${courseId} has been unlocked after completing module ${moduleId}.`);
+      }
+
+      // Helper function to refresh course view if needed
+      function refreshCourseView(courseId) {
+        console.log(`Refreshing course view for ${courseId}`);
+        const courseCard = document.querySelector(`.curso-adquirido-empleado[data-course-id="${courseId}"]`);
+        
+        if (courseCard) {
+          // Get the course element
+          const courseElement = document.getElementById(`curso-${courseId}`);
+          if (courseElement) {
+            const course = window.courseData.find(c => c.id === courseId);
+            if (course) {
+              // Re-generate modules HTML
+              const modulesContainer = courseElement.querySelector('.modulos-container');
+              if (modulesContainer) {
+                modulesContainer.innerHTML = generateModulesHTML(course);
+                
+                // Re-add event listeners
+                const lessonButtons = modulesContainer.querySelectorAll('.comenzar-leccion-btn');
+                lessonButtons.forEach(button => {
+                  if (!button.disabled) {
+                    button.addEventListener('click', function(e) {
+                      e.stopPropagation();
+                      const lessonId = button.dataset.lessonId;
+                      const moduleId = button.dataset.moduleId;
+                      
+                      if (lessonId && moduleId) {
+                        openLessonModal(courseId, moduleId, lessonId, button);
+                      }
+                    });
+                  }
+                });
+                
+                // Add event listeners for quiz buttons
+                const quizButtons = modulesContainer.querySelectorAll('.comenzar-quiz-btn');
+                quizButtons.forEach(button => {
+                  if (!button.disabled) {
+                    button.addEventListener('click', function(e) {
+                      e.stopPropagation();
+                      const quizId = button.dataset.quizId;
+                      const moduleId = button.dataset.moduleId;
+                      
+                      if (quizId && moduleId) {
+                        openQuizModal(courseId, moduleId, quizId, button);
+                      }
+                    });
+                  }
+                });
+                
+                console.log('Course view refreshed and event listeners reattached');
+              }
+            }
+          }
+        }
+      }
+
+      // Load assigned courses from localStorage
+      function loadAssignedCourses() {
+        const currentEmployeeId = getCurrentUserId();
+        if (!currentEmployeeId) {
+          console.error('No employee ID found. Cannot load courses.');
+          return;
+        }
+        
+        // Get assigned courses from localStorage
+        let assignments = JSON.parse(localStorage.getItem('employeeAssignments') || '{}');
+        const employeeAssignments = assignments[currentEmployeeId] || [];
+        
+        // Get overall progress from localStorage
+        const progress = JSON.parse(localStorage.getItem(`employee_progress_${currentEmployeeId}`) || '{}');
+        
+        // Get courses from database
+        const assignedCourses = [];
+        
+        employeeAssignments.forEach(assignment => {
+          const courseId = assignment.courseId;
+          const course = window.coursesDatabase.find(c => c.id === courseId);
+          
+          if (course) {
+            assignedCourses.push(course);
+          }
+        });
+        
+        // Display courses in Assigned tab
+        const assignedCoursesContainer = document.getElementById('assigned-courses-container');
+        if (!assignedCoursesContainer) {
+          console.warn('Assigned courses container not found');
+          return;
+        }
+        
+        if (assignedCourses.length === 0) {
+          assignedCoursesContainer.innerHTML = '<div class="empty-courses-message">No tienes cursos asignados actualmente.</div>';
+          return;
+        }
+        
+        // Generate HTML for each assigned course
+        let coursesHTML = '';
+        
+        assignedCourses.forEach(course => {
+          const courseProgress = progress[course.id] || { modules: {}, overallProgress: 0 };
+          
+          // Initialize course progress if not present
+          if (!progress[course.id]) {
+            progress[course.id] = { 
+              modules: {}, 
+              overallProgress: 0,
+              startDate: new Date().toISOString()
+            };
+            
+            // Initialize the first module as unlocked
+            if (course.modules && course.modules.length > 0) {
+              const firstModuleId = course.modules[0].id;
+              progress[course.id].modules[firstModuleId] = {
+                lessons: {},
+                quiz: { completed: false, score: 0 },
+                status: 'not-started',
+                unlocked: true
+              };
+            }
+            
+            // Save the initialized progress
+            localStorage.setItem(`employee_progress_${currentEmployeeId}`, JSON.stringify(progress));
+          }
+          
+          // Ensure all completed modules have the next module unlocked
+          if (course.modules && course.modules.length > 1) {
+            for (let i = 0; i < course.modules.length - 1; i++) {
+              const currentModuleId = course.modules[i].id;
+              const nextModuleId = course.modules[i+1].id;
+              
+              // If current module is completed, ensure next module is unlocked
+              if (progress[course.id].modules[currentModuleId] && 
+                  progress[course.id].modules[currentModuleId].status === 'completed') {
+                
+                // Initialize next module if needed
+                if (!progress[course.id].modules[nextModuleId]) {
+                  progress[course.id].modules[nextModuleId] = {
+                    lessons: {},
+                    quiz: { completed: false, score: 0 },
+                    status: 'not-started',
+                    unlocked: true
+                  };
+                } else {
+                  // Ensure next module is unlocked
+                  progress[course.id].modules[nextModuleId].unlocked = true;
+                }
+              }
+            }
+            
+            // Save updated progress
+            localStorage.setItem(`employee_progress_${currentEmployeeId}`, JSON.stringify(progress));
+          }
+          
+          // Calculate overall course progress
+          const overallProgress = calculateOverallProgress(course, courseProgress);
+          
+          // Update overall progress in localStorage
+          progress[course.id].overallProgress = overallProgress;
+          localStorage.setItem(`employee_progress_${currentEmployeeId}`, JSON.stringify(progress));
+          
+          // Create course card HTML
+          coursesHTML += `
+            <div id="curso-${course.id}" class="curso-adquirido-empleado" data-course-id="${course.id}">
+              <div class="curso-header">
+                <div class="curso-title">
+                  <h3>${course.title}</h3>
+                  <div class="curso-categoria">${course.category}</div>
+              </div>
+                <div class="curso-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${overallProgress}%"></div>
+              </div>
+                  <div class="progress-percentage">${overallProgress}%</div>
+            </div>
+          </div>
+              
+              <div class="curso-content">
+                <div class="modulos-container">
+                  ${generateModulesHTML(course)}
+            </div>
+                
+                <div class="prueba-final-container ${overallProgress < 80 ? 'locked' : ''}">
+                  <div class="modulo-header">
+                    <span>Prueba Final: ${course.title}</span>
+                    <span>${overallProgress < 80 ? 'Bloqueado' : ''}</span>
+              </div>
+                  <div class="modulo-points">Completa al menos el 80% del curso para desbloquear la prueba final.</div>
+                  <button class="prueba-final-btn" ${overallProgress < 80 ? 'disabled' : ''}>Realizar Prueba Final</button>
+            </div>
+          </div>
+        </div>
+          `;
+        });
+        
+        assignedCoursesContainer.innerHTML = coursesHTML;
+        
+        // Add event listeners to the generated elements
+        addCourseToggleListeners();
+        
+        // Notify parent window that content has been loaded
+        window.parent.postMessage({ type: 'contentLoaded' }, '*');
+        
+        console.log('Assigned courses loaded successfully');
       }
     });
     
@@ -1456,357 +2227,5 @@
       });
     }
   </script>
-
-  <style>
-    .curso-empleado {
-      background: white;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 15px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .curso-empleado h3 {
-      margin-bottom: 10px;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 10px;
-      background-color: #e9ecef;
-      border-radius: 5px;
-      margin: 10px 0;
-    }
-
-    .progress {
-      height: 100%;
-      background-color: #28a745;
-      border-radius: 5px;
-    }
-
-    .continue-btn {
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
-
-    .continue-btn:hover {
-      background: #0056b3;
-    }
-
-    .no-courses-message {
-      text-align: center;
-      color: #666;
-      font-style: italic;
-      padding: 20px;
-    }
-    
-    /* Lecciones Styles */
-    .lecciones-container {
-      margin: 10px 0;
-      padding: 10px;
-      background-color: #f9f9f9;
-      border-radius: 4px;
-    }
-    
-    .lecciones-container h4 {
-      margin-top: 0;
-      margin-bottom: 10px;
-      color: #333;
-    }
-    
-    .leccion-item {
-      margin-bottom: 10px;
-      padding: 10px;
-      border: 1px solid #e9ecef;
-      border-radius: 4px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .leccion-header {
-      font-weight: 500;
-    }
-    
-    .comenzar-leccion-btn {
-      background: #17a2b8;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    
-    .comenzar-leccion-btn:hover {
-      background: #138496;
-    }
-    
-    .comenzar-leccion-btn.completed {
-      background: #28a745;
-    }
-    
-    /* Quiz Styles */
-    .quiz-container {
-      margin: 15px 0;
-      padding: 10px;
-      background-color: #f9f9f9;
-      border-radius: 4px;
-    }
-    
-    .quiz-container h4 {
-      margin-top: 0;
-      margin-bottom: 10px;
-      color: #333;
-    }
-    
-    .quiz-item {
-      padding: 10px;
-      border: 1px solid #e9ecef;
-      border-radius: 4px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .quiz-header {
-      font-weight: 500;
-    }
-    
-    .comenzar-quiz-btn {
-      background: #dc3545;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    
-    .comenzar-quiz-btn:hover {
-      background: #c82333;
-    }
-    
-    .comenzar-quiz-btn.completed {
-      background: #28a745;
-    }
-    
-    /* Quiz Modal Styles */
-    .quiz-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .quiz-modal-content {
-      background-color: white;
-      width: 80%;
-      max-width: 800px;
-      max-height: 90vh;
-      border-radius: 8px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .quiz-modal-header {
-      padding: 15px;
-      background-color: #dc3545;
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .quiz-modal-header h3 {
-      margin: 0;
-    }
-    
-    .quiz-modal-body {
-      padding: 20px;
-      overflow-y: auto;
-      max-height: 60vh;
-    }
-    
-    .quiz-modal-footer {
-      padding: 15px;
-      border-top: 1px solid #e9ecef;
-      display: flex;
-      justify-content: flex-end;
-    }
-    
-    .quiz-btn {
-      padding: 8px 15px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    
-    .close-btn {
-      background-color: transparent;
-      color: white;
-      border: 1px solid white;
-    }
-    
-    .close-btn:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    #finalizarQuiz {
-      background-color: #28a745;
-      color: white;
-    }
-    
-    #finalizarQuiz:hover {
-      background-color: #218838;
-    }
-    
-    .quiz-question {
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid #e9ecef;
-    }
-    
-    .question-text {
-      font-weight: 500;
-      margin-bottom: 10px;
-    }
-    
-    .quiz-options {
-      margin-left: 20px;
-    }
-    
-    .quiz-option {
-      margin-bottom: 8px;
-    }
-    
-    .quiz-option input[type="radio"] {
-      margin-right: 10px;
-    }
-    
-    .quiz-question.unanswered {
-      background-color: #fff8f8;
-      padding: 10px;
-      border-left: 3px solid #dc3545;
-    }
-    
-    /* Lesson Modal Styles */
-    .lesson-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .lesson-modal-content {
-      background-color: white;
-      width: 80%;
-      max-width: 800px;
-      max-height: 90vh;
-      border-radius: 8px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .lesson-modal-header {
-      padding: 15px;
-      background-color: #007bff;
-      color: white;
-    }
-    
-    .lesson-modal-header h3 {
-      margin: 0 0 10px 0;
-    }
-    
-    .lesson-progress-container {
-      margin-top: 10px;
-    }
-    
-    .lesson-progress-bar {
-      width: 100%;
-      height: 8px;
-      background-color: rgba(255, 255, 255, 0.3);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    
-    .lesson-progress-fill {
-      height: 100%;
-      background-color: white;
-      border-radius: 4px;
-      transition: width 0.3s ease;
-    }
-    
-    .lesson-progress-text {
-      font-size: 0.8rem;
-      margin-top: 5px;
-      display: block;
-    }
-    
-    .lesson-modal-body {
-      padding: 20px;
-      overflow-y: auto;
-      max-height: 60vh;
-      line-height: 1.6;
-    }
-    
-    .lesson-modal-footer {
-      padding: 15px;
-      border-top: 1px solid #e9ecef;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .lesson-navigation {
-      display: flex;
-      gap: 10px;
-    }
-    
-    .lesson-btn {
-      padding: 8px 15px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    
-    .lesson-btn#closeLesson {
-      background-color: #6c757d;
-      color: white;
-    }
-    
-    .lesson-btn#prevPage,
-    .lesson-btn#nextPage {
-      background-color: #007bff;
-      color: white;
-    }
-    
-    .lesson-btn:disabled {
-      background-color: #e9ecef;
-      color: #6c757d;
-      cursor: not-allowed;
-    }
-  </style>
 </body>
 </html>
