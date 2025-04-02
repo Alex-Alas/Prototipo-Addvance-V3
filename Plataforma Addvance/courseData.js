@@ -1,11 +1,21 @@
-// Course Data Structure
+/**
+ * Estructura de datos para los cursos de la plataforma Addvance
+ * Este archivo contiene la información hardcodeada de los cursos disponibles
+ * incluyendo sus módulos, lecciones y cuestionarios.
+ */
+
 const courseData = {
     courses: [
         {
             id: "PC101",
             title: "Introducción a Pronto Cash",
+            category: "finanzas",
+            level: "Básico",
             estimatedTime: "3 semanas",
+            price: "$$$",
             description: "Curso fundamental sobre Pronto Cash y sus beneficios para la gestión financiera empresarial.",
+            providerEmail: "abaco@example.com",
+            creationDate: "2023-01-15T10:00:00Z",
             modules: [
                 {
                     id: "M1",
@@ -80,36 +90,14 @@ const courseData = {
                             },
                             {
                                 id: "Q1.3",
-                                question: "¿Qué tipo de reportes ofrece Pronto Cash?",
+                                question: "¿Cuál es la ventaja que ofrece Pronto Cash con respecto a la cadena de suministro?",
                                 options: [
-                                    "Reportes de redes sociales",
-                                    "Reportes personalizables",
-                                    "Reportes de tráfico web",
-                                    "Reportes de marketing"
+                                    "Mayor integración de componentes electrónicos",
+                                    "Anticipo de renuncia de empleados",
+                                    "Ofrece una tasa de interés baja",
+                                    "Evita interrupciones de operaciones"
                                 ],
-                                correctAnswer: 1
-                            },
-                            {
-                                id: "Q1.4",
-                                question: "¿Qué sistema de alertas tiene Pronto Cash?",
-                                options: [
-                                    "Alertas de redes sociales",
-                                    "Alertas de tráfico web",
-                                    "Alertas automáticas",
-                                    "Alertas de marketing"
-                                ],
-                                correctAnswer: 2
-                            },
-                            {
-                                id: "Q1.5",
-                                question: "¿Qué permite la gestión de múltiples cuentas?",
-                                options: [
-                                    "Gestionar varias redes sociales",
-                                    "Gestionar varias cuentas bancarias",
-                                    "Gestionar varios sitios web",
-                                    "Gestionar varios perfiles de usuario"
-                                ],
-                                correctAnswer: 1
+                                correctAnswer: 3
                             }
                         ]
                     }
@@ -127,6 +115,17 @@ const courseData = {
                                     id: "P1",
                                     content: "ÁbacoPay es una plataforma de procesamiento de pagos que se integra perfectamente con Pronto Cash.",
                                     type: "text"
+                                },
+                                {
+                                    id: "P2",
+                                    content: "Características principales de ÁbacoPay:",
+                                    type: "list",
+                                    items: [
+                                        "Procesamiento 100% digital",
+                                        "Pagos instantáneos a proveedores",
+                                        "Extensión de plazos de pago",
+                                        "Gestión de flujo de caja y crédito"
+                                    ]
                                 }
                             ]
                         }
@@ -137,16 +136,37 @@ const courseData = {
                         questions: [
                             {
                                 id: "Q2.1",
-                                question: "¿Qué es ÁbacoPay?",
+                                question: "¿Qué hace ÁbacoPay?",
                                 options: [
-                                    "Un sistema de gestión de inventario",
-                                    "Una plataforma de procesamiento de pagos",
-                                    "Un software de contabilidad",
-                                    "Una aplicación de mensajería"
+                                    "Adelanta los fondos necesarios",
+                                    "Mejora la cadena de suministro",
+                                    "Permite mantener mayor liquidez",
+                                    "Permite una mejor relación con los empleados"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                id: "Q2.2",
+                                question: "¿De qué manera se realizan los procesos en ÁbacoPay?",
+                                options: [
+                                    "100% digital",
+                                    "100% presencial",
+                                    "50% presencial y 50% digital",
+                                    "25% presencial y 75% digital"
+                                ],
+                                correctAnswer: 0
+                            },
+                            {
+                                id: "Q2.3",
+                                question: "¿En qué momento reciben el pago los proveedores si se usa ÁbacoPay?",
+                                options: [
+                                    "Después de 10 días hábiles",
+                                    "Al instante",
+                                    "Después de llenar un formulario",
+                                    "Hasta que la empresa decida pagar"
                                 ],
                                 correctAnswer: 1
                             }
-                            // ... más preguntas similares
                         ]
                     }
                 },
@@ -163,6 +183,17 @@ const courseData = {
                                     id: "P1",
                                     content: "CashX es una herramienta avanzada que complementa Pronto Cash para la gestión financiera.",
                                     type: "text"
+                                },
+                                {
+                                    id: "P2",
+                                    content: "Beneficios principales de CashX:",
+                                    type: "list",
+                                    items: [
+                                        "Mantiene un flujo de caja estable",
+                                        "Funciona de manera 100% digital",
+                                        "Permite la inversión y evita interrupciones",
+                                        "Gestiona documentación de cuentas por cobrar"
+                                    ]
                                 }
                             ]
                         }
@@ -173,16 +204,37 @@ const courseData = {
                         questions: [
                             {
                                 id: "Q3.1",
-                                question: "¿Qué es CashX?",
+                                question: "¿Qué son las cuentas por cobrar?",
                                 options: [
-                                    "Un sistema de gestión de inventario",
-                                    "Una herramienta de gestión financiera",
-                                    "Un software de contabilidad",
-                                    "Una aplicación de mensajería"
+                                    "Son inmuebles que la empresa posee",
+                                    "Son prestamos que la empresa ha realizado en todo su tiempo funcionando",
+                                    "Son los importes que la empresa tiene derecho a recibir por operaciones comerciales",
+                                    "Son cuentas con fondos extra"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                id: "Q3.2",
+                                question: "Señala cuál es el objetivo principal de CashX",
+                                options: [
+                                    "Lograr que los empleados trabajen más",
+                                    "Mantener un flujo de caja estable",
+                                    "Obtener mayor comisión por venta",
+                                    "Recibir menos dinero"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                id: "Q3.3",
+                                question: "¿Qué información se sube una vez se está registrado en CashX?",
+                                options: [
+                                    "Crédito fiscal y factura electrónica",
+                                    "Documentación sobre nuestras cuentas por cobrar",
+                                    "DUI del representante",
+                                    "NIT de la empresa"
                                 ],
                                 correctAnswer: 1
                             }
-                            // ... más preguntas similares
                         ]
                     }
                 }
@@ -202,12 +254,128 @@ const courseData = {
                             "Gestionar proyectos"
                         ],
                         correctAnswer: 1
+                    },
+                    {
+                        id: "FT1.2",
+                        question: "¿Qué plataforma se integra con Pronto Cash para el procesamiento de pagos?",
+                        options: [
+                            "PayPal",
+                            "Stripe",
+                            "ÁbacoPay",
+                            "CashX"
+                        ],
+                        correctAnswer: 2
+                    },
+                    {
+                        id: "FT1.3",
+                        question: "¿Qué herramienta complementa a Pronto Cash para la gestión financiera avanzada?",
+                        options: [
+                            "Excel",
+                            "QuickBooks",
+                            "ÁbacoPay",
+                            "CashX"
+                        ],
+                        correctAnswer: 3
                     }
-                    // ... más preguntas similares
                 ]
             }
+        },
+        {
+            id: "AP102",
+            title: "ÁbacoPay Avanzado",
+            category: "finanzas",
+            level: "Intermedio",
+            estimatedTime: "4 semanas",
+            price: "$$$",
+            description: "Curso avanzado sobre ÁbacoPay y sus aplicaciones en la gestión financiera empresarial.",
+            providerEmail: "abaco@example.com",
+            creationDate: "2023-02-20T14:30:00Z",
+            modules: [
+                {
+                    id: "M1",
+                    title: "Módulo 1: Configuración Avanzada",
+                    description: "Aprende a configurar ÁbacoPay para necesidades empresariales específicas.",
+                    lessons: [
+                        {
+                            id: "L1",
+                            title: "Configuración de Perfiles",
+                            pages: [
+                                {
+                                    id: "P1",
+                                    content: "En esta lección aprenderás a configurar perfiles de usuario y permisos en ÁbacoPay.",
+                                    type: "text"
+                                }
+                            ]
+                        }
+                    ],
+                    quiz: {
+                        id: "Q1",
+                        title: "Cuestionario Módulo 1",
+                        questions: [
+                            {
+                                id: "Q1.1",
+                                question: "¿Qué tipo de perfiles se pueden configurar en ÁbacoPay?",
+                                options: [
+                                    "Solo perfiles de administrador",
+                                    "Perfiles de usuario, administrador y auditor",
+                                    "Solo perfiles de usuario básico",
+                                    "No se pueden configurar perfiles"
+                                ],
+                                correctAnswer: 1
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            id: "CX103",
+            title: "CashX para Empresas",
+            category: "finanzas",
+            level: "Avanzado",
+            estimatedTime: "5 semanas",
+            price: "$$$$",
+            description: "Curso especializado en el uso de CashX para la gestión financiera de empresas medianas y grandes.",
+            providerEmail: "abaco@example.com",
+            creationDate: "2023-03-10T09:15:00Z",
+            modules: [
+                {
+                    id: "M1",
+                    title: "Módulo 1: Implementación de CashX",
+                    description: "Aprende a implementar CashX en tu empresa de manera efectiva.",
+                    lessons: [
+                        {
+                            id: "L1",
+                            title: "Planificación de la Implementación",
+                            pages: [
+                                {
+                                    id: "P1",
+                                    content: "En esta lección aprenderás a planificar la implementación de CashX en tu empresa.",
+                                    type: "text"
+                                }
+                            ]
+                        }
+                    ],
+                    quiz: {
+                        id: "Q1",
+                        title: "Cuestionario Módulo 1",
+                        questions: [
+                            {
+                                id: "Q1.1",
+                                question: "¿Cuál es el primer paso para implementar CashX en una empresa?",
+                                options: [
+                                    "Instalar el software",
+                                    "Capacitar al personal",
+                                    "Realizar un análisis de necesidades",
+                                    "Contratar consultores externos"
+                                ],
+                                correctAnswer: 2
+                            }
+                        ]
+                    }
+                }
+            ]
         }
-        // Más cursos pueden ser agregados aquí siguiendo la misma estructura
     ]
 };
 
@@ -230,5 +398,19 @@ function getLessonById(courseId, moduleId, lessonId) {
     return module.lessons.find(lesson => lesson.id === lessonId);
 }
 
+// Función para obtener un cuestionario específico de un módulo
+function getQuizById(courseId, moduleId) {
+    const module = getModuleById(courseId, moduleId);
+    if (!module) return null;
+    return module.quiz;
+}
+
+// Función para obtener el examen final de un curso
+function getFinalTestById(courseId) {
+    const course = getCourseById(courseId);
+    if (!course) return null;
+    return course.finalTest;
+}
+
 // Exportar el objeto courseData y las funciones de utilidad
-export { courseData, getCourseById, getModuleById, getLessonById }; 
+export { courseData, getCourseById, getModuleById, getLessonById, getQuizById, getFinalTestById };

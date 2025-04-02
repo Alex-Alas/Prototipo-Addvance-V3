@@ -13,6 +13,22 @@ function initializeEmpresaNavigation() {
   const messagingOption = document.getElementById('empresaMessagingOption');
   const notificationsOption = document.getElementById('empresaNotificationsOption');
   
+  // Create an array of all menu options for easier management
+  const allMenuOptions = [
+    perfilOption,
+    cursoOption,
+    networkOption,
+    rankingsOption,
+    achievementsOption,
+    messagingOption,
+    notificationsOption
+  ].filter(option => option !== null); // Filter out any null options
+  
+  // Remove active class from all menu options initially
+  allMenuOptions.forEach(option => {
+    if (option) option.classList.remove('active');
+  });
+  
   // Get all sections
   const profileSection = document.getElementById('profileSection');
   const cursoSection = document.getElementById('cursoSection');
@@ -35,51 +51,65 @@ function initializeEmpresaNavigation() {
     if (notificationsSection) notificationsSection.style.display = 'none';
   }
   
-  // Function to show a specific section
-  function showSection(section) {
+  // Function to remove active class from all menu options
+  function removeActiveClassFromAllOptions() {
+    allMenuOptions.forEach(option => {
+      option.classList.remove('active');
+    });
+  }
+  
+  // Function to show a specific section and activate corresponding menu option
+  function showSection(section, activeOption) {
     hideAllSections();
+    removeActiveClassFromAllOptions();
+    
     if (section) {
       section.style.display = 'block';
+    }
+    
+    if (activeOption) {
+      // Asegurarse de que solo esta opción tenga la clase 'active'
+      activeOption.classList.add('active');
     }
   }
   
   // Add click handlers to menu options
   perfilOption.addEventListener('click', function() {
-    showSection(profileSection);
+    showSection(profileSection, perfilOption);
     initializeProfileCardFlip();
   });
   
   cursoOption.addEventListener('click', function() {
-    showSection(cursoSection);
+    showSection(cursoSection, cursoOption);
   });
   
   networkOption.addEventListener('click', function() {
-    showSection(networkSection);
+    showSection(networkSection, networkOption);
   });
   
   rankingsOption.addEventListener('click', function() {
-    showSection(rankingsSection);
+    showSection(rankingsSection, rankingsOption);
   });
   
   achievementsOption.addEventListener('click', function() {
-    showSection(achievementsSection);
+    showSection(achievementsSection, achievementsOption);
   });
   
   // Add event listeners for messaging and notifications if the sections exist
   if (messagingOption && messagingSection) {
     messagingOption.addEventListener('click', function() {
-      showSection(messagingSection);
+      showSection(messagingSection, messagingOption);
     });
   }
   
   if (notificationsOption && notificationsSection) {
     notificationsOption.addEventListener('click', function() {
-      showSection(notificationsSection);
+      showSection(notificationsSection, notificationsOption);
     });
   }
   
-  // Set curso section as visible by default
-  showSection(cursoSection);
+  // Set curso section as visible by default and activate its menu option
+  showSection(cursoSection, cursoOption);
 }
 
 // Initialize navigation when the DOM is fully loaded

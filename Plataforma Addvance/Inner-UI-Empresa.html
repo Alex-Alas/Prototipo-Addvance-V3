@@ -219,8 +219,24 @@
       <!-- Curso search view -->
       <div id="searchView">
         <div class="search-container">
-          <h2>¿Qué Curso estás buscando?</h2>
-          <input type="text" class="search-bar" placeholder="Buscar curso...">
+          <div class="search-filter-container">
+  <h2>¿Qué Curso estás buscando?</h2>
+  <div class="search-header">
+    <input type="text" class="search-bar" placeholder="Buscar curso..." id="cursoSearchInput">
+    <div class="filter-options">
+      <select class="filter-select" id="categoryFilter">
+        <option value="todas">Todas las categorías</option>
+        <option value="liderazgo">Liderazgo</option>
+        <option value="tecnologia">Tecnología</option>
+      </select>
+      <select class="filter-select" id="levelFilter">
+        <option value="todos">Todos los niveles</option>
+        <option value="basico">Básico</option>
+        <option value="intermedio">Intermedio</option>
+        <option value="avanzado">Avanzado</option>
+      </select>
+    </div>
+  </div>
         </div>
         <div class="curso-grid">
           <div class="curso-card">
@@ -510,93 +526,46 @@
   <script src="profile-manager.js"></script>
   <script src="menu-toggle.js"></script>
   <script src="js/empresa-navigation.js"></script>
+  <script src="js/curso-manager.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Function to hide all sections
-      function hideAllSections() {
-        const sections = [
-          'profileSection',
-          'cursoSection',
-          'networkSection',
-          'rankingsSection',
-          'achievementsSection',
-          'empresaMessagingSection',
-          'empresaNotificationsSection'
-        ];
-        
-        sections.forEach(sectionId => {
-          const section = document.getElementById(sectionId);
-          if (section) {
-            section.style.display = 'none';
-          }
-        });
-      }
-
-      // Function to show a specific section
-      function showSection(sectionId) {
-        hideAllSections();
-        const section = document.getElementById(sectionId);
-        if (section) {
-          section.style.display = 'block';
-        }
-      }
-
-      // Initialize profile card flip functionality
-      const perfilOption = document.getElementById('perfilOption');
-      if (perfilOption) {
-        perfilOption.addEventListener('click', function() {
-          initializeProfileCardFlip();
-          showSection('profileSection');
-        });
-      }
-
-      // Add click event listeners to all menu options
-      const menuOptions = document.querySelectorAll('#empresaMenu .menu-option');
-      menuOptions.forEach(option => {
-        option.addEventListener('click', function() {
-          // Remove active class from all options
-          menuOptions.forEach(opt => opt.classList.remove('active'));
-          // Add active class to clicked option
-          this.classList.add('active');
+      // Initialize curso tabs functionality
+      document.addEventListener('DOMContentLoaded', function() {
+          const searchTab = document.getElementById('searchTab');
+          const acquiredTab = document.getElementById('acquiredTab');
+          const searchView = document.getElementById('searchView');
+          const acquiredView = document.getElementById('acquiredView');
           
-          // Show corresponding section based on the option ID
-          let sectionId;
-          switch(this.id) {
-            case 'perfilOption':
-              sectionId = 'profileSection';
-              break;
-            case 'cursoOption':
-              sectionId = 'cursoSection';
-              break;
-            case 'networkOption':
-              sectionId = 'networkSection';
-              break;
-            case 'rankingsOption':
-              sectionId = 'rankingsSection';
-              break;
-            case 'achievementsOption':
-              sectionId = 'achievementsSection';
-              break;
-            case 'empresaMessagingOption':
-              sectionId = 'empresaMessagingSection';
-              break;
-            case 'empresaNotificationsOption':
-              sectionId = 'empresaNotificationsSection';
-              break;
+          if (searchTab && acquiredTab && searchView && acquiredView) {
+              searchTab.addEventListener('click', function() {
+                  searchTab.classList.add('active');
+                  acquiredTab.classList.remove('active');
+                  searchView.style.display = 'block';
+                  acquiredView.style.display = 'none';
+              });
+              
+              acquiredTab.addEventListener('click', function() {
+                  acquiredTab.classList.add('active');
+                  searchTab.classList.remove('active');
+                  acquiredView.style.display = 'block';
+                  searchView.style.display = 'none';
+              });
           }
-          showSection(sectionId);
-        });
       });
-
-      // Set initial state - show Curso section by default
-      hideAllSections();
-      showSection('cursoSection');
       
-      // Set Curso option as active by default
-      const cursoOption = document.getElementById('cursoOption');
-      if (cursoOption) {
-        cursoOption.classList.add('active');
+      // La función initializeProfileCardFlip se define aquí para ser utilizada por empresa-navigation.js
+      function initializeProfileCardFlip() {
+          const moreInfoBtns = document.querySelectorAll('.more-info-btn');
+          const profileCard = document.querySelector('.profile-card');
+          
+          moreInfoBtns.forEach(btn => {
+              btn.addEventListener('click', function() {
+                  profileCard.classList.toggle('flipped');
+              });
+          });
       }
+      
+      // No necesitamos establecer la clase active aquí, ya se maneja en empresa-navigation.js
+      // La inicialización del menú se hace completamente en el archivo js/empresa-navigation.js
 
       // Initialize company code display
       const companyCodeSpan = document.getElementById('companyCode');
@@ -608,7 +577,6 @@
       if (document.getElementById('profileSection').style.display !== 'none') {
         initializeProfileCardFlip();
       }
-    });
     
     // Implementar funcionalidad de cerrar sesión
     const logoutButton = document.querySelector('.logout-button');

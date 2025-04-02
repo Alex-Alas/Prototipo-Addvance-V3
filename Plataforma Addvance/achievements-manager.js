@@ -10,7 +10,8 @@ const ACHIEVEMENT_TYPES = {
   FIRST_CONNECTION: 'FIRST_CONNECTION',
   CONNECTION_MILESTONE: 'CONNECTION_MILESTONE',
   MESSAGE_MILESTONE: 'MESSAGE_MILESTONE',
-  PLATFORM_VETERAN: 'PLATFORM_VETERAN'
+  PLATFORM_VETERAN: 'PLATFORM_VETERAN',
+  FIRST_COURSE_PURCHASE: 'FIRST_COURSE_PURCHASE'
 };
 
 const ACHIEVEMENTS_CONFIG = {
@@ -55,6 +56,12 @@ const ACHIEVEMENTS_CONFIG = {
     description: '6 meses siendo parte de la comunidad Addvance',
     icon: 'fa-medal',
     points: 500
+  },
+  [ACHIEVEMENT_TYPES.FIRST_COURSE_PURCHASE]: {
+    title: 'Primer Curso Adquirido',
+    description: 'Has adquirido tu primer curso en la plataforma',
+    icon: 'fa-graduation-cap',
+    points: 150
   }
 };
 
@@ -79,6 +86,7 @@ class AchievementsManager {
     document.addEventListener('employeeAdded', this.checkEmployeeMilestones.bind(this));
     document.addEventListener('connectionCreated', this.checkConnectionMilestones.bind(this));
     document.addEventListener('messageSent', this.checkMessageMilestones.bind(this));
+    document.addEventListener('coursePurchased', this.checkCoursePurchase.bind(this));
   }
 
   checkProfileCompletion(event) {
@@ -118,6 +126,13 @@ class AchievementsManager {
     
     if (messageCount >= 50 && !this.hasAchievement(ACHIEVEMENT_TYPES.MESSAGE_MILESTONE)) {
       this.addAchievement(ACHIEVEMENT_TYPES.MESSAGE_MILESTONE);
+    }
+  }
+  
+  checkCoursePurchase(event) {
+    // Otorgar logro por la primera compra de curso
+    if (!this.hasAchievement(ACHIEVEMENT_TYPES.FIRST_COURSE_PURCHASE)) {
+      this.addAchievement(ACHIEVEMENT_TYPES.FIRST_COURSE_PURCHASE);
     }
   }
 
@@ -338,3 +353,4 @@ document.addEventListener('profileUpdated', () => checkAndAwardAchievements());
 document.addEventListener('employeeAdded', () => checkAndAwardAchievements());
 document.addEventListener('connectionCreated', () => checkAndAwardAchievements());
 document.addEventListener('messageSent', () => checkAndAwardAchievements());
+document.addEventListener('coursePurchased', () => checkAndAwardAchievements());
