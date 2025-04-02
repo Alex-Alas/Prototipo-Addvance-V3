@@ -400,33 +400,87 @@
   <script src="profile-manager.js"></script>
   <script src="menu-toggle.js"></script>
   <script>
-    // Initialize profile card flip functionality when the page loads
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize profile card when profile section is visible
+      // Function to hide all sections
+      function hideAllSections() {
+        const sections = [
+          'profileSection',
+          'cursoSection',
+          'networkSection',
+          'rankingsSection',
+          'achievementsSection',
+          'empresaMessagingSection',
+          'empresaNotificationsSection'
+        ];
+        
+        sections.forEach(sectionId => {
+          const section = document.getElementById(sectionId);
+          if (section) {
+            section.style.display = 'none';
+          }
+        });
+      }
+
+      // Function to show a specific section
+      function showSection(sectionId) {
+        hideAllSections();
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.style.display = 'block';
+        }
+      }
+
+      // Initialize profile card flip functionality
       const perfilOption = document.getElementById('perfilOption');
       if (perfilOption) {
         perfilOption.addEventListener('click', function() {
-          // Initialize profile card when profile section becomes visible
           initializeProfileCardFlip();
+          showSection('profileSection');
         });
       }
-      
-      // Initialize profile card if profile section is visible by default
-      if (document.getElementById('profileSection').style.display !== 'none') {
-        initializeProfileCardFlip();
-      }
 
-      // Highlight the selected menu option based on visible section
-      const menuOptions = document.querySelectorAll('.menu-option');
+      // Add click event listeners to all menu options
+      const menuOptions = document.querySelectorAll('#empresaMenu .menu-option');
       menuOptions.forEach(option => {
         option.addEventListener('click', function() {
           // Remove active class from all options
           menuOptions.forEach(opt => opt.classList.remove('active'));
           // Add active class to clicked option
           this.classList.add('active');
+          
+          // Show corresponding section based on the option ID
+          let sectionId;
+          switch(this.id) {
+            case 'perfilOption':
+              sectionId = 'profileSection';
+              break;
+            case 'cursoOption':
+              sectionId = 'cursoSection';
+              break;
+            case 'networkOption':
+              sectionId = 'networkSection';
+              break;
+            case 'rankingsOption':
+              sectionId = 'rankingsSection';
+              break;
+            case 'achievementsOption':
+              sectionId = 'achievementsSection';
+              break;
+            case 'empresaMessagingOption':
+              sectionId = 'empresaMessagingSection';
+              break;
+            case 'empresaNotificationsOption':
+              sectionId = 'empresaNotificationsSection';
+              break;
+          }
+          showSection(sectionId);
         });
       });
 
+      // Set initial state - show Curso section by default
+      hideAllSections();
+      showSection('cursoSection');
+      
       // Set Curso option as active by default
       const cursoOption = document.getElementById('cursoOption');
       if (cursoOption) {
@@ -436,24 +490,20 @@
       // Initialize company code display
       const companyCodeSpan = document.getElementById('companyCode');
       if (companyCodeSpan && !companyCodeSpan.textContent) {
-        // In a real application, this would be loaded from the backend
-        // associated with the company's account
         companyCodeSpan.textContent = 'ABC123'; // Example static code
       }
     });
     
-    document.addEventListener('DOMContentLoaded', function() {
-      // Implementar funcionalidad de cerrar sesión
-      const logoutButton = document.querySelector('.logout-button');
-      if (logoutButton) {
-        logoutButton.addEventListener('click', function() {
-          // Llamar a la función cerrarSesion de auth.js
-          cerrarSesion();
-          // Redirigir a la página de autenticación
-          window.location.href = 'auth.html';
-        });
-      }
-    });
+    // Implementar funcionalidad de cerrar sesión
+    const logoutButton = document.querySelector('.logout-button');
+    if (logoutButton) {
+      logoutButton.addEventListener('click', function() {
+        // Llamar a la función cerrarSesion de auth.js
+        cerrarSesion();
+        // Redirigir a la página de autenticación
+        window.location.href = 'auth.html';
+      });
+    }
   </script>
 </body>
 </html>
