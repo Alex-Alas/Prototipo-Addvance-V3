@@ -1,0 +1,283 @@
+/**
+ * Páginas Style - Estilos para las páginas de lecciones
+ * 
+ * Este archivo contiene los estilos para la visualización de páginas
+ * de lecciones en la plataforma Addvance.
+ */
+
+/* Contenedor principal de página */
+.pagina-content {
+  font-family: 'Poppins', sans-serif;
+  color: white;
+  line-height: 1.6;
+  padding: 15px;
+  margin: 0;
+  background-color: #333;
+  border-radius: 8px;
+}
+
+.pagina-content h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #ffd601;
+  font-weight: 600;
+}
+
+.pagina-content h4 {
+  font-size: 1.2rem;
+  margin-bottom: 0.7rem;
+  color: #ffd601;
+  font-weight: 500;
+}
+
+.lesson-modal-body h3 {
+  color: #ffd601;
+}
+
+.pagina-content p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.pagina-content ul, 
+.pagina-content ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.pagina-content li {
+  margin-bottom: 0.5rem;
+}
+
+/* Grids y layouts */
+.benefits-grid,
+.features-container,
+.leadership-types,
+.skills-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.benefit-item,
+.feature,
+.leadership-type,
+.skill {
+  background-color: #444;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.benefit-item:hover,
+.feature:hover,
+.leadership-type:hover,
+.skill:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Procesos y pasos */
+.process-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #ffd601;
+  color: #333;
+  border-radius: 50%;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.step-content p {
+  margin: 0;
+}
+
+/* Descripciones de roles */
+.role-description {
+  background-color: #444;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.role-description h4 {
+  color: #ffd601;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.role-description h4:first-child {
+  margin-top: 0;
+}
+
+/* Imágenes y multimedia */
+.pagina-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+
+.pagina-content .image-caption {
+  text-align: center;
+  font-style: italic;
+  color: #6c757d;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Bloques de código */
+.pagina-content pre {
+  background-color: #222;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border-left: 4px solid #ffd601;
+}
+
+.pagina-content code {
+  font-family: 'Courier New', monospace;
+  color: #ffd601;
+}
+
+/* Citas y bloques destacados */
+.pagina-content blockquote {
+  background-color: #444;
+  border-left: 4px solid #ffd601;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+}
+
+/* Tablas */
+.pagina-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pagina-content th {
+  background-color: #ffd601;
+  color: #333;
+  text-align: left;
+  padding: 0.75rem 1rem;
+}
+
+.pagina-content td {
+  border-bottom: 1px solid #444;
+  padding: 0.75rem 1rem;
+  background-color: #3a3a3a;
+}
+
+.pagina-content tr:last-child td {
+  border-bottom: none;
+}
+
+.pagina-content tr:nth-child(even) td {
+  background-color: #444;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .benefits-grid,
+  .features-container,
+  .leadership-types,
+  .skills-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .process-steps {
+    gap: 1rem;
+  }
+  
+  .step {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .step-number {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Animaciones para mejorar UX */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pagina-content {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Estilos para el modal de lecciones */
+.lesson-modal-content {
+  background-color: #222;
+  color: white;
+}
+
+.lesson-modal-header {
+  background-color: #333;
+  border-bottom: 1px solid #444;
+}
+
+.lesson-modal-header h3 {
+  color: #ffd601;
+}
+
+.lesson-modal-body {
+  background-color: #333;
+}
+
+.lesson-modal-footer {
+  background-color: #333;
+  border-top: 1px solid #444;
+}
+
+.lesson-btn {
+  background-color: #ffd601;
+  color: #333;
+  border: none;
+}
+
+.lesson-btn:hover {
+  background-color: #e6c200;
+}
+
+.lesson-btn:disabled {
+  background-color: #666;
+  color: #999;
+} 
