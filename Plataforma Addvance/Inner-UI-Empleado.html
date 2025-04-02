@@ -300,57 +300,78 @@
   <script src="empleado-navigation.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Function to hide all sections
+      function hideAllSections() {
+        const sections = [
+          'empleadoPerfilSection',
+          'empleadoCursoSection',
+          'empleadoRankingSection',
+          'empleadoMessagingSection',
+          'empleadoNotificationsSection'
+        ];
+        
+        sections.forEach(sectionId => {
+          const section = document.getElementById(sectionId);
+          if (section) {
+            section.style.display = 'none';
+          }
+        });
+      }
+
+      // Function to show a specific section
+      function showSection(sectionId) {
+        hideAllSections();
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.style.display = 'block';
+        }
+      }
+
       // Initialize profile card flip functionality
       const perfilOption = document.getElementById('empleadoPerfilOption');
       if (perfilOption) {
         perfilOption.addEventListener('click', function() {
           initializeProfileCardFlip();
+          showSection('empleadoPerfilSection');
         });
       }
 
-      // Set Journey section as visible by default
-      const journeySection = document.getElementById('empleadoJourneySection');
-      if (journeySection) {
-        journeySection.style.display = 'block';
+      // Add click event listeners to all menu options
+      const menuOptions = document.querySelectorAll('#empleadoMenu .menu-option');
+      menuOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          // Remove active class from all options
+          menuOptions.forEach(opt => opt.classList.remove('active'));
+          // Add active class to clicked option
+          this.classList.add('active');
+          
+          // Show corresponding section
+          const sectionId = this.id.replace('Option', 'Section');
+          showSection(sectionId);
+        });
+      });
+
+      // Set initial state - show Curso section by default
+      hideAllSections();
+      showSection('empleadoCursoSection');
+      
+      // Set Curso option as active by default
+      const cursoOption = document.getElementById('empleadoCursoOption');
+      if (cursoOption) {
+        cursoOption.classList.add('active');
       }
 
-      // Set Journey option as active by default
-      const journeyOption = document.getElementById('empleadoJourneyOption');
-      if (journeyOption) {
-        journeyOption.classList.add('active');
-      }
-
-      // Set search view as visible by default
+      // Initialize search view and acquired view states for Curso section
       const searchView = document.getElementById('empleadoSearchView');
-      if (searchView) {
-        searchView.style.display = 'block';
-      }
-
-      // Set acquired view as hidden by default
       const acquiredView = document.getElementById('empleadoAcquiredView');
-      if (acquiredView) {
-        acquiredView.style.display = 'none';
-      }
+      if (searchView) searchView.style.display = 'block';
+      if (acquiredView) acquiredView.style.display = 'none';
 
-      // Set search tab as active by default
+      // Set search tab as active and acquired tab as inactive by default
       const searchTab = document.getElementById('empleadoSearchTab');
-      if (searchTab) {
-        searchTab.classList.add('active');
-      }
-
-      // Set acquired tab as inactive by default
       const acquiredTab = document.getElementById('empleadoAcquiredTab');
-      if (acquiredTab) {
-        acquiredTab.classList.remove('active');
-      }
-
-      // Initialize company code display
-      const companyCodeDisplay = document.getElementById('companyCodeDisplay');
-      if (companyCodeDisplay) {
-        // In a real application, this would be loaded from the backend
-        // associated with the employee's account
-        companyCodeDisplay.textContent = 'ABC123'; // Example static code
-      }
+      if (searchTab) searchTab.classList.add('active');
+      if (acquiredTab) acquiredTab.classList.remove('active');
     });
     
     // Implementar funcionalidad de cerrar sesión
