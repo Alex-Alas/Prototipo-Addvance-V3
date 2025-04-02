@@ -8,7 +8,6 @@ function initializeEmpresaNavigation() {
   const perfilOption = document.getElementById('perfilOption');
   const cursoOption = document.getElementById('cursoOption');
   const networkOption = document.getElementById('networkOption');
-  const rankingsOption = document.getElementById('rankingsOption');
   const achievementsOption = document.getElementById('achievementsOption');
   const messagingOption = document.getElementById('empresaMessagingOption');
   const notificationsOption = document.getElementById('empresaNotificationsOption');
@@ -18,7 +17,6 @@ function initializeEmpresaNavigation() {
     perfilOption,
     cursoOption,
     networkOption,
-    rankingsOption,
     achievementsOption,
     messagingOption,
     notificationsOption
@@ -33,7 +31,6 @@ function initializeEmpresaNavigation() {
   const profileSection = document.getElementById('profileSection');
   const cursoSection = document.getElementById('cursoSection');
   const networkSection = document.getElementById('networkSection');
-  const rankingsSection = document.getElementById('rankingsSection');
   const achievementsSection = document.getElementById('achievementsSection');
   const messagingSection = document.getElementById('empresaMessagingSection');
   const notificationsSection = document.getElementById('empresaNotificationsSection');
@@ -43,7 +40,6 @@ function initializeEmpresaNavigation() {
     profileSection.style.display = 'none';
     cursoSection.style.display = 'none';
     networkSection.style.display = 'none';
-    rankingsSection.style.display = 'none';
     achievementsSection.style.display = 'none';
     
     // Check if messaging and notifications sections exist before trying to hide them
@@ -85,10 +81,6 @@ function initializeEmpresaNavigation() {
   
   networkOption.addEventListener('click', function() {
     showSection(networkSection, networkOption);
-  });
-  
-  rankingsOption.addEventListener('click', function() {
-    showSection(rankingsSection, rankingsOption);
   });
   
   achievementsOption.addEventListener('click', function() {
