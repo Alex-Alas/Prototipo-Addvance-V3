@@ -261,7 +261,7 @@
 
       <!-- Acquired journeys view -->
       <div id="acquiredView" style="display: none;">
-        <div id="companyAcquiredCoursesList">
+        <div id="companyAcquiredCoursesList" class="acquired-courses-list">
           <!-- Los cursos adquiridos se cargarán aquí dinámicamente con la información del progreso de los empleados -->
         </div>
       </div>
@@ -290,7 +290,7 @@
               <div class="contact-info">
                 <div class="contact-name">Proveedor 2</div>
                 <div class="contact-preview">Último mensaje...</div>
-              </div>
+          </div>
               <div class="contact-time">Ayer</div>
             </div>
           </div>
@@ -322,11 +322,11 @@
             <i class="fas fa-paperclip"></i>
             <input type="text" placeholder="Escribe un mensaje...">
             <i class="fas fa-paper-plane"></i>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    
+
     <!-- Notifications Section - For company notifications -->
     <div id="empresaNotificationsSection" class="notifications-section" style="display: none;">
       <h2>Notificaciones</h2>
@@ -370,11 +370,11 @@
             <div class="notification-actions">
               <i class="fas fa-ellipsis-v"></i>
             </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
   <!-- External JavaScript dependencies -->
   <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
@@ -398,6 +398,21 @@
       const acquiredTab = document.getElementById('acquiredTab');
       const searchView = document.getElementById('searchView');
       const acquiredView = document.getElementById('acquiredView');
+
+      // Initialize acquired courses from companiesData
+      function initializeAcquiredCourses() {
+        console.log('Initializing acquired courses from companiesData');
+        // We'll use empresa-ejemplo as the current company
+        const currentCompany = window.companiesData['empresa-ejemplo'];
+        if (currentCompany && currentCompany.acquiredCourses) {
+          const acquiredCourseIds = currentCompany.acquiredCourses.map(course => course.courseId);
+          localStorage.setItem('acquiredCourses', JSON.stringify(acquiredCourseIds));
+          console.log('Initialized acquired courses:', acquiredCourseIds);
+        }
+      }
+
+      // Call initialization on page load
+      initializeAcquiredCourses();
       
       if (searchTab && acquiredTab && searchView && acquiredView) {
         searchTab.addEventListener('click', function() {
@@ -475,9 +490,32 @@
           </div>
           
           <button class="assign-btn">Asignar empleados</button>
+          
+          <div class="employees-table-container" style="display: none;">
+            <table class="employees-table">
+              <thead>
+                <tr>
+                  <th>Empleado</th>
+                  <th>Progreso</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="employee-row">
+                  <td>
+                    <select class="employee-select">
+                      <option value="">Selecciona un empleado</option>
+                    </select>
+                  </td>
+                  <td>0%</td>
+                  <td>No iniciado</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         `;
 
-        // Add event listeners for the new buttons
+        // Add event listeners
         const moreTimeBtn = courseCard.querySelector('.more-time-btn');
         moreTimeBtn.addEventListener('click', function() {
           extendDeadline(courseCard, course.id);
@@ -492,8 +530,7 @@
 
         const assignBtn = courseCard.querySelector('.assign-btn');
         assignBtn.addEventListener('click', function() {
-          // Handle employee assignment
-          console.log('Assigning employees for course:', course.id);
+          toggleEmployeesTable(courseCard, course.id);
         });
 
         // Check if course is already scheduled
@@ -595,33 +632,143 @@
         }
 
         // Add the course to the acquired view
-        const acquiredView = document.getElementById('acquiredView');
-        if (acquiredView) {
-          const acquiredCoursesList = document.getElementById('companyAcquiredCoursesList');
-          if (acquiredCoursesList) {
-            const courseCard = createAcquiredCourseCard(course);
-            acquiredCoursesList.appendChild(courseCard);
+        const acquiredCoursesList = document.getElementById('companyAcquiredCoursesList');
+        if (acquiredCoursesList) {
+          const courseCard = createAcquiredCourseCard(course);
+          acquiredCoursesList.appendChild(courseCard);
+        }
+      }
+
+      // Function to toggle employees table visibility
+      function toggleEmployeesTable(courseCard, courseId) {
+        const tableContainer = courseCard.querySelector('.employees-table-container');
+        const isVisible = tableContainer.style.display !== 'none';
+        
+        if (!isVisible) {
+          // Show table and populate employee dropdown
+          tableContainer.style.display = 'block';
+          populateEmployeeDropdown(courseCard, courseId);
+        } else {
+          // Hide table
+          tableContainer.style.display = 'none';
+        }
+      }
+
+      // Function to populate employee dropdown
+      function populateEmployeeDropdown(courseCard, courseId) {
+        const employeeSelect = courseCard.querySelector('.employee-select');
+        employeeSelect.innerHTML = '<option value="">Selecciona un empleado</option>';
+        
+        // Get assigned employees from localStorage
+        const assignedEmployees = JSON.parse(localStorage.getItem('assignedEmployees') || '{}');
+        const courseAssignedEmployees = assignedEmployees[courseId] || [];
+        
+        // Get all employees from the company
+        const companyEmployees = [
+          { id: 'emp1', name: 'Juan Pérez' },
+          { id: 'emp2', name: 'María García' },
+          { id: 'emp3', name: 'Carlos López' }
+        ];
+        
+        // Filter out already assigned employees
+        const availableEmployees = companyEmployees.filter(emp => 
+          !courseAssignedEmployees.includes(emp.id)
+        );
+        
+        // Add available employees to dropdown
+        availableEmployees.forEach(emp => {
+          const option = document.createElement('option');
+          option.value = emp.id;
+          option.textContent = emp.name;
+          employeeSelect.appendChild(option);
+        });
+
+        // Add change event listener to the dropdown
+        employeeSelect.addEventListener('change', function() {
+          if (this.value) {
+            assignEmployeeToCourse(courseCard, courseId, this.value);
           }
+        });
+      }
+
+      // Function to assign employee to course
+      function assignEmployeeToCourse(courseCard, courseId, employeeId) {
+        // Get current assignments
+        const assignedEmployees = JSON.parse(localStorage.getItem('assignedEmployees') || '{}');
+        if (!assignedEmployees[courseId]) {
+          assignedEmployees[courseId] = [];
+        }
+        
+        // Add new employee to assignments
+        if (!assignedEmployees[courseId].includes(employeeId)) {
+          assignedEmployees[courseId].push(employeeId);
+          localStorage.setItem('assignedEmployees', JSON.stringify(assignedEmployees));
+          
+          // Add new row to table
+          const tableBody = courseCard.querySelector('.employees-table tbody');
+          const newRow = document.createElement('tr');
+          newRow.className = 'employee-row';
+          newRow.innerHTML = `
+            <td>${document.querySelector(`.employee-select option[value="${employeeId}"]`).textContent}</td>
+            <td>0%</td>
+            <td>No iniciado</td>
+          `;
+          tableBody.appendChild(newRow);
+          
+          // Clear and repopulate dropdown
+          populateEmployeeDropdown(courseCard, courseId);
         }
       }
 
       // Function to load acquired courses
       function loadAcquiredCourses() {
+        console.log('Loading acquired courses...');
         const acquiredCoursesList = document.getElementById('companyAcquiredCoursesList');
-        if (!acquiredCoursesList) return;
+        if (!acquiredCoursesList) {
+          console.error('Acquired courses list container not found!');
+          return;
+        }
 
         // Clear existing content
         acquiredCoursesList.innerHTML = '';
 
-        // Get acquired courses from localStorage
+        // Get acquired courses from localStorage and companiesData
         const acquiredCourses = JSON.parse(localStorage.getItem('acquiredCourses') || '[]');
+        console.log('Acquired courses from storage:', acquiredCourses);
         
+        if (acquiredCourses.length === 0) {
+          console.log('No acquired courses found');
+          acquiredCoursesList.innerHTML = '<p class="no-courses">No hay cursos adquiridos</p>';
+          return;
+        }
+
         // Load and display acquired courses
         acquiredCourses.forEach(courseId => {
           const course = window.coursesDatabase.find(c => c.id === courseId);
           if (course) {
+            console.log('Creating card for acquired course:', course);
             const courseCard = createAcquiredCourseCard(course);
             acquiredCoursesList.appendChild(courseCard);
+            
+            // Load assigned employees if any
+            const assignedEmployees = JSON.parse(localStorage.getItem('assignedEmployees') || '{}');
+            if (assignedEmployees[courseId]) {
+              const tableBody = courseCard.querySelector('.employees-table tbody');
+              assignedEmployees[courseId].forEach(empId => {
+                const employee = window.employeesData[empId] || { 
+                  id: empId,
+                  name: `Empleado ${empId}`
+                };
+                const newRow = document.createElement('tr');
+                newRow.className = 'employee-row';
+                newRow.innerHTML = `
+                  <td>${employee.name}</td>
+                  <td>0%</td>
+                  <td>No iniciado</td>
+                `;
+                tableBody.appendChild(newRow);
+              });
+            }
           }
         });
       }
@@ -691,7 +838,7 @@
       if (document.getElementById('profileSection').style.display !== 'none') {
         initializeProfileCardFlip();
       }
-    
+      
       // Implementar funcionalidad de cerrar sesión
       const logoutButton = document.querySelector('.logout-button');
       if (logoutButton) {
@@ -833,6 +980,55 @@
       border-radius: 4px;
       cursor: pointer;
       margin-top: 10px;
+    }
+
+    .acquired-courses-list {
+      padding: 20px;
+    }
+
+    .no-courses {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 20px;
+    }
+
+    .curso-adquirido-empresa {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .curso-adquirido-empresa:hover {
+      transform: translateY(-5px);
+    }
+
+    .employees-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .employees-table th,
+    .employees-table td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .employees-table th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+    }
+
+    .employee-select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ced4da;
     }
   </style>
 </body>
