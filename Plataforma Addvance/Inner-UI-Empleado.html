@@ -111,166 +111,30 @@
       <button id="empleadoLogoutBtn" class="logout-button">Cambiar cuenta</button>
     </div>
     
-    <!-- Empleado Curso Section - With Duolingo-style learning path -->
-    <div id="empleadoCursoSection" class="curso-section" style="display: block;">
-      <!-- Curso view tabs -->
-      <div class="curso-submenu">
+    <!-- Empleado Journey Section - With Duolingo-style learning path -->
+    <div id="empleadoCursoSection" class="journey-section" style="display: block;">
+      <!-- Journey view tabs -->
+      <div class="journey-submenu">
         <button id="empleadoSearchTab" class="menu-option active">Búsqueda</button>
         <button id="empleadoAcquiredTab" class="menu-option">Mis Cursos</button>
       </div>
 
-      <!-- Curso search view -->
+      <!-- Journey search view -->
       <div id="empleadoSearchView" style="display: block;">
         <div class="search-container">
-          <h2>¿Qué Curso estás buscando?</h2>
-          <input type="text" class="search-bar" placeholder="Buscar curso...">
+          <h2>¿Qué Journey estás buscando?</h2>
+          <input type="text" class="search-bar" placeholder="Buscar journey...">
         </div>
-        <div class="curso-grid">
-          <div class="curso-card">
-            <h3>Curso para Empleados 1</h3>
-            <p>Desarrollo de habilidades técnicas</p>
-            <div class="curso-details">
-              <div class='curso-details-container'>
-                <p>Duración: 3 semanas</p>
-              </div>
-              <p>Nivel: Básico</p>
-              <p><b>Precio:</b> $$$</p>
-              <p>Descripción detallada del curso y sus beneficios para el desarrollo profesional.</p>
-              <button class="purchase-btn">Inscribirse</button>
-            </div>
-          </div>
+        <div class="journey-grid">
+          <!-- Journey cards will be dynamically populated here -->
         </div>
       </div>
 
-      <!-- Acquired cursos view with Duolingo-style modules -->
+      <!-- Acquired journeys view -->
       <div id="empleadoAcquiredView" style="display: none;">
         <h2 style="margin-bottom: 20px;">Mi Progreso de Aprendizaje</h2>
-        
-        <!-- Módulo 1 -->
-        <div class="module-content">
-          <div class="module-unit-expanded">
-            <div class="module-icon">📘</div>
-            <div>
-              <h3>Módulo 1: Introducción a Pronto Cash</h3>
-              <div class="module-progress-bar">
-                <div class="module-progress-fill" style="width: 0%;"></div>
-              </div>
-            </div>
-          </div>
-          <p>Este módulo cubre los fundamentos de Pronto Cash y sus beneficios.</p>
-          
-          <!-- Mostrar lección y cuestionario juntos en una grid como en el módulo 2 -->
-          <div class="lessons-grid">
-            <div class="lesson-card">
-              <div class="lesson-icon">🔠</div>
-              <h4>Lección 1</h4>
-              <p>Introducción a ProntoCash</p>
-              <button class="start-lesson-btn">Iniciar</button>
-            </div>
-            <div class="lesson-card quiz-card" data-module="1">
-              <div class="lesson-icon">❓</div>
-              <h4>Cuestionario Módulo 1</h4>
-              <p>Evalúa tu conocimiento</p>
-              <button class="start-lesson-btn">Iniciar ❓</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Módulo 2 -->
-        <div class="module-content">
-          <div class="module-unit-expanded">
-            <div class="module-icon">📘</div>
-            <div>
-              <h3>Módulo 2: ÁbacoPay</h3>
-              <div class="module-progress-bar">
-                <div class="module-progress-fill" style="width: 0%;"></div>
-              </div>
-            </div>
-          </div>
-          <p>Aprende sobre ÁbacoPay y sus procesos.</p>
-          <div class="lessons-grid">
-            <div class="lesson-card">
-              <div class="lesson-icon">🔠</div>
-              <h4>Lección 1</h4>
-              <p>¿Qué es ÁbacoPay?</p>
-              <button class="start-lesson-btn">Iniciar</button>
-            </div>
-            <div class="lesson-card quiz-card" data-module="2">
-              <div class="lesson-icon">❓</div>
-              <h4>Cuestionario Módulo 2</h4>
-              <p>Evalúa tu conocimiento</p>
-              <button class="start-lesson-btn">Iniciar ❓</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Módulo 3 -->
-        <div class="module-content">
-          <div class="module-unit-expanded">
-            <div class="module-icon">📘</div>
-            <div>
-              <h3>Módulo 3: CashX</h3>
-              <div class="module-progress-bar">
-                <div class="module-progress-fill" style="width: 0%;"></div>
-              </div>
-            </div>
-          </div>
-          <p>Explora cómo CashX mejora el flujo de caja.</p>
-          <div class="lessons-grid">
-            <div class="lesson-card">
-              <div class="lesson-icon">🔠</div>
-              <h4>Lección 1</h4>
-              <p>Introducción a CashX</p>
-              <button class="start-lesson-btn">Iniciar</button>
-            </div>
-            <div class="lesson-card quiz-card" data-module="3">
-              <div class="lesson-icon">❓</div>
-              <h4>Cuestionario Módulo 3</h4>
-              <p>Evalúa tu conocimiento</p>
-              <button class="start-lesson-btn">Iniciar ❓</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Modal para el cuestionario -->
-        <div id="quizModal" class="quiz-modal" style="display: none;">
-          <div class="quiz-content">
-            <h3 id="quizTitle">Cuestionario: Módulo X</h3>
-            <div id="quizQuestions">
-              <!-- Las preguntas se generarán con JavaScript -->
-            </div>
-            <button id="submitQuizBtn" class="submit-btn">Enviar respuestas</button>
-            <button id="closeQuizBtn" class="close-btn">Cerrar</button>
-          </div>
-        </div>
-        
-        <!-- Modal para la lección -->
-        <div id="lessonModal" class="lesson-modal" style="display: none;">
-          <div class="lesson-modal-content">
-            <h3 id="lessonTitle">Lección: Módulo X</h3>
-            
-            <!-- Indicador de progreso de la lección -->
-            <div class="lesson-progress-container">
-              <div class="lesson-progress-bar">
-                <div class="lesson-progress-fill" style="width: 0%"></div>
-              </div>
-              <div class="lesson-progress-text">Nivel <span id="currentLevel">1</span> de <span id="totalLevels">4</span></div>
-            </div>
-            
-            <!-- Contenedor para los niveles de la lección -->
-            <div id="lessonContent" class="lesson-container">
-              <!-- Los niveles se generarán con JavaScript -->
-            </div>
-            
-            <!-- Navegación entre niveles -->
-            <div class="lesson-navigation">
-              <button id="prevLevelBtn" class="nav-btn" disabled>Anterior</button>
-              <button id="nextLevelBtn" class="nav-btn">Siguiente</button>
-              <button id="completeLessonBtn" class="complete-btn" style="display: none;">Completar lección</button>
-            </div>
-            
-            <button id="closeLessonBtn" class="close-btn">Cerrar</button>
-          </div>
+        <div class="journey-grid">
+          <!-- Acquired journey cards will be dynamically populated here -->
         </div>
       </div>
     </div>
