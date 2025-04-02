@@ -27,6 +27,10 @@
         <i class="fas fa-user"></i>
         <span>Perfil</span>
       </button>
+      <button id="socioCursoOption" class="menu-option">
+        <i class="fas fa-road"></i>
+        <span>Curso</span>
+      </button>
       <button id="socioNetworkOption" class="menu-option">
         <i class="fas fa-network-wired"></i>
         <span>Network</span>
@@ -94,6 +98,60 @@
             <tr><td>Servicio 3</td><td>Descripción breve</td></tr>
           </table>
         </details>
+      </div>
+    </div>
+    
+    <!-- Socio Curso Section -->
+    <div id="socioCursoSection" class="curso-section" style="display: none;">
+      <!-- Curso view tabs -->
+      <div class="curso-submenu">
+        <button id="socioSearchTab" class="menu-option active">Búsqueda</button>
+        <button id="socioAcquiredTab" class="menu-option">Mis Cursos</button>
+      </div>
+
+      <!-- Curso search view -->
+      <div id="socioSearchView" style="display: block;">
+        <div class="search-container">
+          <h2>¿Qué Curso estás buscando?</h2>
+          <input type="text" class="search-bar" placeholder="Buscar curso...">
+        </div>
+        <div class="curso-grid">
+          <div class="curso-card">
+            <h3>Curso para Socios 1</h3>
+            <p>Desarrollo de habilidades de negocio</p>
+            <div class="curso-details">
+              <div class='curso-details-container'>
+                <p>Duración: 4 semanas</p>
+              </div>
+              <p>Nivel: Intermedio</p>
+              <p><b>Precio:</b> $$$</p>
+              <p>Descripción detallada del curso y sus beneficios para socios estratégicos.</p>
+              <button class="purchase-btn">Inscribirse</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acquired cursos view -->
+      <div id="socioAcquiredView" style="display: none;">
+        <div class="curso-grid">
+          <div class="curso-card">
+            <h3>Curso Adquirido 1</h3>
+            <p>Estado: En progreso</p>
+            <p class="deadline">Fecha límite para agendar: 30-06-2023</p>
+            <select class="schedule-dropdown">
+              <option>Seleccionar horario</option>
+              <option>Mañana 9:00 AM</option>
+              <option>Tarde 2:00 PM</option>
+            </select>
+            <div class="curso-details">
+              <p>Progreso: 45%</p>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 45%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     
@@ -173,6 +231,40 @@
       const networkOption = document.getElementById('socioNetworkOption');
       if (networkOption) {
         networkOption.classList.add('active');
+      }
+      
+      // Gestión de tabs para la sección de Cursos
+      const socioSearchTab = document.getElementById('socioSearchTab');
+      const socioAcquiredTab = document.getElementById('socioAcquiredTab');
+      const socioSearchView = document.getElementById('socioSearchView');
+      const socioAcquiredView = document.getElementById('socioAcquiredView');
+
+      if (socioSearchTab && socioAcquiredTab) {
+        socioSearchTab.addEventListener('click', function() {
+          socioSearchView.style.display = 'block';
+          socioAcquiredView.style.display = 'none';
+          socioSearchTab.classList.add('active');
+          socioAcquiredTab.classList.remove('active');
+        });
+
+        socioAcquiredTab.addEventListener('click', function() {
+          socioSearchView.style.display = 'none';
+          socioAcquiredView.style.display = 'block';
+          socioSearchTab.classList.remove('active');
+          socioAcquiredTab.classList.add('active');
+        });
+      }
+
+      // Manejo de navegación para sección de Cursos
+      const socioCursoOption = document.getElementById('socioCursoOption');
+      if (socioCursoOption) {
+        socioCursoOption.addEventListener('click', function() {
+          // Ocultar todas las secciones
+          document.getElementById('socioPerfilSection').style.display = 'none';
+          document.getElementById('socioNetworkSection').style.display = 'none';
+          // Mostrar sección de cursos
+          document.getElementById('socioCursoSection').style.display = 'block';
+        });
       }
       
       // Implementar funcionalidad de cerrar sesión

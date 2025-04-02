@@ -451,7 +451,7 @@ journeyViews.forEach(view => {
 });
 
 // Journey card expansion - Toggle expanded view for journey details
-document.querySelectorAll('.journey-card').forEach(card => {
+document.querySelectorAll('.journey-card, .curso-card').forEach(card => {
   card.addEventListener('click', () => {
     card.classList.toggle('expanded');
     // Add slight delay for better neumorphic visual experience
@@ -1361,7 +1361,7 @@ document.getElementById('proveedorPerfilOption').addEventListener('click', funct
  * Shows elements with fade-in effect as they enter the viewport
  */
 const animateOnScroll = () => {
-  const elements = document.querySelectorAll('.swiper-slide, .profile-box, .employee-card, .ranking-item, .journey-card');
+  const elements = document.querySelectorAll('.swiper-slide, .profile-box, .employee-card, .ranking-item, .journey-card, .curso-card');
   
   elements.forEach(element => {
     const elementPosition = element.getBoundingClientRect().top;
@@ -1375,7 +1375,7 @@ const animateOnScroll = () => {
 };
 
 // Set initial state for animation
-document.querySelectorAll('.swiper-slide, .profile-box, .employee-card, .ranking-item, .journey-card').forEach(el => {
+document.querySelectorAll('.swiper-slide, .profile-box, .employee-card, .ranking-item, .journey-card, .curso-card').forEach(el => {
   el.style.opacity = '0';
   el.style.transform = 'translateY(20px)';
   el.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';

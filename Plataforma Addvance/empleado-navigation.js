@@ -7,18 +7,18 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Get all menu options
     const perfilOption = document.getElementById('empleadoPerfilOption');
-    const journeyOption = document.getElementById('empleadoJourneyOption');
+    const cursoOption = document.getElementById('empleadoCursoOption');
     const rankingOption = document.getElementById('empleadoRankingOption');
 
     // Get all sections
     const perfilSection = document.getElementById('empleadoPerfilSection');
-    const journeySection = document.getElementById('empleadoJourneySection');
+    const cursoSection = document.getElementById('empleadoCursoSection');
     const rankingSection = document.getElementById('empleadoRankingSection');
 
     // Function to hide all sections
     function hideAllSections() {
         if (perfilSection) perfilSection.style.display = 'none';
-        if (journeySection) journeySection.style.display = 'none';
+        if (cursoSection) cursoSection.style.display = 'none';
         if (rankingSection) rankingSection.style.display = 'none';
     }
 
@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (journeyOption) {
-        journeyOption.addEventListener('click', function() {
-            showSection(journeySection);
+    if (cursoOption) {
+        cursoOption.addEventListener('click', function() {
+            showSection(cursoSection);
         });
     }
 
@@ -48,10 +48,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Set Journey section as visible by default
-    showSection(journeySection);
+    // Set Curso section as visible by default
+    showSection(cursoSection);
 
-    // Initialize journey tabs
+    // Initialize curso tabs
     const searchTab = document.getElementById('empleadoSearchTab');
     const acquiredTab = document.getElementById('empleadoAcquiredTab');
     const searchView = document.getElementById('empleadoSearchView');
@@ -85,18 +85,18 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeEmpleadoNavigation() {
   // Get all menu options
   const perfilOption = document.getElementById('empleadoPerfilOption');
-  const journeyOption = document.getElementById('empleadoJourneyOption');
+  const cursoOption = document.getElementById('empleadoCursoOption');
   const rankingOption = document.getElementById('empleadoRankingOption');
   
   // Get all sections
   const perfilSection = document.getElementById('empleadoPerfilSection');
-  const journeySection = document.getElementById('empleadoJourneySection');
+  const cursoSection = document.getElementById('empleadoCursoSection');
   const rankingSection = document.getElementById('empleadoRankingSection');
   
   // Function to hide all sections
   function hideAllSections() {
     perfilSection.style.display = 'none';
-    journeySection.style.display = 'none';
+    cursoSection.style.display = 'none';
     rankingSection.style.display = 'none';
   }
   
@@ -112,8 +112,8 @@ function initializeEmpleadoNavigation() {
     initializeProfileCardFlip();
   });
   
-  journeyOption.addEventListener('click', function() {
-    showSection(journeySection);
+  cursoOption.addEventListener('click', function() {
+    showSection(cursoSection);
     // Initialize Journey Manager when switching to Journey section
     if (typeof JourneyManager !== 'undefined') {
       JourneyManager.init();
@@ -124,22 +124,22 @@ function initializeEmpleadoNavigation() {
     showSection(rankingSection);
   });
   
-  // Set Journey section as visible by default
-  showSection(journeySection);
+  // Set Curso section as visible by default
+  showSection(cursoSection);
 }
 
-// Function to initialize journey tabs navigation
-function initializeJourneyTabs() {
-  // Get journey tab elements
+// Function to initialize curso tabs navigation
+function initializeCursoTabs() {
+  // Get curso tab elements
   const searchTab = document.getElementById('empleadoSearchTab');
   const acquiredTab = document.getElementById('empleadoAcquiredTab');
   
-  // Get journey view elements
+  // Get curso view elements
   const searchView = document.getElementById('empleadoSearchView');
   const acquiredView = document.getElementById('empleadoAcquiredView');
   
-  // Function to show a journey view and hide the other
-  function showJourneyView(viewToShow, activeTab) {
+  // Function to show a curso view and hide the other
+  function showCursoView(viewToShow, activeTab) {
     // Hide all views first
     searchView.style.display = 'none';
     acquiredView.style.display = 'none';
@@ -155,18 +155,18 @@ function initializeJourneyTabs() {
     activeTab.classList.add('active');
   }
   
-  // Add click event listeners to journey tabs
+  // Add click event listeners to curso tabs
   if (searchTab) {
     searchTab.addEventListener('click', function(e) {
       e.preventDefault();
-      showJourneyView(searchView, searchTab);
+      showCursoView(searchView, searchTab);
     });
   }
   
   if (acquiredTab) {
     acquiredTab.addEventListener('click', function(e) {
       e.preventDefault();
-      showJourneyView(acquiredView, acquiredTab);
+      showCursoView(acquiredView, acquiredTab);
     });
   }
   
