@@ -84,9 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function hideAllEmpleadoSections() {
   const sections = [
     'empleadoPerfilSection',
-    'empleadoCursoSection',
-    'empleadoMessagingSection',
-    'empleadoNotificationsSection'
+    'empleadoCursoSection'
   ];
   
   sections.forEach(sectionId => {
@@ -586,7 +584,11 @@ empleadoMenuOptions.forEach(option => {
  * Hides all employee sections for clean transitions
  */
 function hideAllEmpleadoSections() {
-  const sections = ['empleadoPerfilSection', 'empleadoJourneySection', 'empleadoRankingSection'];
+  const sections = [
+    'empleadoPerfilSection',
+    'empleadoCursoSection'
+  ];
+  
   sections.forEach(sectionId => {
     const section = document.getElementById(sectionId);
     if (section) {
@@ -621,7 +623,11 @@ if (empleadoSearchTab && empleadoAcquiredTab && empleadoSearchView && empleadoAc
  * Hides all employee sections for clean transitions
  */
 function hideAllEmpleadoSections() {
-  const sections = ['empleadoPerfilSection', 'empleadoJourneySection', 'empleadoRankingSection'];
+  const sections = [
+    'empleadoPerfilSection',
+    'empleadoCursoSection'
+  ];
+  
   sections.forEach(sectionId => {
     const section = document.getElementById(sectionId);
     if (section) {
